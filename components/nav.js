@@ -1,0 +1,20 @@
+import React from 'react'
+import Link from 'next/link'
+import { Menu, Container, Image } from 'semantic-ui-react'
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
+
+const Nav = () => {
+    return (
+        <Menu fixed='top' inverted className="top-nav" size="huge" css={{backgroundColor: '#303030'}}>
+            <Container>
+                <Menu.Item as='a' header>
+                    <Image src='android-chrome-192x192.png' css={{ marginRight: '1.5em', width: 50 }} />
+                    Push-Up Heroes
+                </Menu.Item>
+            </Container>
+        </Menu>
+    );
+};
+
+export default Nav
