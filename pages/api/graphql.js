@@ -3,15 +3,43 @@ import fetch from "isomorphic-unfetch";
 import format from 'date-fns/format'
 
 const typeDefs = gql`
+    scalar GraphQLJSON
+
     type Query {
         leaderboard: [User!]!
         summary: String!
         totalPushUps: Int!
     }
+    type SlackProfile {
+        title: String!
+        phone: String!
+        skype: String!
+        real_name: String!
+        real_name_normalized: String!
+        display_name: String!
+        display_name_normalized: String!
+        fields: [GraphQLJSON]
+        status_text: String!
+        status_emoji: String!
+        status_expiration: Int!
+        avatar_hash: String!
+        image_original: String!
+        first_name: String!
+        last_name: String!
+        image_24: String!
+        image_32: String!
+        image_48: String!
+        image_72: String!
+        image_192: String!
+        image_512: String!
+        image_1024: String!
+        status_text_canonical: String!
+    }
     type User {
         id: ID!
         name: String!
         count: Int!
+        profile: SlackProfile!
     }
 `;
 
@@ -37,12 +65,13 @@ const resolvers = {
                 const data = allRows.reduce((acc, curr) => {
                     const name = curr.name;
                     const count = curr.count;
+                    const id = curr.id;
 
                     return {
                         ...acc,
                         slackIdMap: {
                             ...acc.slackIdMap,
-                            [name]: curr.id,
+                            [name]: id,
                         },
                         leaderboard: {
                             ...acc.leaderboard,
@@ -54,10 +83,26 @@ const resolvers = {
                     leaderboard: {},
                 });
 
-                const leaderArr = Object.keys(data.leaderboard).map(name => ({
-                    name,
-                    count: data.leaderboard[name],
-                    id: data.slackIdMap[name],
+                const getProfileData = async (userSlackId) => {
+                    const user = await fetch(`https://slack.com/api/users.profile.get?user=${userSlackId}`, {
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        }
+                    });
+
+                    const data = await user.json();
+                    return Promise.resolve(data.profile);
+                };
+
+                const leaderArr = await Promise.all(Object.keys(data.leaderboard).map(async (name) => {
+                    const slackId = data.slackIdMap[name];
+                    return {
+                        name,
+                        count: data.leaderboard[name],
+                        id:slackId,
+                        profile: await getProfileData(slackId)
+                    };
                 }));
 
                 return [...leaderArr].sort((aPerson, bPerson) => {
