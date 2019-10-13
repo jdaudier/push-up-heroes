@@ -1,9 +1,12 @@
 import React from 'react';
 import Head from 'next/head';
 import Nav from '../components/nav';
-import fetch from 'isomorphic-unfetch';
 import { Icon, Label, Image, Menu, Table, Container, Header } from 'semantic-ui-react';
-import Layout from '../components/Layout'
+import Layout from '../components/Layout';
+import withData from "../lib/apollo";
+import { useQuery } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
+
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
 
@@ -28,23 +31,31 @@ const floating = keyframes`
    }
 `;
 
-const Leaderboard = ({leaderboard, totalPushUps}) => {
-    if (leaderboard.length === 0) {
-        return (
-            <div>
-                <Table celled size='large' selectable textAlign="left">
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>Rank</Table.HeaderCell>
-                            <Table.HeaderCell>Athlete</Table.HeaderCell>
-                            <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
-                            <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
+const GET_LEADERBOARD = gql`
+    query leaderboard { 
+        leaderboard { 
+            id name count 
+        }
+        totalPushUps
+    }
+`;
 
-                    <Table.Body>
-                        <Table.Row key="empty" textAlign="center">
-                            <Table.Cell colSpan='4'>
+const EmptyView = ({message}) => {
+    return (
+        <div>
+            <Table celled size='large' selectable textAlign="left">
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell>Rank</Table.HeaderCell>
+                        <Table.HeaderCell>Athlete</Table.HeaderCell>
+                        <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
+                        <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                    <Table.Row key="empty" textAlign="center">
+                        <Table.Cell colSpan='4'>
                                 <span css={{
                                     borderRadius: 4,
                                     display: 'flex',
@@ -58,7 +69,7 @@ const Leaderboard = ({leaderboard, totalPushUps}) => {
                                     height: '100%',
                                     overflow: 'hidden',
                                 }}>
-                                    <p css={{color: 'white'}}>No one has done any push-ups yet!</p>
+                                    <p css={{color: 'white'}}>{message}</p>
 
                                     <span css={{
                                         marginLeft: 45,
@@ -67,13 +78,25 @@ const Leaderboard = ({leaderboard, totalPushUps}) => {
                                         <Image src="https://mars-404.templateku.co/img/astronaut.svg" centered/>
                                     </span>
                                 </span>
-                            </Table.Cell>
-                        </Table.Row>
-                    </Table.Body>
-                </Table>
-            </div>
+                        </Table.Cell>
+                    </Table.Row>
+                </Table.Body>
+            </Table>
+        </div>
+    );
+};
 
-        )
+const Leaderboard = () => {
+    const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD, {
+        notifyOnNetworkStatusChange: true
+    });
+
+    if (!data) return null;
+
+    const {leaderboard, totalPushUps} = data;
+
+    if (leaderboard.length === 0) {
+        return <EmptyView message="No one has done any push-ups yet!" />
     }
 
     return (
@@ -101,7 +124,7 @@ const Leaderboard = ({leaderboard, totalPushUps}) => {
                     const maybePlaceText = place === 1 ? '' : place;
                     const diffFromLeader = leaderboard[0].count - count;
                     return (
-                        <Table.Row key={id} css={{cursor: 'pointer'}}>
+                        <Table.Row key={id}>
                             <Table.Cell>
                                 <MaybeRibbon place={place} />
                                 {maybePlaceText}
@@ -161,39 +184,8 @@ const Home = ({leaderboard, totalPushUps}) => (
     </Layout>
 );
 
-Home.getInitialProps = async ({ req }) => {
-    try {
-        const leaderboardPromise = fetch('https://push-up-heroes.now.sh/api/graphql', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({ query: '{ leaderboard { id name count } }' })
-        });
-
-        const totalPushUpsPromise = fetch('https://push-up-heroes.now.sh/api/graphql', {
-            method: 'POST',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({ query: '{ totalPushUps }' })
-        });
-
-        const [leaderboardRaw, totalPushUpsRaw] = await Promise.all([leaderboardPromise, totalPushUpsPromise]);
-
-        const [leaderboardResponse, totalPushUpsResponse] = await Promise.all([leaderboardRaw.json(), totalPushUpsRaw.json()]);
-
-        const {data: {leaderboard}} = leaderboardResponse;
-        const {data: {totalPushUps}} = totalPushUpsResponse;
-
-        return {
-            leaderboard,
-            totalPushUps
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        return {error};
-    }
-};
-
-export default Home
+export default withData(props => {
+    return (
+        <Home />
+    );
+});
