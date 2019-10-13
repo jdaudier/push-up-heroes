@@ -153,7 +153,9 @@ const Home = ({leaderboard, totalPushUps}) => (
         <Nav />
 
         <Container text css={{ marginTop: '8em' }}>
-            <Header as='h1' css={{color: '#303030'}}>Leaderboard</Header>
+            <Header as='h1'>
+                <span css={{color: '#303030'}}>Leaderboard</span>
+            </Header>
             <Leaderboard leaderboard={leaderboard} totalPushUps={totalPushUps} />
         </Container>
     </Layout>
@@ -161,7 +163,7 @@ const Home = ({leaderboard, totalPushUps}) => (
 
 Home.getInitialProps = async ({ req }) => {
     try {
-        const leaderboardResponse = await fetch('https://push-up-heroes.now.sh/api/graphql', {
+        const leaderboardPromise = fetch('https://push-up-heroes.now.sh/api/graphql', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
@@ -169,11 +171,7 @@ Home.getInitialProps = async ({ req }) => {
             body: JSON.stringify({ query: '{ leaderboard { id name count } }' })
         });
 
-        const {
-            data: { leaderboard }
-        } = await leaderboardResponse.json();
-
-        const totalPushUpsResponse = await fetch('https://push-up-heroes.now.sh/api/graphql', {
+        const totalPushUpsPromise = fetch('https://push-up-heroes.now.sh/api/graphql', {
             method: 'POST',
             headers: {
                 'Content-type': 'application/json'
@@ -181,11 +179,17 @@ Home.getInitialProps = async ({ req }) => {
             body: JSON.stringify({ query: '{ totalPushUps }' })
         });
 
-        const {
-            data: { totalPushUps }
-        } = await totalPushUpsResponse.json();
+        const [leaderboardRaw, totalPushUpsRaw] = await Promise.all([leaderboardPromise, totalPushUpsPromise]);
 
-        return { leaderboard, totalPushUps }
+        const [leaderboardResponse, totalPushUpsResponse] = await Promise.all([leaderboardRaw.json(), totalPushUpsRaw.json()]);
+
+        const {data: {leaderboard}} = leaderboardResponse;
+        const {data: {totalPushUps}} = totalPushUpsResponse;
+
+        return {
+            leaderboard,
+            totalPushUps
+        }
     } catch (error) {
         console.error('Error:', error);
         return {error};

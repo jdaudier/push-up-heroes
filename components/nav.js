@@ -6,11 +6,13 @@ import { jsx } from '@emotion/core';
 
 const Nav = () => {
     return (
-        <Menu fixed='top' inverted className="top-nav" size="huge" css={{backgroundColor: '#303030'}}>
+        <Menu fixed='top' className="top-nav" size="huge">
             <Container>
                 <Menu.Item as='a' header>
                     <Image src='android-chrome-192x192.png' css={{ marginRight: '1.5em', width: 50 }} />
-                    Push-Up Heroes
+                    <span css={{color: '#303030'}}>
+                        Push-Up Heroes
+                    </span>
                 </Menu.Item>
             </Container>
         </Menu>
