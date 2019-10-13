@@ -101,7 +101,7 @@ const Leaderboard = ({leaderboard, totalPushUps}) => {
                     const maybePlaceText = place === 1 ? '' : place;
                     const diffFromLeader = leaderboard[0].count - count;
                     return (
-                        <Table.Row key={id}>
+                        <Table.Row key={id} css={{cursor: 'pointer'}}>
                             <Table.Cell>
                                 <MaybeRibbon place={place} />
                                 {maybePlaceText}
