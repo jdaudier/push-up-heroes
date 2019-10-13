@@ -13,7 +13,11 @@ import { jsx, keyframes } from '@emotion/core';
 const MaybeRibbon = ({place}) => {
     switch (place) {
         case 1:
-            return <Label color="yellow" ribbon size="big">1st!</Label>;
+            return <Label color="yellow" ribbon size="big">1st</Label>;
+        case 2:
+            return <Label color="blue" ribbon size="big">2nd</Label>;
+        case 3:
+            return <Label color="red" ribbon size="big">3rd</Label>;
         default:
             return null;
     }
@@ -34,7 +38,12 @@ const floating = keyframes`
 const GET_LEADERBOARD = gql`
     query leaderboard { 
         leaderboard { 
-            id name count 
+            id 
+            name 
+            count
+            profile {
+                image_48
+            }
         }
         totalPushUps
     }
@@ -119,9 +128,9 @@ const Leaderboard = () => {
             </Table.Header>
 
             <Table.Body>
-                {leaderboard.map(({id, name, count}, i) => {
+                {leaderboard.map(({id, name, count, profile}, i) => {
                     const place = i + 1;
-                    const maybePlaceText = place === 1 ? '' : place;
+                    const maybePlaceText = [1, 2, 3].includes(place) ? '' : place;
                     const diffFromLeader = leaderboard[0].count - count;
                     return (
                         <Table.Row key={id}>
@@ -130,7 +139,8 @@ const Leaderboard = () => {
                                 {maybePlaceText}
                             </Table.Cell>
                             <Table.Cell>
-                                {name}
+                                <Image src={profile.image_48} avatar />
+                                <span>{name}</span>
                             </Table.Cell>
                             <Table.Cell>
                                 {count}
