@@ -1,7 +1,23 @@
+import React from "react";
+import Head from 'next/head';
+import Nav from "./nav";
+import {Container} from "semantic-ui-react";
+
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
+
 function Layout(props) {
     return (
         <div>
-            {props.children}
+            <Head>
+                <title>Push-Up Heroes</title>
+                <link rel='icon' href='/favicon.ico' />
+                <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+            </Head>
+            <Nav />
+            <Container text css={{ marginTop: '8em' }}>
+                {props.children}
+            </Container>
             <style jsx global>{`
                 body { 
                     background-color: #f2f5f7;

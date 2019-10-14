@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import Link from 'next/link'
 import Nav from '../components/nav';
 import { Icon, Label, Image, Menu, Table, Container, Header } from 'semantic-ui-react';
 import Layout from '../components/Layout';
@@ -43,6 +44,7 @@ const GET_LEADERBOARD = gql`
             count
             profile {
                 image_48
+                real_name_normalized
             }
         }
         totalPushUps
@@ -95,6 +97,12 @@ const EmptyView = ({message}) => {
     );
 };
 
+const cellLinkCss = {
+    display: 'block',
+    cursor: 'pointer',
+    color: 'initial'
+};
+
 const Leaderboard = () => {
     const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD, {
         notifyOnNetworkStatusChange: true
@@ -132,21 +140,44 @@ const Leaderboard = () => {
                     const place = i + 1;
                     const maybePlaceText = [1, 2, 3].includes(place) ? '' : place;
                     const diffFromLeader = leaderboard[0].count - count;
+                    const lowercaseId = id.toLowerCase();
                     return (
                         <Table.Row key={id}>
                             <Table.Cell>
-                                <MaybeRibbon place={place} />
-                                {maybePlaceText}
+                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                    <a title="rank" css={cellLinkCss}>
+                                        <MaybeRibbon place={place} />
+                                        {maybePlaceText}
+                                    </a>
+                                </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Image src={profile.image_48} avatar />
-                                <span>{name}</span>
+                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                    <a title="athlete" css={cellLinkCss}>
+                                        <Image src={profile.image_48} avatar />
+                                        <span css={{
+                                            display: 'inline-block',
+                                            verticalAlign: 'middle',
+                                            marginLeft: 5,
+                                        }}>
+                                            {profile.real_name_normalized}
+                                        </span>
+                                    </a>
+                                </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                {count}
+                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                    <a title="count" css={cellLinkCss}>
+                                        {count}
+                                    </a>
+                                </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                {diffFromLeader > 0 ? `${diffFromLeader} more` : ''}
+                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                    <a title="diff from leader" css={cellLinkCss}>
+                                        {diffFromLeader > 0 ? `${diffFromLeader} more` : ''}
+                                    </a>
+                                </Link>
                             </Table.Cell>
                         </Table.Row>
                     )
@@ -177,20 +208,10 @@ const Leaderboard = () => {
 
 const Home = ({leaderboard, totalPushUps}) => (
     <Layout>
-        <Head>
-            <title>Push-Up Heroes</title>
-            <link rel='icon' href='/favicon.ico' />
-            <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
-        </Head>
-
-        <Nav />
-
-        <Container text css={{ marginTop: '8em' }}>
-            <Header as='h1'>
-                <span css={{color: '#303030'}}>Leaderboard</span>
-            </Header>
-            <Leaderboard leaderboard={leaderboard} totalPushUps={totalPushUps} />
-        </Container>
+        <Header as='h1'>
+            <span css={{color: '#303030'}}>Leaderboard</span>
+        </Header>
+        <Leaderboard leaderboard={leaderboard} totalPushUps={totalPushUps} />
     </Layout>
 );
 
