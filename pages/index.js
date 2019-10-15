@@ -1,7 +1,6 @@
 import React from 'react';
-import Head from 'next/head';
 import Link from 'next/link'
-import Nav from '../components/nav';
+import Crown from '../components/Crown';
 import { Icon, Label, Image, Menu, Table, Container, Header } from 'semantic-ui-react';
 import Layout from '../components/Layout';
 import withData from "../lib/apollo";
@@ -100,7 +99,8 @@ const EmptyView = ({message}) => {
 const cellLinkCss = {
     display: 'block',
     cursor: 'pointer',
-    color: 'initial'
+    color: 'initial',
+    position: 'relative',
 };
 
 const Leaderboard = () => {
@@ -154,6 +154,15 @@ const Leaderboard = () => {
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
                                     <a title="athlete" css={cellLinkCss}>
+                                        {place === 1 && (<div css={{
+                                            top: -26,
+                                            left: -12,
+                                            width: 50,
+                                            transform: 'rotate(-10deg)',
+                                            position: 'absolute',
+                                        }}>
+                                            <Crown />
+                                        </div>)}
                                         <Image src={profile.image_48} avatar />
                                         <span css={{
                                             display: 'inline-block',
