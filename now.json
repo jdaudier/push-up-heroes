@@ -6,7 +6,8 @@
       "AIRTABLE_API_KEY": "@airtable_api_key",
       "AIRTABLE_BASE_ID": "@airtable_base_id",
       "SUPREME_LEADERS_SLACK_TOKEN": "@supreme_leaders_slack_token",
-      "ZAPIER_SLACK_TOKEN": "@zapier_slack_token"
+      "ZAPIER_SLACK_TOKEN": "@zapier_slack_token",
+      "FIREBASE_API_KEY": "@firebase_api_key"
     }
   }
 }

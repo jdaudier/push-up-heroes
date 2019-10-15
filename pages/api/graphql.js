@@ -59,7 +59,7 @@ const resolvers = {
                     id: "myID",
                     name: "joanne",
                     count: 22,
-                    createdAt: "2019-10-07T09:08:22.000Z"
+                    created: "2019-10-07T09:08:22.000Z"
                 */
 
                 const data = allRows.reduce((acc, curr) => {
@@ -147,7 +147,7 @@ const resolvers = {
                 /*  id: "myID",
                     name: "joanne",
                     count: 22,
-                    createdAt: "2019-10-07T09:08:22.000Z"
+                    created: "2019-10-07T09:08:22.000Z"
                 */
 
                 const data = allRows.reduce((acc, curr) => {
