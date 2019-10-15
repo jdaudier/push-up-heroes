@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-unfetch'
 import format from 'date-fns/format'
-import getUsers from '../../utils/getUsers';
+import {getUsers} from '../../utils/firebaseQueries';
 
 async function handler(req, res) {
     const {user_id, channel_name} = req.body;

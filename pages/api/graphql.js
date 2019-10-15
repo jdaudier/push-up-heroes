@@ -1,13 +1,15 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
 import fetch from "isomorphic-unfetch";
 import format from 'date-fns/format'
-import getUsers from '../../utils/getUsers';
+import { getUsers, getUserStatsById } from '../../utils/firebaseQueries';
 
 const typeDefs = gql`
     scalar GraphQLJSON
+    scalar Date
 
     type Query {
         leaderboard: [User!]!
+        userStats(id: String!): [User]!
         summary: String!
         totalPushUps: Int!
     }
@@ -41,6 +43,7 @@ const typeDefs = gql`
         name: String!
         count: Int!
         profile: SlackProfile!
+        created: Date!
     }
 `;
 
@@ -105,6 +108,14 @@ const resolvers = {
                 });
             } catch (error) {
                 throw new ApolloError('Error getting leaderboard!', 500, error);
+            }
+        },
+
+        async userStats (parent, {id}) {
+            try {
+                return await getUserStatsById(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting user ${id} data!`, 500, error);
             }
         },
 
