@@ -1,6 +1,7 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
 import fetch from "isomorphic-unfetch";
 import format from 'date-fns/format'
+import getUsers from '../../utils/getUsers';
 
 const typeDefs = gql`
     scalar GraphQLJSON
@@ -47,21 +48,13 @@ const resolvers = {
     Query: {
         async leaderboard () {
             try {
-                const response = await fetch(`https://api.airtable.com/v0/${process.env.airtableBaseId}/Push-Ups?view=Raw%20view`, {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.airtableApiKey}`
-                    }
-                });
-                const json = await response.json();
-                const allRows = json.records.map(record => record.fields);
-
+                const allRows = await getUsers();
                 /*
                     id: "myID",
                     name: "joanne",
                     count: 22,
                     created: "2019-10-07T09:08:22.000Z"
                 */
-
                 const data = allRows.reduce((acc, curr) => {
                     const name = curr.name;
                     const count = curr.count;
@@ -117,13 +110,7 @@ const resolvers = {
 
         async totalPushUps () {
             try {
-                const response = await fetch(`https://api.airtable.com/v0/${process.env.airtableBaseId}/Push-Ups?view=Raw%20view`, {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.airtableApiKey}`
-                    }
-                });
-                const json = await response.json();
-                const allRows = json.records.map(record => record.fields);
+                const allRows = await getUsers();
 
                 return allRows.reduce((acc, curr) => {
                     const count = curr.count;
@@ -136,19 +123,7 @@ const resolvers = {
 
         async summary () {
             try {
-                const response = await fetch(`https://api.airtable.com/v0/${process.env.airtableBaseId}/Push-Ups?view=Raw%20view`, {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.airtableApiKey}`
-                    }
-                });
-                const json = await response.json();
-                const allRows = json.records.map(record => record.fields);
-
-                /*  id: "myID",
-                    name: "joanne",
-                    count: 22,
-                    created: "2019-10-07T09:08:22.000Z"
-                */
+                const allRows = await getUsers();
 
                 const data = allRows.reduce((acc, curr) => {
                     const name = curr.name;
