@@ -1,26 +1,19 @@
 import fetch from 'isomorphic-unfetch'
 import format from 'date-fns/format'
+import getUsers from '../../utils/getUsers';
 
 async function handler(req, res) {
     const {user_id, channel_name} = req.body;
 
     if (req.method === 'POST') {
         try {
-            const response = await fetch(`https://api.airtable.com/v0/${process.env.airtableBaseId}/Push-Ups?view=Raw%20view`, {
-                headers: {
-                    'Authorization': `Bearer ${process.env.airtableApiKey}`
-                }
-            });
-            const json = await response.json();
-            const allRows = json.records.map(record => record.fields);
-
+            const allRows = await getUsers();
             /*
             id: "myID",
             name: "joanne",
             count: 22,
             created: "2019-10-07T09:08:22.000Z"
             */
-
             const data = allRows.reduce((acc, curr) => {
                 const name = curr.name;
                 const count = curr.count;
