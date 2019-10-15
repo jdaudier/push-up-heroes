@@ -7,7 +7,7 @@ export default function User() {
     return (
         <Layout>
             <h1>{router.query.id}</h1>
-            <p>This is the blog post content.</p>
+            <p>Insert individual push-up stats chart.</p>
         </Layout>
     );
 }
