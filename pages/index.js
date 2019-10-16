@@ -65,7 +65,7 @@ const EmptyView = ({message}) => {
 
                 <Table.Body>
                     <Table.Row key="empty" textAlign="center">
-                        <Table.Cell colSpan='4'>
+                        <Table.Cell colSpan='5'>
                                 <span css={{
                                     borderRadius: 4,
                                     display: 'flex',
@@ -116,22 +116,27 @@ const Leaderboard = () => {
         return <EmptyView message="No one has done any push-ups yet!" />
     }
 
+    const crownCss = {
+        left: -12,
+        top: -26,
+        position: 'absolute',
+        width: 50,
+        transform: 'rotate(-10deg)',
+        '@media(max-width: 767px)': {
+            top: 11,
+            position: 'relative',
+        }
+    };
+
     return (
         <Table celled size='large' selectable textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell>Rank</Table.HeaderCell>
-                    <Table.HeaderCell>Athlete
-                        <span css={{color: '#55acee', marginLeft: 10}}>
-                            ({leaderboard.length.toLocaleString()})
-                        </span>
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>Total Push-Ups
-                        <span css={{color: '#55acee', marginLeft: 10}}>
-                            ({totalPushUps.toLocaleString()})
-                        </span>
-                    </Table.HeaderCell>
+                    <Table.HeaderCell>Athlete</Table.HeaderCell>
+                    <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
                     <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
+                    <Table.HeaderCell>Contribution</Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
 
@@ -154,13 +159,7 @@ const Leaderboard = () => {
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
                                     <a title="athlete" css={cellLinkCss}>
-                                        {place === 1 && (<div css={{
-                                            top: -26,
-                                            left: -12,
-                                            width: 50,
-                                            transform: 'rotate(-10deg)',
-                                            position: 'absolute',
-                                        }}>
+                                        {place === 1 && (<div css={crownCss}>
                                             <Crown />
                                         </div>)}
                                         <Image src={profile.image_48} avatar />
@@ -188,6 +187,13 @@ const Leaderboard = () => {
                                     </a>
                                 </Link>
                             </Table.Cell>
+                            <Table.Cell>
+                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                    <a title="contribution" css={cellLinkCss}>
+                                        {Math.round((count / totalPushUps) * 100)}%
+                                    </a>
+                                </Link>
+                            </Table.Cell>
                         </Table.Row>
                     )
                 })}
@@ -195,7 +201,7 @@ const Leaderboard = () => {
 
             <Table.Footer>
                 <Table.Row>
-                    <Table.HeaderCell colSpan='4'>
+                    <Table.HeaderCell colSpan='5'>
                         <Menu floated='right' pagination>
                             <Menu.Item as='a' icon>
                                 <Icon name='chevron left' />
