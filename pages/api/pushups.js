@@ -24,14 +24,14 @@ async function handler(req, res) {
                 count: count,
             });
 
-            const pushUp = count === 1 ? 'push-up' : 'push-ups';
+            const pushUps = count === 1 ? 'push-up' : 'push-ups';
             const context = "_Use the `/pushups` command to log your entry._";
 
             const blocks = [{
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": `<@${user_id}> just did *${text}* ${pushUp}! :muscle:\n>Wow! That's a lot! Good job!\n${context}`
+                    "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>Wow! That's a lot! Good job!\n${context}`
                 }
             }];
 
