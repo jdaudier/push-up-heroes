@@ -135,15 +135,20 @@ async function handler(req, res) {
 
                 res.setHeader('Content-Type', 'application/json');
                 res.statusCode = 200;
-                res.json({
+                return res.json({
                     response_type: "in_channel",
                     blocks,
                 });
             }
 
+            const slackEmptyLeaderboardMessage = {
+                response_type: 'ephemeral',
+                text: ':sadtears: Looks like no one has done any push-ups yet. Check the <#CNTT52KV0|fun-push-up-challenge> channel for details on how you can participate.',
+            };
+
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
-            res.json(null);
+            res.json(slackEmptyLeaderboardMessage);
         } catch (error) {
             console.error('Error:', error);
             return {error};
