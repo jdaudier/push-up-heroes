@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-unfetch'
+import {addUserData} from "../../utils/firebaseQueries";
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
 
@@ -16,20 +17,24 @@ async function handler(req, res) {
     if (req.method === 'POST' && isTeamAllowed) {
         if (isPeerChallenge) {
             if (!isMatchingChallenger) {
-                const slackResponse = {
-                    "channel": channel.id,
-                    "thread_ts": message.ts,
-                    "text": `<@${user.id}> This challenge wasn't meant for you, but that doesn't mean you can't get down and do some push-ups! :flex2:`,
-                };
+                try {
+                    const slackResponse = {
+                        "channel": channel.id,
+                        "thread_ts": message.ts,
+                        "text": `<@${user.id}> This challenge wasn't meant for you, but that doesn't mean you can't get down and do some push-ups! :flex2:`,
+                    };
 
-                await fetch(slackPostMessageUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
-                    },
-                    body: JSON.stringify(slackResponse)
-                });
+                    await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(slackResponse)
+                    });
+                } catch (err) {
+                    throw new Error(err.message)
+                }
 
                 res.setHeader('Content-Type', 'application/json');
                 res.statusCode = 200;
@@ -40,35 +45,49 @@ async function handler(req, res) {
             const pushUps = count === 1 ? 'push-up' : 'push-ups';
 
             if (hasAccepted) {
-                const slackResponse = {
-                    "channel": channel.id,
-                    "thread_ts": message.ts,
-                    "text": `<@${user.id}> We've logged *${count}* new ${pushUps} for you. Kudos for accepting the challenge from <@${challengerId}>! :party:`
-                };
+                try {
+                    await addUserData({
+                        name: user.username,
+                        id: user.id,
+                        count,
+                    });
 
-                await fetch(slackPostMessageUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
-                    },
-                    body: JSON.stringify(slackResponse)
-                });
+                    const slackResponse = {
+                        "channel": channel.id,
+                        "thread_ts": message.ts,
+                        "text": `<@${user.id}> We've logged *${count}* new ${pushUps} for you. Kudos for accepting the challenge from <@${challengerId}>! :party:`
+                    };
+
+                    await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(slackResponse)
+                    });
+                } catch (err) {
+                    throw new Error(err.message)
+                }
             } else {
-                const slackResponse = {
-                    "channel": channel.id,
-                    "thread_ts": message.ts,
-                    "text": `<@${user.id}> We get it! You're too busy to get down and do *${count}* ${pushUps}. Don't worry, plenty of chances to make <@${challengerId}> proud. :grandpa-simpson-shake-fist:`
-                };
+                try {
+                    const slackResponse = {
+                        "channel": channel.id,
+                        "thread_ts": message.ts,
+                        "text": `<@${user.id}> We get it! You're too busy to get down and do *${count}* ${pushUps}. Don't worry, plenty of chances to make <@${challengerId}> proud. :grandpa-simpson-shake-fist:`
+                    };
 
-                await fetch(slackPostMessageUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
-                    },
-                    body: JSON.stringify(slackResponse)
-                });
+                    await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(slackResponse)
+                    });
+                } catch (err) {
+                    throw new Error(err.message)
+                }
             }
 
             res.setHeader('Content-Type', 'application/json');
