@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link'
 import Crown from '../components/Crown';
-import { Icon, Label, Image, Menu, Table, Container, Header } from 'semantic-ui-react';
+import { Icon, Label, Image, Menu, Table, Header } from 'semantic-ui-react';
 import Layout from '../components/Layout';
 import withData from "../lib/apollo";
 import { useQuery } from "@apollo/react-hooks";
@@ -38,15 +38,23 @@ const floating = keyframes`
 const GET_LEADERBOARD = gql`
     query leaderboard { 
         leaderboard { 
-            id 
-            name 
-            count
-            profile {
-                image_48
-                real_name_normalized
+            rankings {
+                id 
+                name 
+                count
+                profile {
+                    image_48
+                    real_name_normalized
+                }
+            }
+            totalPushUps
+            totalAthletes
+            avgSet
+            bestIndividualSet {
+                name
+                count
             }
         }
-        totalPushUps
     }
 `;
 
@@ -110,9 +118,9 @@ const Leaderboard = () => {
 
     if (!data) return null;
 
-    const {leaderboard, totalPushUps} = data;
+    const {rankings, totalPushUps, totalAthletes, avgSet, bestIndividualSet} = data.leaderboard;
 
-    if (leaderboard.length === 0) {
+    if (totalAthletes === 0) {
         return <EmptyView message="No one has done any push-ups yet!" />
     }
 
@@ -141,10 +149,10 @@ const Leaderboard = () => {
             </Table.Header>
 
             <Table.Body>
-                {leaderboard.map(({id, name, count, profile}, i) => {
+                {rankings.map(({id, name, count, profile}, i) => {
                     const place = i + 1;
                     const maybePlaceText = [1, 2, 3].includes(place) ? '' : place;
-                    const diffFromLeader = leaderboard[0].count - count;
+                    const diffFromLeader = rankings[0].count - count;
                     const lowercaseId = id.toLowerCase();
                     return (
                         <Table.Row key={id}>
@@ -221,12 +229,12 @@ const Leaderboard = () => {
     )
 };
 
-const Home = ({leaderboard, totalPushUps}) => (
+const Home = () => (
     <Layout>
         <Header as='h1'>
             <span css={{color: '#303030'}}>Leaderboard</span>
         </Header>
-        <Leaderboard leaderboard={leaderboard} totalPushUps={totalPushUps} />
+        <Leaderboard />
     </Layout>
 );
 

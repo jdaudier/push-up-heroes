@@ -1,14 +1,27 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
 import fetch from 'isomorphic-unfetch';
-import { getUsers, getUserStatsById } from '../../utils/firebaseQueries';
+import startOfDay from 'date-fns/startOfDay';
+import { getUsers, getUserStatsById, getChallengeStartDate } from '../../utils/firebaseQueries';
 import getLeaderboardText from '../../utils/getLeaderboardText';
 
 const typeDefs = gql`
     scalar GraphQLJSON
     scalar Date
-
+    
+    type BestIndividualSet {
+        id: ID!
+        count: Int!
+        name: String!
+    }
+    type Leaderboard {
+        rankings: [User]!
+        totalPushUps: Int!
+        totalAthletes: Int!
+        avgSet: Int!
+        bestIndividualSet: BestIndividualSet!
+    }
     type Query {
-        leaderboard: [User!]!
+        leaderboard: Leaderboard!
         userStats(id: String!): [User]!
         summary: String!
         totalPushUps: Int!
@@ -47,6 +60,18 @@ const typeDefs = gql`
     }
 `;
 
+const getProfileData = async (userSlackId) => {
+    const user = await fetch(`https://slack.com/api/users.profile.get?user=${userSlackId}`, {
+        headers: {
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+        }
+    });
+
+    const data = await user.json();
+    return Promise.resolve(data.profile);
+};
+
 const resolvers = {
     Query: {
         async leaderboard () {
@@ -58,10 +83,13 @@ const resolvers = {
                     count: 22,
                     created: "2019-10-07T09:08:22.000Z"
                 */
+                // const challengeStartDate = await getChallengeStartDate();
+
                 const data = allRows.reduce((acc, curr) => {
                     const name = curr.name;
                     const count = curr.count;
                     const id = curr.id;
+                    const createdDate = curr.created;
 
                     return {
                         ...acc,
@@ -73,23 +101,21 @@ const resolvers = {
                             ...acc.leaderboard,
                             [name]: acc.leaderboard[name] ? acc.leaderboard[name] + count : count,
                         },
+                        totalPushUps: acc.totalPushUps + count,
+                        bestIndividualSet: {
+                            count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
+                            id: count > acc.bestIndividualSet.count ? id : acc.bestIndividualSet.id,
+                        }
                     }
                 }, {
                     slackIdMap: {},
                     leaderboard: {},
+                    totalPushUps: 0,
+                    bestIndividualSet: {
+                        count: 0,
+                        id: '',
+                    },
                 });
-
-                const getProfileData = async (userSlackId) => {
-                    const user = await fetch(`https://slack.com/api/users.profile.get?user=${userSlackId}`, {
-                        headers: {
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
-                        }
-                    });
-
-                    const data = await user.json();
-                    return Promise.resolve(data.profile);
-                };
 
                 const leaderArr = await Promise.all(Object.keys(data.leaderboard).map(async (name) => {
                     const slackId = data.slackIdMap[name];
@@ -101,11 +127,24 @@ const resolvers = {
                     };
                 }));
 
-                return [...leaderArr].sort((aPerson, bPerson) => {
+                const sortedLeaderboard = [...leaderArr].sort((aPerson, bPerson) => {
                     const aCount = aPerson.count;
                     const bCount = bPerson.count;
                     return bCount - aCount;
                 });
+
+                const {totalPushUps, bestIndividualSet} = data;
+                const bestIndividualSetProfile = await getProfileData(bestIndividualSet.id);
+                return {
+                    rankings: sortedLeaderboard,
+                    totalPushUps,
+                    totalAthletes: sortedLeaderboard.length,
+                    avgSet: Math.round(totalPushUps / allRows.length),
+                    bestIndividualSet: {
+                        ...bestIndividualSet,
+                        name: bestIndividualSetProfile.real_name_normalized,
+                    },
+                }
             } catch (error) {
                 throw new ApolloError('Error getting leaderboard!', 500, error);
             }
