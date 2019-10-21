@@ -1,5 +1,6 @@
 import db from '../init-firebase';
 import startOfDay from 'date-fns/startOfDay';
+import getSlackProfile from "./getSlackProfile";
 
 export async function getUsers() {
     try {
@@ -51,6 +52,27 @@ export async function getChallengeStartDate() {
             .limit(1).get();
 
         return startOfDay(snapshot.docs.map(doc => doc.data().created.toDate())[0]);
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+export async function getMostRecentSet() {
+    try {
+        const snapshot = await db.collection('users')
+            .orderBy('created', 'desc')
+            .limit(1).get();
+
+        return snapshot.docs.map(async (doc) => {
+            const rawData = doc.data();
+            const created = startOfDay(rawData.created.toDate());
+            const profile = await getSlackProfile(rawData.id);
+            return {
+                ...rawData,
+                profile,
+                created,
+            }
+        })[0];
     } catch (err) {
         throw new Error(err.message);
     }

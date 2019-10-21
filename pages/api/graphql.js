@@ -1,30 +1,26 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import fetch from 'isomorphic-unfetch';
 import startOfDay from 'date-fns/startOfDay';
-import { getUsers, getUserStatsById, getChallengeStartDate } from '../../utils/firebaseQueries';
+import { getUsers, getUserStatsById, getMostRecentSet, getChallengeStartDate } from '../../utils/firebaseQueries';
 import getLeaderboardText from '../../utils/getLeaderboardText';
+import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
     scalar GraphQLJSON
     scalar Date
     
-    type BestIndividualSet {
-        id: ID!
-        count: Int!
-        name: String!
-    }
     type Leaderboard {
         rankings: [User]!
         totalPushUps: Int!
         totalAthletes: Int!
         avgSet: Int!
-        bestIndividualSet: BestIndividualSet!
+        bestIndividualSet: User!
     }
     type Query {
         leaderboard: Leaderboard!
         userStats(id: String!): [User]!
         summary: String!
         totalPushUps: Int!
+        mostRecentSet: User!
     }
     type SlackProfile {
         title: String!
@@ -60,18 +56,6 @@ const typeDefs = gql`
     }
 `;
 
-const getProfileData = async (userSlackId) => {
-    const user = await fetch(`https://slack.com/api/users.profile.get?user=${userSlackId}`, {
-        headers: {
-            'Content-type': 'application/json',
-            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
-        }
-    });
-
-    const data = await user.json();
-    return Promise.resolve(data.profile);
-};
-
 const resolvers = {
     Query: {
         async leaderboard () {
@@ -105,6 +89,7 @@ const resolvers = {
                         bestIndividualSet: {
                             count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
                             id: count > acc.bestIndividualSet.count ? id : acc.bestIndividualSet.id,
+                            name: count > acc.bestIndividualSet.count ? name : acc.bestIndividualSet.name,
                         }
                     }
                 }, {
@@ -114,6 +99,7 @@ const resolvers = {
                     bestIndividualSet: {
                         count: 0,
                         id: '',
+                        name: '',
                     },
                 });
 
@@ -123,7 +109,7 @@ const resolvers = {
                         name,
                         count: data.leaderboard[name],
                         id:slackId,
-                        profile: await getProfileData(slackId)
+                        profile: await getSlackProfile(slackId)
                     };
                 }));
 
@@ -134,7 +120,7 @@ const resolvers = {
                 });
 
                 const {totalPushUps, bestIndividualSet} = data;
-                const bestIndividualSetProfile = await getProfileData(bestIndividualSet.id);
+                const bestIndividualSetProfile = await getSlackProfile(bestIndividualSet.id);
                 return {
                     rankings: sortedLeaderboard,
                     totalPushUps,
@@ -142,7 +128,7 @@ const resolvers = {
                     avgSet: Math.round(totalPushUps / allRows.length),
                     bestIndividualSet: {
                         ...bestIndividualSet,
-                        name: bestIndividualSetProfile.real_name_normalized,
+                        profile: bestIndividualSetProfile,
                     },
                 }
             } catch (error) {
@@ -177,7 +163,15 @@ const resolvers = {
             } catch (error) {
                 throw new ApolloError('Error getting summary!', 500, error);
             }
-        }
+        },
+
+        async mostRecentSet () {
+            try {
+                return await getMostRecentSet();
+            } catch (error) {
+                throw new ApolloError('Error getting most recent set!', 500, error);
+            }
+        },
     }
 };
 

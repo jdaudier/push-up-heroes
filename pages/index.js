@@ -51,8 +51,22 @@ const GET_LEADERBOARD = gql`
             totalAthletes
             avgSet
             bestIndividualSet {
+                id
                 name
                 count
+                profile {
+                    image_48
+                    real_name_normalized
+                }
+            }
+        }
+        mostRecentSet {
+            id
+            name
+            count
+            profile {
+                image_48
+                real_name_normalized
             }
         }
     }
@@ -118,7 +132,8 @@ const Leaderboard = () => {
 
     if (!data) return null;
 
-    const {rankings, totalPushUps, totalAthletes, avgSet, bestIndividualSet} = data.leaderboard;
+    const {mostRecentSet, leaderboard} = data;
+    const {rankings, totalPushUps, totalAthletes, avgSet, bestIndividualSet} = leaderboard;
 
     if (totalAthletes === 0) {
         return <EmptyView message="No one has done any push-ups yet!" />
