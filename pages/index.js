@@ -234,18 +234,21 @@ const Leaderboard = ({data}) => {
             <Table.Footer>
                 <Table.Row>
                     <Table.HeaderCell colSpan='6'>
-                        <Menu floated='right' pagination>
-                            <Menu.Item as='a' icon>
-                                <Icon name='chevron left' />
-                            </Menu.Item>
-                            <Menu.Item as='a'>1</Menu.Item>
-                            <Menu.Item as='a'>2</Menu.Item>
-                            <Menu.Item as='a'>3</Menu.Item>
-                            <Menu.Item as='a'>4</Menu.Item>
-                            <Menu.Item as='a' icon>
-                                <Icon name='chevron right' />
-                            </Menu.Item>
-                        </Menu>
+                        <div css={{
+                            color: 'rgba(0,0,0,.6)',
+                            textAlign: 'right',
+                            marginTop: 6,
+                            marginBottom: 6,
+                        }}>
+                            You can also view this in Slack by typing
+                            <code css={{
+                                backgroundColor: 'rgba(27,31,35,.05)',
+                                borderRadius: 3,
+                                fontSize: '95%',
+                                padding: '.2em .4em',
+                                marginLeft: 4,
+                            }}>/leaderboard</code>.
+                        </div>
                     </Table.HeaderCell>
                 </Table.Row>
             </Table.Footer>
