@@ -7,12 +7,28 @@ const typeDefs = gql`
     scalar GraphQLJSON
     scalar Date
     
+    type BestIndividualSet {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlackProfile!
+        created: Date!
+        dailyAvg: Int
+    }
+    type MostRecentSet {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlackProfile!
+        created: Date!
+        dailyAvg: Int
+    }
     type Leaderboard {
         rankings: [User]!
         totalPushUps: Int!
         totalAthletes: Int!
         avgSet: Int!
-        bestIndividualSet: User!
+        bestIndividualSet: BestIndividualSet!
         dailyAvg: Int!
     }
     type Query {
@@ -20,7 +36,7 @@ const typeDefs = gql`
         userStats(id: String!): [User]!
         summary: String!
         totalPushUps: Int!
-        mostRecentSet: User!
+        mostRecentSet: MostRecentSet!
     }
     type SlackProfile {
         title: String!
