@@ -68,8 +68,6 @@ const resolvers = {
                     count: 22,
                     created: "2019-10-07T09:08:22.000Z"
                 */
-                const totalChallengeDays = await getTotalChallengeDays();
-
                 const data = allRows.reduce((acc, curr) => {
                     const name = curr.name;
                     const count = curr.count;
@@ -79,11 +77,11 @@ const resolvers = {
                         ...acc,
                         slackIdMap: {
                             ...acc.slackIdMap,
-                            [name]: id,
+                            [id]: name,
                         },
                         leaderboard: {
                             ...acc.leaderboard,
-                            [name]: acc.leaderboard[name] ? acc.leaderboard[name] + count : count,
+                            [id]: acc.leaderboard[id] ? acc.leaderboard[id] + count : count,
                         },
                         totalPushUps: acc.totalPushUps + count,
                         bestIndividualSet: {
@@ -103,16 +101,17 @@ const resolvers = {
                     },
                 });
 
-                const {totalPushUps, bestIndividualSet, leaderboard} = data;
+                const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap} = data;
+                const totalChallengeDays = await getTotalChallengeDays();
 
-                const leaderArr = await Promise.all(Object.keys(leaderboard).map(async (name) => {
-                    const slackId = data.slackIdMap[name];
-                    const count =  data.leaderboard[name];
+                const leaderArr = await Promise.all(Object.keys(leaderboard).map(async (id) => {
+                    const name = slackIdMap[id];
+                    const count =  leaderboard[id];
                     return {
                         name,
                         count,
-                        id: slackId,
-                        profile: await getSlackProfile(slackId),
+                        id,
+                        profile: await getSlackProfile(id),
                         dailyAvg: Math.round(count / totalChallengeDays)
                     };
                 }));

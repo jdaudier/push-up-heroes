@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Crown from '../components/Crown';
 import { Icon, Label, Image, Menu, Table, Header } from 'semantic-ui-react';
 import Layout from '../components/Layout';
+import Stats from '../components/Stats';
 import withData from "../lib/apollo";
 import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
@@ -129,15 +130,11 @@ const cellLinkCss = {
     position: 'relative',
 };
 
-const Leaderboard = () => {
-    const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD, {
-        notifyOnNetworkStatusChange: true
-    });
-
+const Leaderboard = ({data}) => {
     if (!data) return null;
 
-    const {mostRecentSet, leaderboard} = data;
-    const {rankings, totalPushUps, totalAthletes, dailyAvg, avgSet, bestIndividualSet} = leaderboard;
+    const {leaderboard} = data;
+    const {rankings, totalPushUps, totalAthletes} = leaderboard;
 
     if (totalAthletes === 0) {
         return <EmptyView message="No one has done any push-ups yet!" />
@@ -256,14 +253,21 @@ const Leaderboard = () => {
     )
 };
 
-const Home = () => (
-    <Layout>
-        <Header as='h1'>
-            <span css={{color: '#303030'}}>Leaderboard</span>
-        </Header>
-        <Leaderboard />
-    </Layout>
-);
+const Home = () => {
+    const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD, {
+        notifyOnNetworkStatusChange: true
+    });
+
+    return (
+        <Layout>
+            <Stats data={data} />
+            <Header as='h1'>
+                <span css={{color: '#303030'}}>Leaderboard</span>
+            </Header>
+            <Leaderboard data={data} />
+        </Layout>
+    )
+};
 
 export default withData(props => {
     return (
