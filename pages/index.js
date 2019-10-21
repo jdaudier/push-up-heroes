@@ -42,6 +42,7 @@ const GET_LEADERBOARD = gql`
                 id 
                 name 
                 count
+                dailyAvg
                 profile {
                     image_48
                     real_name_normalized
@@ -83,12 +84,14 @@ const EmptyView = ({message}) => {
                         <Table.HeaderCell>Athlete</Table.HeaderCell>
                         <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
                         <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
+                        <Table.HeaderCell>Daily Average</Table.HeaderCell>
+                        <Table.HeaderCell>Contribution</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
 
                 <Table.Body>
                     <Table.Row key="empty" textAlign="center">
-                        <Table.Cell colSpan='5'>
+                        <Table.Cell colSpan='6'>
                                 <span css={{
                                     borderRadius: 4,
                                     display: 'flex',
@@ -160,12 +163,13 @@ const Leaderboard = () => {
                     <Table.HeaderCell>Athlete</Table.HeaderCell>
                     <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
                     <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
+                    <Table.HeaderCell>Daily Average</Table.HeaderCell>
                     <Table.HeaderCell>Contribution</Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
 
             <Table.Body>
-                {rankings.map(({id, name, count, profile}, i) => {
+                {rankings.map(({id, name, count, dailyAvg, profile}, i) => {
                     const place = i + 1;
                     const maybePlaceText = [1, 2, 3].includes(place) ? '' : place;
                     const diffFromLeader = rankings[0].count - count;
@@ -213,6 +217,13 @@ const Leaderboard = () => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                    <a title="daily average" css={cellLinkCss}>
+                                        {dailyAvg}
+                                    </a>
+                                </Link>
+                            </Table.Cell>
+                            <Table.Cell>
+                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
                                     <a title="contribution" css={cellLinkCss}>
                                         {Math.round((count / totalPushUps) * 100)}%
                                     </a>
@@ -225,7 +236,7 @@ const Leaderboard = () => {
 
             <Table.Footer>
                 <Table.Row>
-                    <Table.HeaderCell colSpan='5'>
+                    <Table.HeaderCell colSpan='6'>
                         <Menu floated='right' pagination>
                             <Menu.Item as='a' icon>
                                 <Icon name='chevron left' />

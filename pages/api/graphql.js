@@ -53,6 +53,7 @@ const typeDefs = gql`
         count: Int!
         profile: SlackProfile!
         created: Date!
+        dailyAvg: Int
     }
 `;
 
@@ -73,7 +74,6 @@ const resolvers = {
                     const name = curr.name;
                     const count = curr.count;
                     const id = curr.id;
-                    const createdDate = curr.created;
 
                     return {
                         ...acc,
@@ -103,13 +103,17 @@ const resolvers = {
                     },
                 });
 
-                const leaderArr = await Promise.all(Object.keys(data.leaderboard).map(async (name) => {
+                const {totalPushUps, bestIndividualSet, leaderboard} = data;
+
+                const leaderArr = await Promise.all(Object.keys(leaderboard).map(async (name) => {
                     const slackId = data.slackIdMap[name];
+                    const count =  data.leaderboard[name];
                     return {
                         name,
-                        count: data.leaderboard[name],
-                        id:slackId,
-                        profile: await getSlackProfile(slackId)
+                        count,
+                        id: slackId,
+                        profile: await getSlackProfile(slackId),
+                        dailyAvg: Math.round(count / totalChallengeDays)
                     };
                 }));
 
@@ -119,7 +123,6 @@ const resolvers = {
                     return bCount - aCount;
                 });
 
-                const {totalPushUps, bestIndividualSet} = data;
                 const bestIndividualSetProfile = await getSlackProfile(bestIndividualSet.id);
                 return {
                     rankings: sortedLeaderboard,
