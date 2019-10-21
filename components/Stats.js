@@ -1,39 +1,48 @@
-import { Grid, Statistic } from 'semantic-ui-react';
+import {Grid, Statistic, Popup, Image} from 'semantic-ui-react';
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
+import Crown from "./Crown";
+import Link from "next/link";
 
-const statsBoxBase = {
+const statsBoxBase = (hasPopup) => ({
     borderRadius: 4,
+    cursor: hasPopup ? 'pointer' : 'auto',
     padding: 20,
     textAlign: 'center',
     boxShadow: '0 1px 3px 0 #d4d4d5, 0 0 0 1px #d4d4d5'
-};
+});
 
-const statsBoxCss = (color) => {
+const statsBoxCss = ({color, hasPopup}) => {
     switch (color) {
         case 'blue':
             return {
-                ...statsBoxBase,
+                ...statsBoxBase(hasPopup),
                 backgroundColor: '#55acee',
             };
         case 'yellow':
             return {
-                ...statsBoxBase,
+                ...statsBoxBase(hasPopup),
                 backgroundColor: '#ffac33',
             };
 
         case 'red':
             return {
-                ...statsBoxBase,
+                ...statsBoxBase(hasPopup),
                 backgroundColor: '#dd2e44',
             };
 
     }
 };
 
-const Stat = ({color, children}) => {
+const cellLinkCss = {
+    display: 'block',
+    cursor: 'pointer',
+    color: 'initial',
+};
+
+const Stat = ({color, hasPopup, children}) => {
     return (
-        <div css={statsBoxCss(color)}>
+        <div css={statsBoxCss({color, hasPopup})}>
             {children}
         </div>
     )
@@ -67,16 +76,54 @@ const Stats = ({data}) => {
                     <Statistic inverted label='Average Set' value={avgSet} />
                 </Stat>
             </Grid.Column>
-            <Grid.Column>
-                <Stat color="red">
-                    <Statistic inverted label='Best Individual Set' value={bestIndividualSet.count} />
-                </Stat>
-            </Grid.Column>
-            <Grid.Column>
-                <Stat color="blue">
-                    <Statistic inverted label='Most Recent Set' value={mostRecentSet.count} />
-                </Stat>
-            </Grid.Column>
+            <Popup position='top center'
+                   hoverable
+                   size='huge'
+                   offset='0, -12px'
+                   trigger={
+                <Grid.Column>
+                    <Stat color="red" hasPopup>
+                        <Statistic inverted label='Best Individual Set' value={bestIndividualSet.count} />
+                    </Stat>
+                </Grid.Column>}
+            >
+                <Link href='/users/[id]' as={`/users/${bestIndividualSet.id.toLowerCase()}`}>
+                    <a title="athlete" css={cellLinkCss}>
+                        <Image src={bestIndividualSet.profile.image_48} avatar />
+                        <span css={{
+                            display: 'inline-block',
+                            verticalAlign: 'middle',
+                            marginLeft: 5,
+                        }}>
+                            {bestIndividualSet.profile.real_name_normalized}
+                        </span>
+                    </a>
+                </Link>
+            </Popup>
+            <Popup position='top center'
+                   hoverable
+                   size='huge'
+                   offset='0, -12px'
+                   trigger={
+                <Grid.Column>
+                    <Stat color="blue" hasPopup>
+                        <Statistic inverted label='Most Recent Set' value={mostRecentSet.count} />
+                    </Stat>
+                </Grid.Column>}
+            >
+                <Link href='/users/[id]' as={`/users/${mostRecentSet.id.toLowerCase()}`}>
+                    <a title="athlete" css={cellLinkCss}>
+                        <Image src={mostRecentSet.profile.image_48} avatar />
+                        <span css={{
+                            display: 'inline-block',
+                            verticalAlign: 'middle',
+                            marginLeft: 5,
+                        }}>
+                            {mostRecentSet.profile.real_name_normalized}
+                        </span>
+                    </a>
+                </Link>
+            </Popup>
         </Grid>
     )
 };
