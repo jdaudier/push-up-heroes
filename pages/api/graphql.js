@@ -1,6 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import startOfDay from 'date-fns/startOfDay';
-import { getUsers, getUserStatsById, getMostRecentSet, getChallengeStartDate } from '../../utils/firebaseQueries';
+import { getUsers, getUserStatsById, getMostRecentSet, getTotalChallengeDays } from '../../utils/firebaseQueries';
 import getLeaderboardText from '../../utils/getLeaderboardText';
 import getSlackProfile from '../../utils/getSlackProfile';
 
@@ -14,6 +13,7 @@ const typeDefs = gql`
         totalAthletes: Int!
         avgSet: Int!
         bestIndividualSet: User!
+        dailyAvg: Int!
     }
     type Query {
         leaderboard: Leaderboard!
@@ -67,7 +67,7 @@ const resolvers = {
                     count: 22,
                     created: "2019-10-07T09:08:22.000Z"
                 */
-                // const challengeStartDate = await getChallengeStartDate();
+                const totalChallengeDays = await getTotalChallengeDays();
 
                 const data = allRows.reduce((acc, curr) => {
                     const name = curr.name;
@@ -126,6 +126,7 @@ const resolvers = {
                     totalPushUps,
                     totalAthletes: sortedLeaderboard.length,
                     avgSet: Math.round(totalPushUps / allRows.length),
+                    dailyAvg: Math.round(totalPushUps / totalChallengeDays),
                     bestIndividualSet: {
                         ...bestIndividualSet,
                         profile: bestIndividualSetProfile,

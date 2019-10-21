@@ -1,5 +1,6 @@
 import db from '../init-firebase';
 import startOfDay from 'date-fns/startOfDay';
+import differenceInCalendarDays from 'date-fns/differenceInCalendarDays'
 import getSlackProfile from "./getSlackProfile";
 
 export async function getUsers() {
@@ -45,13 +46,22 @@ export async function addUserData({
     });
 }
 
-export async function getChallengeStartDate() {
+export async function getTotalChallengeDays() {
     try {
-        const snapshot = await db.collection('users')
-            .orderBy('created', 'asc')
-            .limit(1).get();
+        const [firstSnapshot, lastSnapshot] = await Promise.all([
+            await db.collection('users')
+                .orderBy('created', 'asc')
+                .limit(1).get(),
 
-        return startOfDay(snapshot.docs.map(doc => doc.data().created.toDate())[0]);
+            await db.collection('users')
+                .orderBy('created', 'desc')
+                .limit(1).get()
+        ]);
+
+        const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+        const lastEntryDate = lastSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+
+        return differenceInCalendarDays(lastEntryDate, firstEntryDate) + 1
     } catch (err) {
         throw new Error(err.message);
     }
