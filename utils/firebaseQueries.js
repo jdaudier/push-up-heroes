@@ -144,26 +144,34 @@ export async function getLeaderboardText(userId) {
             return bCount - aCount;
         });
 
-        const formattedText = sortedLeaderboard.reduce((acc, {name, count}, i) => {
+        const formattedText = sortedLeaderboard.reduce((acc, {name, count}, i, arr) => {
             const isFirst = i === 0;
             const rank = i + 1;
             const {longestNameLength, longestCountLength} = data;
-            const padding = 10;
+            const padding = 8;
             const nameColLength = longestNameLength + padding;
-            const countColLength = longestCountLength + padding;
             const headingText = 'Athlete';
             const nameHeadingLength = headingText.length;
+
+            const heading2Text = 'Total';
+            const heading3Text = 'Catch Up';
+
             const nameLength = name.length;
             const spaceAfterNameHeading = nameColLength - nameHeadingLength;
             const spaceAfterName = nameColLength - nameLength;
             const headingWithSpacing = headingText + new Array(spaceAfterNameHeading + 1).join(' ');
+            const heading2WithSpacing = heading2Text + new Array(padding).join(' ');
             const nameWithSpacing = name + new Array(spaceAfterName + 1).join(' ');
+            const leaderCount = arr[0].count;
+            const catchTheLeader = leaderCount - count;
+            const spaceAfterCount = heading2WithSpacing.length - count.toString().length;
+            const countWithSpacing = count + new Array(spaceAfterCount + 1).join(' ');
 
             if (isFirst) {
-                return `#   ${headingWithSpacing}Total Push-Ups\n${rank}.  ${nameWithSpacing}${count}\n`;
+                return `#   ${headingWithSpacing}${heading2WithSpacing}${heading3Text}\n${rank}.  ${nameWithSpacing}${countWithSpacing}\n`;
             }
 
-            return `${acc}${rank}.  ${nameWithSpacing}${count}\n`;
+            return `${acc}${rank}.  ${nameWithSpacing}${countWithSpacing}${catchTheLeader} more\n`;
         }, '');
 
         const leaderboardText = "```" + formattedText + "```";
