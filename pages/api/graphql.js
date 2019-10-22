@@ -1,6 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getUsers, getDailySetsByUserId, getMostRecentSet, getTotalChallengeDays, getUserStats } from '../../utils/firebaseQueries';
-import getLeaderboardText from '../../utils/getLeaderboardText';
+import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -124,82 +123,7 @@ const resolvers = {
     Query: {
         async leaderboard () {
             try {
-                const allRows = await getUsers();
-                /*
-                    id: "myID",
-                    name: "joanne",
-                    count: 22,
-                    created: "2019-10-07T09:08:22.000Z"
-                */
-                const data = allRows.reduce((acc, curr) => {
-                    const name = curr.name;
-                    const count = curr.count;
-                    const id = curr.id;
-                    const created = curr.created;
-
-                    return {
-                        ...acc,
-                        slackIdMap: {
-                            ...acc.slackIdMap,
-                            [id]: name,
-                        },
-                        leaderboard: {
-                            ...acc.leaderboard,
-                            [id]: acc.leaderboard[id] ? acc.leaderboard[id] + count : count,
-                        },
-                        totalPushUps: acc.totalPushUps + count,
-                        bestIndividualSet: {
-                            count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
-                            id: count > acc.bestIndividualSet.count ? id : acc.bestIndividualSet.id,
-                            name: count > acc.bestIndividualSet.count ? name : acc.bestIndividualSet.name,
-                            created: count > acc.bestIndividualSet.count ? created : acc.bestIndividualSet.created,
-                        }
-                    }
-                }, {
-                    slackIdMap: {},
-                    leaderboard: {},
-                    totalPushUps: 0,
-                    bestIndividualSet: {
-                        count: 0,
-                        id: '',
-                        name: '',
-                    },
-                });
-
-                const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap} = data;
-                const totalChallengeDays = await getTotalChallengeDays();
-
-                const leaderArr = await Promise.all(Object.keys(leaderboard).map(async (id) => {
-                    const name = slackIdMap[id];
-                    const count =  leaderboard[id];
-                    return {
-                        name,
-                        count,
-                        id,
-                        profile: await getSlackProfile(id),
-                        dailyAvg: Math.round(count / totalChallengeDays),
-                        contributionPercentage: Math.round((count / totalPushUps) * 100),
-                    };
-                }));
-
-                const sortedLeaderboard = leaderArr.sort((aPerson, bPerson) => {
-                    const aCount = aPerson.count;
-                    const bCount = bPerson.count;
-                    return bCount - aCount;
-                });
-
-                const bestIndividualSetProfile = await getSlackProfile(bestIndividualSet.id);
-                return {
-                    rankings: sortedLeaderboard,
-                    totalPushUps,
-                    totalAthletes: sortedLeaderboard.length,
-                    avgSet: Math.round(totalPushUps / allRows.length),
-                    dailyAvg: Math.round(totalPushUps / totalChallengeDays),
-                    bestIndividualSet: {
-                        ...bestIndividualSet,
-                        profile: bestIndividualSetProfile,
-                    },
-                }
+                return await getFullLeaderboardData();
             } catch (error) {
                 throw new ApolloError('Error getting leaderboard!', 500, error);
             }
@@ -223,12 +147,7 @@ const resolvers = {
 
         async totalPushUps () {
             try {
-                const allRows = await getUsers();
-
-                return allRows.reduce((acc, curr) => {
-                    const count = curr.count;
-                    return acc + count;
-                }, 0);
+               return await getTotalPushUpsCount();
             } catch (error) {
                 throw new ApolloError('Error getting total push-up count!', 500, error);
             }

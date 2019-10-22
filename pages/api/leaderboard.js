@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-unfetch';
-import getLeaderboardText from '../../utils/getLeaderboardText';
+import { getLeaderboardText } from '../../utils/firebaseQueries';
 
 async function handler(req, res) {
     const {user_id, channel_name} = req.body;

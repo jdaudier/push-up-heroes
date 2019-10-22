@@ -3,20 +3,189 @@ import startOfDay from 'date-fns/startOfDay';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays'
-import getSlackProfile from "./getSlackProfile";
+import getSlackProfile from './getSlackProfile';
 
-export async function getUsers() {
+export async function getFullLeaderboardData() {
     try {
         const snapshot = await db.collection('users').get();
-        return snapshot.docs.map(doc => {
-            const created = startOfDay(doc.data().created.toDate());
+        const data = snapshot.docs.reduce((acc, doc) => {
+            /*
+            id: "myID",
+            name: "joanne",
+            count: 22,
+            created: "2019-10-07T09:08:22.000Z"
+            */
+            const rawData = doc.data();
+            const {id, count, name, created} = {
+                ...rawData,
+                created: startOfDay(rawData.created.toDate()),
+            };
+
             return {
-                ...doc.data(),
-                created,
+                ...acc,
+                slackIdMap: {
+                    ...acc.slackIdMap,
+                    [id]: name,
+                },
+                leaderboard: {
+                    ...acc.leaderboard,
+                    [id]: acc.leaderboard[id] ? acc.leaderboard[id] + count : count,
+                },
+                totalPushUps: acc.totalPushUps + count,
+                bestIndividualSet: {
+                    count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
+                    id: count > acc.bestIndividualSet.count ? id : acc.bestIndividualSet.id,
+                    name: count > acc.bestIndividualSet.count ? name : acc.bestIndividualSet.name,
+                    created: count > acc.bestIndividualSet.count ? created : acc.bestIndividualSet.created,
+                }
             }
+        }, {
+            slackIdMap: {},
+            leaderboard: {},
+            totalPushUps: 0,
+            bestIndividualSet: {
+                count: 0,
+                id: '',
+                name: '',
+            },
         });
+
+        const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap} = data;
+        const totalChallengeDays = await getTotalChallengeDays();
+
+        const leaderArr = await Promise.all(Object.keys(leaderboard).map(async (id) => {
+            const name = slackIdMap[id];
+            const count =  leaderboard[id];
+            return {
+                name,
+                count,
+                id,
+                profile: await getSlackProfile(id),
+                dailyAvg: Math.round(count / totalChallengeDays),
+                contributionPercentage: Math.round((count / totalPushUps) * 100),
+            };
+        }));
+
+        const sortedLeaderboard = leaderArr.sort((aPerson, bPerson) => {
+            const aCount = aPerson.count;
+            const bCount = bPerson.count;
+            return bCount - aCount;
+        });
+
+        const bestIndividualSetProfile = await getSlackProfile(bestIndividualSet.id);
+        return {
+            rankings: sortedLeaderboard,
+            totalPushUps,
+            totalAthletes: sortedLeaderboard.length,
+            avgSet: Math.round(totalPushUps / snapshot.docs.length),
+            dailyAvg: Math.round(totalPushUps / totalChallengeDays),
+            bestIndividualSet: {
+                ...bestIndividualSet,
+                profile: bestIndividualSetProfile,
+            },
+        }
     } catch (err) {
         throw new Error(err.message);
+    }
+}
+
+export async function getLeaderboardText(userId) {
+    try {
+        const snapshot = await db.collection('users').get();
+        const data = snapshot.docs.reduce((acc, doc) => {
+            /*
+             id: "myID",
+             name: "joanne",
+             count: 22,
+             created: "2019-10-07T09:08:22.000Z"
+            */
+            const rawData = doc.data();
+            const {id, count, name} = {
+                ...rawData,
+                created: startOfDay(rawData.created.toDate()),
+            };
+            const countLength = (count).toString().length;
+
+            return {
+                ...acc,
+                slackIdMap: {
+                    ...acc.slackIdMap,
+                    [id]: name,
+                },
+                leaderboard: {
+                    ...acc.leaderboard,
+                    [id]: acc.leaderboard[id] ? acc.leaderboard[id] + count : count,
+                },
+                longestNameLength: name.length > acc.longestNameLength ? name.length : acc.longestNameLength,
+                longestCountLength: countLength > acc.longestCountLength ? countLength : acc.longestCountLength,
+            }
+        }, {
+            slackIdMap: {},
+            leaderboard: {},
+            longestNameLength: 0,
+            longestCountLength: 0,
+        });
+
+        const {leaderboard, slackIdMap} = data;
+
+        const leaderArr = Object.keys(leaderboard).map(id => ({
+            id,
+            name: slackIdMap[id],
+            count: leaderboard[id],
+        }));
+
+        const maxAmountForSummary = 20;
+        const hasMoreData = leaderArr.length > 20;
+        const clippedLeaderboard = hasMoreData ? [...leaderArr.slice(0, maxAmountForSummary)] : [...leaderArr];
+
+        const sortedLeaderboard = clippedLeaderboard.sort((aPerson, bPerson) => {
+            const aCount = aPerson.count;
+            const bCount = bPerson.count;
+            return bCount - aCount;
+        });
+
+        const formattedText = sortedLeaderboard.reduce((acc, {name, count}, i) => {
+            const isFirst = i === 0;
+            const rank = i + 1;
+            const {longestNameLength, longestCountLength} = data;
+            const padding = 10;
+            const nameColLength = longestNameLength + padding;
+            const countColLength = longestCountLength + padding;
+            const headingText = 'Athlete';
+            const nameHeadingLength = headingText.length;
+            const nameLength = name.length;
+            const spaceAfterNameHeading = nameColLength - nameHeadingLength;
+            const spaceAfterName = nameColLength - nameLength;
+            const headingWithSpacing = headingText + new Array(spaceAfterNameHeading + 1).join(' ');
+            const nameWithSpacing = name + new Array(spaceAfterName + 1).join(' ');
+
+            if (isFirst) {
+                return `#   ${headingWithSpacing}Total Push-Ups\n${rank}.  ${nameWithSpacing}${count}\n`;
+            }
+
+            return `${acc}${rank}.  ${nameWithSpacing}${count}\n`;
+        }, '');
+
+        const leaderboardText = "```" + formattedText + "```";
+
+        const context = userId ? `_<@${userId}>` + " triggered this from the `/leaderboard` command._" : '_Use the `/leaderboard` command to see the latest data._';
+        const webLink = '_More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._';
+
+        const summary = sortedLeaderboard.map((person, i) => {
+            switch (i) {
+                case (0): return `<@${person.id}> is in first place! :first_place_medal:`;
+                case (1): return `<@${person.id}> is in second place! :second_place_medal:`;
+                case (2): return `<@${person.id}> is in third place! :third_place_medal:`;
+            }
+        }).join('\n');
+
+        const fallbackDate = format(new Date(), 'EEE, MMM dd');
+        const date = `<!date^${Math.floor(new Date() / 1000)}^{date_short_pretty} at {time}|${fallbackDate}>`;
+
+        return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${context}\n${webLink}` : '';
+    } catch (error) {
+        console.error('Error:', error);
+        return {error};
     }
 }
 
