@@ -35,6 +35,10 @@ const GET_USER_STATS = gql`
                 created
             }
         }
+        streakData(id: $id) {
+            currentStreak
+            longestStreak
+        }
     }
 `;
 
@@ -60,7 +64,7 @@ function User() {
 
     if (!data) return null;
 
-    const {userSlackProfile, dailySetsByUser, userStats} = data;
+    const {userSlackProfile, dailySetsByUser, userStats, streakData} = data;
 
     return (
         <Layout>

@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount } from '../../utils/firebaseQueries';
+import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -14,6 +14,7 @@ const typeDefs = gql`
         mostRecentSet: MostRecentSet!
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
+        streakData(id: ID!): Streak!
     }
     interface Set {
         id: ID!
@@ -35,6 +36,10 @@ const typeDefs = gql`
         bestSet: BestSetByUser!
         firstSet: FirstSetByUser!
         mostRecentSet: MostRecentSetByUser!
+    }
+    type Streak {
+        currentStreak: Int!
+        longestStreak: Int!
     }
     type BestSetByUser implements IndividualSet {
         count: Int!
@@ -142,6 +147,14 @@ const resolvers = {
                 return await getUserStats(id);
             } catch (error) {
                 throw new ApolloError(`Error getting user ${id} stats!`, 500, error);
+            }
+        },
+
+        async streakData (parent, {id}) {
+            try {
+                return await getStreakData(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting user ${id} streak data!`, 500, error);
             }
         },
 

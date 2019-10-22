@@ -2,7 +2,9 @@ import db from '../init-firebase';
 import startOfDay from 'date-fns/startOfDay';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
-import differenceInCalendarDays from 'date-fns/differenceInCalendarDays'
+import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
+import isBefore from 'date-fns/isBefore';
+import parseISO from 'date-fns/parseISO';
 import getSlackProfile from './getSlackProfile';
 
 export async function getFullLeaderboardData() {
@@ -321,22 +323,46 @@ export async function getMostRecentSet() {
 
 /* INDIVIDUAL QUERIES */
 async function getUserSetsById(id) {
-    return await db.collection('users').where('id', '==', id).get();
+    const snapshot = await db.collection('users').where('id', '==', id).get();
+
+    const sorted = snapshot.docs.sort((a, b) => {
+        const aDate = a.data().created.toDate();
+        const bDate = b.data().created.toDate();
+
+        const isABeforeB = isBefore(aDate, bDate);
+
+        if (isABeforeB) {
+            return -1;
+        }
+
+        return 1;
+    });
+
+    return sorted.reduce((acc, doc) => {
+        const data = doc.data();
+        const created = format(data.created.toDate(), 'yyyy-M-d');
+        const currentSet = {
+            ...data,
+            created,
+        };
+        const prevCount = acc.countsByDayMap[created];
+        return {
+            ...acc,
+            sortedList: [...acc.sortedList, currentSet],
+            countsByDayMap: {
+                ...acc.countsByDayMap,
+                [created]: prevCount ? prevCount + currentSet.count : currentSet.count,
+            }
+        }
+    }, {
+        sortedList: [],
+        countsByDayMap: {},
+    });
 }
 
 export async function getDailySetsByUserId(id) {
     try {
-        const snapshot = await getUserSetsById(id);
-
-        const countsByDayMap = snapshot.docs.reduce((acc, doc) => {
-            const data = doc.data();
-            const created = format(data.created.toDate(), 'M-d-yyyy');
-
-            return {
-                ...acc,
-                [created]: acc[created] ? acc[created] + data.count : data.count,
-            }
-        }, {});
+        const {countsByDayMap} = await getUserSetsById(id);
 
         const firstSnapshot = await db.collection('users')
             .orderBy('created', 'asc')
@@ -349,7 +375,7 @@ export async function getDailySetsByUserId(id) {
         );
 
         return datesArray.map(date => {
-            const key = format(date, 'M-d-yyyy');
+            const key = format(date, 'yyyy-M-d');
 
             return {
                 name: format(date, 'EEE, MMM d'),
@@ -367,16 +393,15 @@ export async function getUserStats(id) {
             await getLeaderboardData(),
             await getTotalChallengeDays(),
         ]);
-        const snapshot = await getUserSetsById(id);
+        const {sortedList} = await getUserSetsById(id);
 
         const {rankings, totalPushUps: totalPushUpsGlobally} = leaderboardData;
 
         const ranking = rankings.findIndex((r) => r.id === id) + 1;
 
-        const results = snapshot.docs.reduce((acc, doc, index) => {
-            const {count, created} = doc.data();
-            const formattedCreated = format(created.toDate(), 'EEE, MMM d');
-
+        const results = sortedList.reduce((acc, set, index) => {
+            const {count, created} = set;
+            const formattedCreated = format(parseISO(created), 'EEE, MMM d');
             return {
                 ...acc,
                 bestSet: {
@@ -384,12 +409,12 @@ export async function getUserStats(id) {
                     created: count > acc.bestSet.count ? formattedCreated : acc.bestSet.created,
                 },
                 firstSet: {
-                    count,
-                    created: formattedCreated,
+                    count: index === 0 ? count : acc.firstSet.count,
+                    created: index === 0 ? formattedCreated : acc.firstSet.created,
                 },
                 mostRecentSet: {
-                    count: index === 0 ? count : acc.mostRecentSet.count,
-                    created: index === 0 ? formattedCreated : acc.mostRecentSet.created,
+                    count,
+                    created: formattedCreated,
                 },
                 totalPushUps: acc.totalPushUps + count,
             }
@@ -418,6 +443,40 @@ export async function getUserStats(id) {
             catchTheLeader: rankings[0].count - totalPushUps,
         }
 
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+export async function getStreakData(id) {
+    try {
+        const {sortedList, countsByDayMap} = await getUserSetsById(id);
+        const firstEntryDate = sortedList[0].created;
+        const lastEntryDate = sortedList[sortedList.length - 1].created;
+
+        const datesArray = eachDayOfInterval(
+            { start: parseISO(firstEntryDate), end: parseISO(lastEntryDate) }
+        );
+
+        return datesArray.reduce((acc, date) => {
+            const simplifiedDate = format(date, 'yyyy-M-d');
+            const didPushUps = Boolean(countsByDayMap[simplifiedDate]);
+
+            if (didPushUps) {
+                return {
+                    longestStreak: acc.currentStreak + 1,
+                    currentStreak: acc.currentStreak + 1,
+                }
+            }
+
+            return {
+                longestStreak: acc.longestStreak > acc.currentStreak ? acc.longestStreak : acc.currentStreak,
+                currentStreak: 0,
+            };
+        }, {
+            currentStreak: 0,
+            longestStreak: 0,
+        });
     } catch (err) {
         throw new Error(err.message);
     }
