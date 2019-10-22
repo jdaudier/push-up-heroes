@@ -1,5 +1,10 @@
 import db from '../init-firebase';
 import startOfDay from 'date-fns/startOfDay';
+import format from 'date-fns/format';
+import isBefore from 'date-fns/isBefore';
+import isSameDay from 'date-fns/isSameDay';
+import parseISO from 'date-fns/parseISO';
+import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays'
 import getSlackProfile from "./getSlackProfile";
 
@@ -18,14 +23,36 @@ export async function getUsers() {
     }
 }
 
-export async function getUserStatsById(id) {
+export async function getDailySetsByUserId(id) {
     try {
         const snapshot = await db.collection('users').where('id', '==', id).get();
-        return snapshot.docs.map(doc => {
-            const created = startOfDay(doc.data().created.toDate());
+
+        const countsByDayMap = snapshot.docs.reduce((acc, doc) => {
+            const data = doc.data();
+            const created = format(data.created.toDate(), 'M-d-yyyy');
+
             return {
-                ...doc.data(),
-                created,
+                ...acc,
+                [created]: acc[created] ? acc[created] + data.count : data.count,
+            }
+        }, {});
+
+        const firstSnapshot = await db.collection('users')
+                .orderBy('created', 'asc')
+                .limit(1).get();
+
+        const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+
+        const datesArray = eachDayOfInterval(
+            { start: firstEntryDate, end: new Date() }
+        );
+
+        return datesArray.map(date => {
+            const key = format(date, 'M-d-yyyy');
+
+            return {
+                name: format(date, 'EEE, MMM d'),
+                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
             }
         });
     } catch (err) {

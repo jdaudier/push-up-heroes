@@ -58,22 +58,22 @@ const Stats = ({data}) => {
         <Grid doubling columns={3} stackable style={{marginBottom: 40}}>
             <Grid.Column>
                 <Stat color="blue">
-                    <Statistic inverted label='Total Athletes' value={totalAthletes} />
+                    <Statistic inverted label='Total Athletes' value={totalAthletes.toLocaleString()} />
                 </Stat>
             </Grid.Column>
             <Grid.Column>
                 <Stat color="yellow">
-                    <Statistic inverted label='Total Push-Ups' value={totalPushUps} />
+                    <Statistic inverted label='Total Push-Ups' value={totalPushUps.toLocaleString()} />
                 </Stat>
             </Grid.Column>
             <Grid.Column>
                 <Stat color="red">
-                    <Statistic inverted label='Daily Average' value={dailyAvg} />
+                    <Statistic inverted label='Daily Average' value={dailyAvg.toLocaleString()} />
                 </Stat>
             </Grid.Column>
             <Grid.Column>
                 <Stat color="yellow">
-                    <Statistic inverted label='Average Set' value={avgSet} />
+                    <Statistic inverted label='Average Set' value={avgSet.toLocaleString()} />
                 </Stat>
             </Grid.Column>
             <Popup position='top center'
@@ -83,7 +83,7 @@ const Stats = ({data}) => {
                    trigger={
                 <Grid.Column>
                     <Stat color="red" hasPopup>
-                        <Statistic inverted label='Best Individual Set' value={bestIndividualSet.count} />
+                        <Statistic inverted label='Best Individual Set' value={bestIndividualSet.count.toLocaleString()} />
                     </Stat>
                 </Grid.Column>}
             >
@@ -107,7 +107,7 @@ const Stats = ({data}) => {
                    trigger={
                 <Grid.Column>
                     <Stat color="blue" hasPopup>
-                        <Statistic inverted label='Most Recent Set' value={mostRecentSet.count} />
+                        <Statistic inverted label='Most Recent Set' value={mostRecentSet.count.toLocaleString()} />
                     </Stat>
                 </Grid.Column>}
             >

@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link'
 import Crown from '../components/Crown';
-import { Icon, Label, Image, Menu, Table, Header } from 'semantic-ui-react';
+import { Label, Image, Table, Header } from 'semantic-ui-react';
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
 import withData from "../lib/apollo";

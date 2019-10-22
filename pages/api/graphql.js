@@ -1,42 +1,58 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getUsers, getUserStatsById, getMostRecentSet, getTotalChallengeDays } from '../../utils/firebaseQueries';
+import { getUsers, getDailySetsByUserId, getMostRecentSet, getTotalChallengeDays } from '../../utils/firebaseQueries';
 import getLeaderboardText from '../../utils/getLeaderboardText';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
     scalar GraphQLJSON
     scalar Date
-    
-    type BestIndividualSet {
-        id: ID!
-        name: String!
-        count: Int!
-        profile: SlackProfile!
-        created: Date!
-        dailyAvg: Int
+
+    type Query {
+        leaderboard: Leaderboard!
+        dailySetsByUser(id: String!): [CountByDay]!
+        summary: String!
+        totalPushUps: Int!
+        mostRecentSet: MostRecentSet!
     }
-    type MostRecentSet {
+    interface Set {
         id: ID!
         name: String!
         count: Int!
         profile: SlackProfile!
         created: Date!
+    }
+    type CountByDay {
+        name: Date!
+        value: Int!
+    }
+    type BestIndividualSet implements Set {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlackProfile!
+        created: Date!
+    }
+    type MostRecentSet implements Set {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlackProfile!
+        created: Date!
+    }
+    type Ranking {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlackProfile!
         dailyAvg: Int
     }
     type Leaderboard {
-        rankings: [User]!
+        rankings: [Ranking]!
         totalPushUps: Int!
         totalAthletes: Int!
         avgSet: Int!
         bestIndividualSet: BestIndividualSet!
         dailyAvg: Int!
-    }
-    type Query {
-        leaderboard: Leaderboard!
-        userStats(id: String!): [User]!
-        summary: String!
-        totalPushUps: Int!
-        mostRecentSet: MostRecentSet!
     }
     type SlackProfile {
         title: String!
@@ -63,17 +79,18 @@ const typeDefs = gql`
         image_1024: String!
         status_text_canonical: String!
     }
-    type User {
-        id: ID!
-        name: String!
-        count: Int!
-        profile: SlackProfile!
-        created: Date!
-        dailyAvg: Int
-    }
 `;
 
 const resolvers = {
+    Set: {
+        __resolveType(set, context, info){
+            if(set.dailyAvg){
+                return 'Ranking';
+            }
+
+            return null;
+        },
+    },
     Query: {
         async leaderboard () {
             try {
@@ -88,6 +105,7 @@ const resolvers = {
                     const name = curr.name;
                     const count = curr.count;
                     const id = curr.id;
+                    const created = curr.created;
 
                     return {
                         ...acc,
@@ -104,6 +122,7 @@ const resolvers = {
                             count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
                             id: count > acc.bestIndividualSet.count ? id : acc.bestIndividualSet.id,
                             name: count > acc.bestIndividualSet.count ? name : acc.bestIndividualSet.name,
+                            created: count > acc.bestIndividualSet.count ? created : acc.bestIndividualSet.created,
                         }
                     }
                 }, {
@@ -155,9 +174,9 @@ const resolvers = {
             }
         },
 
-        async userStats (parent, {id}) {
+        async dailySetsByUser (parent, {id}) {
             try {
-                return await getUserStatsById(id);
+                return await getDailySetsByUserId(id);
             } catch (error) {
                 throw new ApolloError(`Error getting user ${id} data!`, 500, error);
             }
