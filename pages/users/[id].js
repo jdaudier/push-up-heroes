@@ -3,7 +3,13 @@ import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import Layout from '../../components/Layout';
-import { Card, Icon, Image } from 'semantic-ui-react'
+import {Grid, Card, Image, Icon, Header} from 'semantic-ui-react'
+import UserStats from '../../components/UserStats';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import parseISO from 'date-fns/parseISO';
+
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
 
 const GET_USER_STATS = gql`
     query getUserStats($id: ID!) {
@@ -42,14 +48,18 @@ const GET_USER_STATS = gql`
     }
 `;
 
-const UserCard = ({user: {real_name_normalized, title, image_512}}) => (
-    <Card color='blue'>
+const UserCard = ({user: {real_name_normalized, title, image_512}, mostRecentSet}) => (
+    <Card centered color='blue'>
         <Image src={image_512} wrapped ui={false} />
         <Card.Content>
             <Card.Header>{real_name_normalized}</Card.Header>
             <Card.Description>
                 {title}
             </Card.Description>
+        </Card.Content>
+        <Card.Content extra>
+            <Icon name='feed' />
+            Last set of {mostRecentSet.count} {formatDistanceToNow(parseISO(mostRecentSet.created), { addSuffix: true })}
         </Card.Content>
     </Card>
 );
@@ -64,11 +74,20 @@ function User() {
 
     if (!data) return null;
 
-    const {userSlackProfile, dailySetsByUser, userStats, streakData} = data;
+    const {userSlackProfile, userStats: {mostRecentSet}} = data;
 
     return (
         <Layout>
-            <UserCard user={userSlackProfile} />
+            <Grid stackable>
+                <Grid.Row>
+                    <Grid.Column width={5}>
+                        <UserCard mostRecentSet={mostRecentSet} user={userSlackProfile} />
+                    </Grid.Column>
+                    <Grid.Column width={11}>
+                        <UserStats data={data} />
+                    </Grid.Column>
+                </Grid.Row>
+            </Grid>
         </Layout>
     );
 }

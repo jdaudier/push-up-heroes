@@ -344,6 +344,7 @@ async function getUserSetsById(id) {
         const currentSet = {
             ...data,
             created,
+            rawCreated: data.created.toDate(),
         };
         const prevCount = acc.countsByDayMap[created];
         return {
@@ -400,7 +401,7 @@ export async function getUserStats(id) {
         const ranking = rankings.findIndex((r) => r.id === id) + 1;
 
         const results = sortedList.reduce((acc, set, index) => {
-            const {count, created} = set;
+            const {count, created, rawCreated} = set;
             const formattedCreated = format(parseISO(created), 'EEE, MMM d');
             return {
                 ...acc,
@@ -414,7 +415,7 @@ export async function getUserStats(id) {
                 },
                 mostRecentSet: {
                     count,
-                    created: formattedCreated,
+                    created: rawCreated,
                 },
                 totalPushUps: acc.totalPushUps + count,
             }
