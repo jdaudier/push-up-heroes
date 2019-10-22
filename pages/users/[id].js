@@ -1,13 +1,53 @@
 import { useRouter } from 'next/router';
+import withData from '../../lib/apollo';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 import Layout from '../../components/Layout';
+import { Card, Icon, Image } from 'semantic-ui-react'
 
-export default function User() {
+const GET_USER_STATS = gql`
+    query getUserStats($id: ID!) {
+        userSlackProfile(id: $id) {
+            real_name_normalized
+            title
+            image_512
+        }
+        dailySetsByUser(id: $id) {
+            name
+            value
+        }
+    }
+`;
+
+const UserCard = ({user: {real_name_normalized, title, image_512}}) => (
+    <Card color='blue'>
+        <Image src={image_512} wrapped ui={false} />
+        <Card.Content>
+            <Card.Header>{real_name_normalized}</Card.Header>
+            <Card.Description>
+                {title}
+            </Card.Description>
+        </Card.Content>
+    </Card>
+);
+
+function User() {
     const router = useRouter();
+
+    const { loading, error, data, fetchMore } = useQuery(GET_USER_STATS, {
+        notifyOnNetworkStatusChange: true,
+        variables: { id: router.query.id },
+    });
+
+    if (!data) return null;
+
+    const {userSlackProfile, dailySetsByUser} = data;
 
     return (
         <Layout>
-            <h1>{router.query.id}</h1>
-            <p>Insert individual push-up stats chart.</p>
+            <UserCard user={userSlackProfile} />
         </Layout>
     );
 }
+
+export default withData(props => <User />);

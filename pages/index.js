@@ -4,9 +4,9 @@ import Crown from '../components/Crown';
 import { Label, Image, Table, Header } from 'semantic-ui-react';
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
-import withData from "../lib/apollo";
-import { useQuery } from "@apollo/react-hooks";
-import { gql } from "apollo-boost";
+import withData from '../lib/apollo';
+import { useQuery } from '@apollo/react-hooks';
+import { gql } from 'apollo-boost';
 
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
@@ -170,11 +170,10 @@ const Leaderboard = ({data}) => {
                     const place = i + 1;
                     const maybePlaceText = [1, 2, 3].includes(place) ? '' : place;
                     const diffFromLeader = rankings[0].count - count;
-                    const lowercaseId = id.toLowerCase();
                     return (
                         <Table.Row key={id}>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="rank" css={cellLinkCss}>
                                         <MaybeRibbon place={place} />
                                         {maybePlaceText}
@@ -182,7 +181,7 @@ const Leaderboard = ({data}) => {
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="athlete" css={cellLinkCss}>
                                         {place === 1 && (<div css={crownCss}>
                                             <Crown />
@@ -199,28 +198,28 @@ const Leaderboard = ({data}) => {
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="count" css={cellLinkCss}>
                                         {count}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="diff from leader" css={cellLinkCss}>
                                         {diffFromLeader > 0 ? `${diffFromLeader} more` : ''}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="daily average" css={cellLinkCss}>
                                         {dailyAvg}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${lowercaseId}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="contribution" css={cellLinkCss}>
                                         {Math.round((count / totalPushUps) * 100)}%
                                     </a>
@@ -272,8 +271,4 @@ const Home = () => {
     )
 };
 
-export default withData(props => {
-    return (
-        <Home />
-    );
-});
+export default withData(props => <Home />);

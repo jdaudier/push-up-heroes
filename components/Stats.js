@@ -87,7 +87,7 @@ const Stats = ({data}) => {
                     </Stat>
                 </Grid.Column>}
             >
-                <Link href='/users/[id]' as={`/users/${bestIndividualSet.id.toLowerCase()}`}>
+                <Link href='/users/[id]' as={`/users/${bestIndividualSet.id}`}>
                     <a title="athlete" css={cellLinkCss}>
                         <Image src={bestIndividualSet.profile.image_48} avatar />
                         <span css={{
@@ -111,7 +111,7 @@ const Stats = ({data}) => {
                     </Stat>
                 </Grid.Column>}
             >
-                <Link href='/users/[id]' as={`/users/${mostRecentSet.id.toLowerCase()}`}>
+                <Link href='/users/[id]' as={`/users/${mostRecentSet.id}`}>
                     <a title="athlete" css={cellLinkCss}>
                         <Image src={mostRecentSet.profile.image_48} avatar />
                         <span css={{

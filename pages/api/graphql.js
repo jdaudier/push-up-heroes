@@ -9,10 +9,11 @@ const typeDefs = gql`
 
     type Query {
         leaderboard: Leaderboard!
-        dailySetsByUser(id: String!): [CountByDay]!
+        dailySetsByUser(id: ID!): [CountByDay]!
         summary: String!
         totalPushUps: Int!
         mostRecentSet: MostRecentSet!
+        userSlackProfile(id: ID!): SlackProfile!
     }
     interface Set {
         id: ID!
@@ -210,6 +211,14 @@ const resolvers = {
                 throw new ApolloError('Error getting most recent set!', 500, error);
             }
         },
+
+        async userSlackProfile (parent, {id}) {
+            try {
+                return await getSlackProfile(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting Slack profile for ${id}!`, 500, error);
+            }
+        }
     }
 };
 
