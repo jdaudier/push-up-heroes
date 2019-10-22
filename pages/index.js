@@ -44,6 +44,7 @@ const GET_LEADERBOARD = gql`
                 name 
                 count
                 dailyAvg
+                contributionPercentage
                 profile {
                     image_48
                     real_name_normalized
@@ -134,7 +135,7 @@ const Leaderboard = ({data}) => {
     if (!data) return null;
 
     const {leaderboard} = data;
-    const {rankings, totalPushUps, totalAthletes} = leaderboard;
+    const {rankings, totalAthletes} = leaderboard;
 
     if (totalAthletes === 0) {
         return <EmptyView message="No one has done any push-ups yet!" />
@@ -166,7 +167,7 @@ const Leaderboard = ({data}) => {
             </Table.Header>
 
             <Table.Body>
-                {rankings.map(({id, name, count, dailyAvg, profile}, i) => {
+                {rankings.map(({id, name, count, dailyAvg, contributionPercentage, profile}, i) => {
                     const place = i + 1;
                     const maybePlaceText = [1, 2, 3].includes(place) ? '' : place;
                     const diffFromLeader = rankings[0].count - count;
@@ -221,7 +222,7 @@ const Leaderboard = ({data}) => {
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title="contribution" css={cellLinkCss}>
-                                        {Math.round((count / totalPushUps) * 100)}%
+                                        {contributionPercentage}%
                                     </a>
                                 </Link>
                             </Table.Cell>

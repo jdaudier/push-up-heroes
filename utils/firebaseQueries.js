@@ -20,38 +20,68 @@ export async function getUsers() {
     }
 }
 
-export async function getDailySetsByUserId(id) {
+export async function getLeaderboardData() {
     try {
-        const snapshot = await db.collection('users').where('id', '==', id).get();
-
-        const countsByDayMap = snapshot.docs.reduce((acc, doc) => {
-            const data = doc.data();
-            const created = format(data.created.toDate(), 'M-d-yyyy');
-
+        const snapshot = await db.collection('users').get();
+        const data = snapshot.docs.reduce((acc, doc) => {
+            const rawData = doc.data();
+            const {id, count, name} = {
+                ...rawData,
+                created: startOfDay(rawData.created.toDate()),
+            };
             return {
                 ...acc,
-                [created]: acc[created] ? acc[created] + data.count : data.count,
+                slackIdMap: {
+                    ...acc.slackIdMap,
+                    [id]: name,
+                },
+                leaderboard: {
+                    ...acc.leaderboard,
+                    [id]: acc.leaderboard[id] ? acc.leaderboard[id] + count : count,
+                },
+                totalPushUps: acc.totalPushUps + count,
             }
-        }, {});
+        }, {
+            slackIdMap: {},
+            leaderboard: {},
+            totalPushUps: 0,
+        });
 
-        const firstSnapshot = await db.collection('users')
-                .orderBy('created', 'asc')
-                .limit(1).get();
+        const {totalPushUps, leaderboard, slackIdMap} = data;
 
-        const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
-
-        const datesArray = eachDayOfInterval(
-            { start: firstEntryDate, end: new Date() }
-        );
-
-        return datesArray.map(date => {
-            const key = format(date, 'M-d-yyyy');
+        const leaderArr = await Promise.all(Object.keys(leaderboard).map(async id => {
+            const name = slackIdMap[id];
 
             return {
-                name: format(date, 'EEE, MMM d'),
-                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+                id,
+                name,
+                count: leaderboard[id],
+                profile: await getSlackProfile(id),
             }
+        }));
+
+        const sortedLeaderboard = leaderArr.sort((aPerson, bPerson) => {
+            const aCount = aPerson.count;
+            const bCount = bPerson.count;
+            return bCount - aCount;
         });
+
+        return {
+            rankings: sortedLeaderboard,
+            totalPushUps,
+        }
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+export async function getTotalPushUpsCount() {
+    try {
+        const snapshot = await db.collection('users').get();
+        return snapshot.docs.reduce((acc, doc) => {
+            const {count} = doc.data();
+            return acc + count;
+        }, 0);
     } catch (err) {
         throw new Error(err.message);
     }
@@ -107,6 +137,110 @@ export async function getMostRecentSet() {
                 created,
             }
         })[0];
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+/* INDIVIDUAL QUERIES */
+async function getUserSetsById(id) {
+    return await db.collection('users').where('id', '==', id).get();
+}
+
+export async function getDailySetsByUserId(id) {
+    try {
+        const snapshot = await getUserSetsById(id);
+
+        const countsByDayMap = snapshot.docs.reduce((acc, doc) => {
+            const data = doc.data();
+            const created = format(data.created.toDate(), 'M-d-yyyy');
+
+            return {
+                ...acc,
+                [created]: acc[created] ? acc[created] + data.count : data.count,
+            }
+        }, {});
+
+        const firstSnapshot = await db.collection('users')
+            .orderBy('created', 'asc')
+            .limit(1).get();
+
+        const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+
+        const datesArray = eachDayOfInterval(
+            { start: firstEntryDate, end: new Date() }
+        );
+
+        return datesArray.map(date => {
+            const key = format(date, 'M-d-yyyy');
+
+            return {
+                name: format(date, 'EEE, MMM d'),
+                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+            }
+        });
+    } catch (err) {
+        throw new Error(err.message);
+    }
+}
+
+export async function getUserStats(id) {
+    try {
+        const [leaderboardData, totalChallengeDays] = await Promise.all([
+            await getLeaderboardData(),
+            await getTotalChallengeDays(),
+        ]);
+        const snapshot = await getUserSetsById(id);
+
+        const {rankings, totalPushUps: totalPushUpsGlobally} = leaderboardData;
+
+        const ranking = rankings.findIndex((r) => r.id === id) + 1;
+
+        const results = snapshot.docs.reduce((acc, doc, index) => {
+            const {count, created} = doc.data();
+            const formattedCreated = format(created.toDate(), 'EEE, MMM d');
+
+            return {
+                ...acc,
+                bestSet: {
+                    count: count > acc.bestSet.count ? count : acc.bestSet.count,
+                    created: count > acc.bestSet.count ? formattedCreated : acc.bestSet.created,
+                },
+                firstSet: {
+                    count,
+                    created: formattedCreated,
+                },
+                mostRecentSet: {
+                    count: index === 0 ? count : acc.mostRecentSet.count,
+                    created: index === 0 ? formattedCreated : acc.mostRecentSet.created,
+                },
+                totalPushUps: acc.totalPushUps + count,
+            }
+        }, {
+            bestSet: {
+                count: 0,
+                created: '',
+            },
+            firstSet: {
+                count: 0,
+                created: '',
+            },
+            mostRecentSet: {
+                count: 0,
+                created: '',
+            },
+            totalPushUps: 0,
+        });
+
+        const {totalPushUps} = results;
+        return {
+            ...results,
+            ranking,
+            dailyAvg: Math.round(totalPushUps / totalChallengeDays),
+            contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
+            catchTheLeader: rankings[0].count - totalPushUps,
+        }
+
     } catch (err) {
         throw new Error(err.message);
     }

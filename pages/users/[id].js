@@ -16,6 +16,25 @@ const GET_USER_STATS = gql`
             name
             value
         }
+        userStats(id: $id) {
+            totalPushUps
+            ranking
+            dailyAvg
+            catchTheLeader
+            contributionPercentage
+            bestSet {
+                count
+                created
+            }
+            firstSet {
+                count
+                created
+            }
+            mostRecentSet {
+                count
+                created
+            }
+        }
     }
 `;
 
@@ -41,7 +60,7 @@ function User() {
 
     if (!data) return null;
 
-    const {userSlackProfile, dailySetsByUser} = data;
+    const {userSlackProfile, dailySetsByUser, userStats} = data;
 
     return (
         <Layout>

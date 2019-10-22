@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getUsers, getDailySetsByUserId, getMostRecentSet, getTotalChallengeDays } from '../../utils/firebaseQueries';
+import { getUsers, getDailySetsByUserId, getMostRecentSet, getTotalChallengeDays, getUserStats } from '../../utils/firebaseQueries';
 import getLeaderboardText from '../../utils/getLeaderboardText';
 import getSlackProfile from '../../utils/getSlackProfile';
 
@@ -14,12 +14,39 @@ const typeDefs = gql`
         totalPushUps: Int!
         mostRecentSet: MostRecentSet!
         userSlackProfile(id: ID!): SlackProfile!
+        userStats(id: ID!): UserStats!
     }
     interface Set {
         id: ID!
         name: String!
         count: Int!
         profile: SlackProfile!
+        created: Date!
+    }
+    interface IndividualSet {
+        count: Int!
+        created: Date!
+    }
+    type UserStats {
+        ranking: Int!
+        totalPushUps: Int!
+        dailyAvg: Int!
+        catchTheLeader: Int!
+        contributionPercentage: Int!
+        bestSet: BestSetByUser!
+        firstSet: FirstSetByUser!
+        mostRecentSet: MostRecentSetByUser!
+    }
+    type BestSetByUser implements IndividualSet {
+        count: Int!
+        created: Date!
+    }
+    type FirstSetByUser implements IndividualSet {
+        count: Int!
+        created: Date!
+    }
+    type MostRecentSetByUser implements IndividualSet {
+        count: Int!
         created: Date!
     }
     type CountByDay {
@@ -45,7 +72,8 @@ const typeDefs = gql`
         name: String!
         count: Int!
         profile: SlackProfile!
-        dailyAvg: Int
+        dailyAvg: Int!
+        contributionPercentage: Int!
     }
     type Leaderboard {
         rankings: [Ranking]!
@@ -85,10 +113,11 @@ const typeDefs = gql`
 const resolvers = {
     Set: {
         __resolveType(set, context, info){
-            if(set.dailyAvg){
-                return 'Ranking';
-            }
-
+            return null;
+        },
+    },
+    IndividualSet: {
+        __resolveType(set, context, info){
             return null;
         },
     },
@@ -148,11 +177,12 @@ const resolvers = {
                         count,
                         id,
                         profile: await getSlackProfile(id),
-                        dailyAvg: Math.round(count / totalChallengeDays)
+                        dailyAvg: Math.round(count / totalChallengeDays),
+                        contributionPercentage: Math.round((count / totalPushUps) * 100),
                     };
                 }));
 
-                const sortedLeaderboard = [...leaderArr].sort((aPerson, bPerson) => {
+                const sortedLeaderboard = leaderArr.sort((aPerson, bPerson) => {
                     const aCount = aPerson.count;
                     const bCount = bPerson.count;
                     return bCount - aCount;
@@ -180,6 +210,14 @@ const resolvers = {
                 return await getDailySetsByUserId(id);
             } catch (error) {
                 throw new ApolloError(`Error getting user ${id} data!`, 500, error);
+            }
+        },
+
+        async userStats (parent, {id}) {
+            try {
+                return await getUserStats(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting user ${id} stats!`, 500, error);
             }
         },
 
