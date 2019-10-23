@@ -40,6 +40,10 @@ const Stat = ({color, hasPopup, children}) => {
     )
 };
 
+function getDayorDays(count) {
+    return count === 1 ? 'day' : 'days';
+}
+
 const Stats = ({data}) => {
     if (!data) return null;
 
@@ -96,7 +100,7 @@ const Stats = ({data}) => {
                                 textTransform: 'uppercase',
                                 verticalAlign: 'top',
                             }}>
-                                days
+                                {getDayorDays(longestStreak)}
                             </span>
                         </Statistic.Value>
                         <Statistic.Label>Longest Streak</Statistic.Label>
@@ -122,7 +126,7 @@ const Stats = ({data}) => {
                                 textTransform: 'uppercase',
                                 verticalAlign: 'top',
                             }}>
-                                days
+                                {getDayorDays(currentStreak)}
                             </span>
                         </Statistic.Value>
                         <Statistic.Label>Current Streak</Statistic.Label>
