@@ -43,8 +43,10 @@ const GET_USER_STATS = gql`
             }
         }
         streakData(id: $id) {
-            currentStreak
             longestStreak
+            currentStreak
+            longestStreakDates
+            currentStreakDates
         }
     }
 `;

@@ -39,8 +39,10 @@ const typeDefs = gql`
         mostRecentSet: MostRecentSetByUser!
     }
     type Streak {
-        currentStreak: Int!
         longestStreak: Int!
+        currentStreak: Int!
+        longestStreakDates: [Date]!
+        currentStreakDates: [Date]!
     }
     type BestSetByUser implements IndividualSet {
         count: Int!

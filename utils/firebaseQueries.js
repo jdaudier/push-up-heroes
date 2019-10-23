@@ -450,22 +450,30 @@ export async function getStreakData(id) {
 
         return datesArray.reduce((acc, date) => {
             const simplifiedDate = format(date, 'yyyy-M-d');
+            const formattedDate = format(date, 'EEE, MMM d');
+
             const didPushUps = Boolean(countsByDayMap[simplifiedDate]);
 
             if (didPushUps) {
                 return {
                     longestStreak: acc.currentStreak + 1,
                     currentStreak: acc.currentStreak + 1,
+                    longestStreakDates: [...acc.longestStreakDates, formattedDate],
+                    currentStreakDates: [...acc.currentStreakDates, formattedDate],
                 }
             }
 
             return {
                 longestStreak: acc.longestStreak > acc.currentStreak ? acc.longestStreak : acc.currentStreak,
                 currentStreak: 0,
+                longestStreakDates: [],
+                currentStreakDates: [],
             };
         }, {
-            currentStreak: 0,
             longestStreak: 0,
+            currentStreak: 0,
+            longestStreakDates: [],
+            currentStreakDates: [],
         });
     } catch (err) {
         throw new Error(err.message);

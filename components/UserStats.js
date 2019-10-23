@@ -47,7 +47,14 @@ function getDayorDays(count) {
 const Stats = ({data}) => {
     if (!data) return null;
 
-    const {userStats, streakData: {currentStreak, longestStreak}} = data;
+    const {userStats,
+        streakData: {
+            longestStreak,
+            currentStreak,
+            longestStreakDates,
+            currentStreakDates
+        }} = data;
+
     const {
         ranking,
         totalPushUps,
@@ -81,58 +88,74 @@ const Stats = ({data}) => {
                     <Statistic inverted label='Daily Average' value={dailyAvg.toLocaleString()} />
                 </Stat>
             </Grid.Column>
-            <Grid.Column>
-                <Stat color="red">
-                    <Statistic inverted>
-                        <Statistic.Value>
+            <Popup content={`${longestStreakDates[0]} - ${longestStreakDates[longestStreakDates.length - 1]}`}
+                   flowing
+                   position='top center'
+                   size='huge'
+                   offset='0, -12px'
+                   trigger={
+                       <Grid.Column>
+                           <Stat color="red" hasPopup>
+                               <Statistic inverted>
+                                   <Statistic.Value>
                             <span css={{
                                 verticalAlign: 'top',
                                 display: 'inline-block',
                             }}>
                                 {longestStreak.toLocaleString()}
                             </span>
-                            <span css={{
-                                color: 'rgba(255,255,255,.7)',
-                                display: 'inline-block',
-                                fontSize: 14,
-                                fontWeight: 700,
-                                marginLeft: 5,
-                                textTransform: 'uppercase',
-                                verticalAlign: 'top',
-                            }}>
+                                       <span css={{
+                                           color: 'rgba(255,255,255,.7)',
+                                           display: 'inline-block',
+                                           fontSize: 14,
+                                           fontWeight: 700,
+                                           marginLeft: 5,
+                                           textTransform: 'uppercase',
+                                           verticalAlign: 'top',
+                                       }}>
                                 {getDayorDays(longestStreak)}
                             </span>
-                        </Statistic.Value>
-                        <Statistic.Label>Longest Streak</Statistic.Label>
-                    </Statistic>
-                </Stat>
-            </Grid.Column>
-            <Grid.Column>
-                <Stat color="blue">
-                    <Statistic inverted>
-                        <Statistic.Value>
+                                   </Statistic.Value>
+                                   <Statistic.Label>Longest Streak</Statistic.Label>
+                               </Statistic>
+                           </Stat>
+                       </Grid.Column>
+                   }
+            />
+            <Popup content={`${currentStreakDates[0]} - ${currentStreakDates[currentStreakDates.length - 1]}`}
+                   flowing
+                   position='top center'
+                   size='huge'
+                   offset='0, -12px'
+                   trigger={
+                       <Grid.Column>
+                           <Stat color="blue" hasPopup>
+                               <Statistic inverted>
+                                   <Statistic.Value>
                             <span css={{
                                 verticalAlign: 'top',
                                 display: 'inline-block',
                             }}>
                                 {currentStreak.toLocaleString()}
                             </span>
-                            <span css={{
-                                color: 'rgba(255,255,255,.7)',
-                                display: 'inline-block',
-                                fontSize: 14,
-                                fontWeight: 700,
-                                marginLeft: 5,
-                                textTransform: 'uppercase',
-                                verticalAlign: 'top',
-                            }}>
+                                       <span css={{
+                                           color: 'rgba(255,255,255,.7)',
+                                           display: 'inline-block',
+                                           fontSize: 14,
+                                           fontWeight: 700,
+                                           marginLeft: 5,
+                                           textTransform: 'uppercase',
+                                           verticalAlign: 'top',
+                                       }}>
                                 {getDayorDays(currentStreak)}
                             </span>
-                        </Statistic.Value>
-                        <Statistic.Label>Current Streak</Statistic.Label>
-                    </Statistic>
-                </Stat>
-            </Grid.Column>
+                                   </Statistic.Value>
+                                   <Statistic.Label>Current Streak</Statistic.Label>
+                               </Statistic>
+                           </Stat>
+                       </Grid.Column>
+                   }
+            />
             <Popup content={firstSet.created}
                    position='top center'
                    size='huge'
