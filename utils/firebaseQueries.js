@@ -3,8 +3,6 @@ import startOfDay from 'date-fns/startOfDay';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
-import isBefore from 'date-fns/isBefore';
-import parseISO from 'date-fns/parseISO';
 import getSlackProfile from './getSlackProfile';
 
 export async function getFullLeaderboardData() {
@@ -323,53 +321,40 @@ export async function getMostRecentSet() {
 
 /* INDIVIDUAL QUERIES */
 async function getUserSetsById(id) {
-    const snapshot = await db.collection('users').where('id', '==', id).get();
+    try {
+        const snapshot = await db.collection('users').where('id', '==', id).orderBy('created').get();
 
-    const sorted = snapshot.docs.sort((a, b) => {
-        const aDate = a.data().created.toDate();
-        const bDate = b.data().created.toDate();
-
-        const isABeforeB = isBefore(aDate, bDate);
-
-        if (isABeforeB) {
-            return -1;
-        }
-
-        return 1;
-    });
-
-    return sorted.reduce((acc, doc) => {
-        const data = doc.data();
-        const created = format(data.created.toDate(), 'yyyy-M-d');
-        const currentSet = {
-            ...data,
-            created,
-            rawCreated: data.created.toDate(),
-        };
-        const prevCount = acc.countsByDayMap[created];
-        return {
-            ...acc,
-            sortedList: [...acc.sortedList, currentSet],
-            countsByDayMap: {
-                ...acc.countsByDayMap,
-                [created]: prevCount ? prevCount + currentSet.count : currentSet.count,
+        return snapshot.docs.reduce((acc, doc) => {
+            const data = doc.data();
+            const created = format(data.created.toDate(), 'yyyy-M-d');
+            const currentSet = {
+                ...data,
+                created,
+                rawCreated: data.created.toDate(),
+            };
+            const prevCount = acc.countsByDayMap[created];
+            return {
+                ...acc,
+                sortedList: [...acc.sortedList, currentSet],
+                countsByDayMap: {
+                    ...acc.countsByDayMap,
+                    [created]: prevCount ? prevCount + currentSet.count : currentSet.count,
+                }
             }
-        }
-    }, {
-        sortedList: [],
-        countsByDayMap: {},
-    });
+        }, {
+            sortedList: [],
+            countsByDayMap: {},
+        });
+    } catch (err) {
+        throw new Error(err);
+    }
 }
 
 export async function getDailySetsByUserId(id) {
     try {
-        const {countsByDayMap} = await getUserSetsById(id);
+        const {countsByDayMap, sortedList} = await getUserSetsById(id);
 
-        const firstSnapshot = await db.collection('users')
-            .orderBy('created', 'asc')
-            .limit(1).get();
-
-        const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+        const firstEntryDate = sortedList[0].rawCreated;
 
         const datesArray = eachDayOfInterval(
             { start: firstEntryDate, end: new Date() }
@@ -401,8 +386,8 @@ export async function getUserStats(id) {
         const ranking = rankings.findIndex((r) => r.id === id) + 1;
 
         const results = sortedList.reduce((acc, set, index) => {
-            const {count, created, rawCreated} = set;
-            const formattedCreated = format(parseISO(created), 'EEE, MMM d');
+            const {count, rawCreated} = set;
+            const formattedCreated = format(rawCreated, 'EEE, MMM d');
             return {
                 ...acc,
                 bestSet: {
@@ -453,11 +438,11 @@ export async function getUserStats(id) {
 export async function getStreakData(id) {
     try {
         const {sortedList, countsByDayMap} = await getUserSetsById(id);
-        const firstEntryDate = sortedList[0].created;
-        const lastEntryDate = sortedList[sortedList.length - 1].created;
+        const firstEntryDate = sortedList[0].rawCreated;
+        const lastEntryDate = sortedList[sortedList.length - 1].rawCreated;
 
         const datesArray = eachDayOfInterval(
-            { start: parseISO(firstEntryDate), end: parseISO(lastEntryDate) }
+            { start: firstEntryDate, end: lastEntryDate }
         );
 
         return datesArray.reduce((acc, date) => {
