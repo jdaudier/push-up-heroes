@@ -379,24 +379,28 @@ export async function getUserStats(id) {
             await getLeaderboardData(),
             await getTotalChallengeDays(),
         ]);
-        const {sortedList} = await getUserSetsById(id);
+
+        const snapshot = await db.collection('users').where('id', '==', id).orderBy('created').get();
 
         const {rankings, totalPushUps: totalPushUpsGlobally} = leaderboardData;
 
         const ranking = rankings.findIndex((r) => r.id === id) + 1;
 
-        const results = sortedList.reduce((acc, set, index) => {
-            const {count, rawCreated} = set;
-            const formattedCreated = format(rawCreated, 'EEE, MMM d');
+        const results = snapshot.docs.reduce((acc, doc, index) => {
+            const data = doc.data();
+            const rawCreated = data.created.toDate();
+            const created = format(rawCreated, 'EEE, MMM d');
+            const {count} = data;
+
             return {
                 ...acc,
                 bestSet: {
                     count: count > acc.bestSet.count ? count : acc.bestSet.count,
-                    created: count > acc.bestSet.count ? formattedCreated : acc.bestSet.created,
+                    created: count > acc.bestSet.count ? created : acc.bestSet.created,
                 },
                 firstSet: {
                     count: index === 0 ? count : acc.firstSet.count,
-                    created: index === 0 ? formattedCreated : acc.firstSet.created,
+                    created: index === 0 ? created : acc.firstSet.created,
                 },
                 mostRecentSet: {
                     count,
@@ -425,11 +429,10 @@ export async function getUserStats(id) {
             ...results,
             ranking,
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
-            avgSet: Math.round(totalPushUps / sortedList.length),
+            avgSet: Math.round(totalPushUps / snapshot.docs.length),
             contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
             catchTheLeader: rankings[0].count - totalPushUps,
         }
-
     } catch (err) {
         throw new Error(err.message);
     }
