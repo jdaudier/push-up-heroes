@@ -54,6 +54,10 @@ const Stats = ({data}) => {
     const {mostRecentSet, leaderboard} = data;
     const {totalAthletes, totalPushUps, dailyAvg, avgSet, bestIndividualSet} = leaderboard;
 
+    if (totalAthletes === 0) {
+        return null;
+    }
+
     return (
         <Grid doubling columns={3} stackable style={{marginBottom: 40}}>
             <Grid.Column>

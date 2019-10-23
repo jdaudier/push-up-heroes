@@ -113,7 +113,7 @@ const EmptyView = ({message}) => {
                                         marginLeft: 45,
                                         animation: `${floating} 3s infinite ease-in-out`,
                                     }}>
-                                        <Image src="https://mars-404.templateku.co/img/astronaut.svg" centered/>
+                                        <Image src="/images/astronaut.svg" centered/>
                                     </span>
                                 </span>
                         </Table.Cell>
@@ -207,8 +207,17 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="diff from leader" css={cellLinkCss}>
-                                        {diffFromLeader > 0 ? `${diffFromLeader} more` : ''}
+                                    <a title="catch the leader" css={{...cellLinkCss, height: 19}}>
+                                        {diffFromLeader > 0 ? `${diffFromLeader} more` : (
+                                            <div css={{
+                                                position: 'absolute',
+                                                top: '50%',
+                                                left: -7,
+                                                transform: 'translateY(-50%)',
+                                            }}>
+                                                <Image src="/images/medal.png" style={{height: 50}} />
+                                            </div>
+                                        )}
                                     </a>
                                 </Link>
                             </Table.Cell>
