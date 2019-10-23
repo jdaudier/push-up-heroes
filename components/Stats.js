@@ -83,7 +83,7 @@ const Stats = ({data}) => {
             <Popup position='top center'
                    hoverable
                    size='huge'
-                   offset='0, -12px'
+                   style={{top: 12}}
                    trigger={
                 <Grid.Column>
                     <Stat color="red" hasPopup>
@@ -107,7 +107,7 @@ const Stats = ({data}) => {
             <Popup position='top center'
                    hoverable
                    size='huge'
-                   offset='0, -12px'
+                   style={{top: 12}}
                    trigger={
                 <Grid.Column>
                     <Stat color="blue" hasPopup>

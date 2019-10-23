@@ -92,7 +92,7 @@ const Stats = ({data}) => {
                    flowing
                    position='top center'
                    size='huge'
-                   offset='0, -12px'
+                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="red" hasPopup>
@@ -126,7 +126,7 @@ const Stats = ({data}) => {
                    flowing
                    position='top center'
                    size='huge'
-                   offset='0, -12px'
+                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="blue" hasPopup>
@@ -159,7 +159,7 @@ const Stats = ({data}) => {
             <Popup content={firstSet.created}
                    position='top center'
                    size='huge'
-                   offset='0, -12px'
+                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="red" hasPopup>
@@ -170,7 +170,7 @@ const Stats = ({data}) => {
             <Popup content={bestSet.created}
                    position='top center'
                    size='huge'
-                   offset='0, -12px'
+                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="blue" hasPopup>
