@@ -440,6 +440,7 @@ export async function getUserStats(id) {
             ...results,
             ranking,
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
+            avgSet: Math.round(totalPushUps / sortedList.length),
             contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
             catchTheLeader: rankings[0].count - totalPushUps,
         }

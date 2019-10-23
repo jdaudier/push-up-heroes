@@ -26,6 +26,7 @@ const GET_USER_STATS = gql`
             totalPushUps
             ranking
             dailyAvg
+            avgSet
             catchTheLeader
             contributionPercentage
             bestSet {

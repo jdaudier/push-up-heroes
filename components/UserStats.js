@@ -49,9 +49,9 @@ const Stats = ({data}) => {
         totalPushUps,
         catchTheLeader,
         dailyAvg,
+        avgSet,
         contributionPercentage,
         firstSet,
-        mostRecentSet,
         bestSet,
     } = userStats;
 
@@ -153,7 +153,7 @@ const Stats = ({data}) => {
             />
             <Grid.Column>
                 <Stat color="yellow">
-                    <Statistic inverted label='Contribution' value={`${contributionPercentage}%`} />
+                    <Statistic inverted label='Average Set' value={avgSet.toLocaleString()} />
                 </Stat>
             </Grid.Column>
         </Grid>

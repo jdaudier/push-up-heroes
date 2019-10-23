@@ -31,6 +31,7 @@ const typeDefs = gql`
         ranking: Int!
         totalPushUps: Int!
         dailyAvg: Int!
+        avgSet: Int!
         catchTheLeader: Int!
         contributionPercentage: Int!
         bestSet: BestSetByUser!
