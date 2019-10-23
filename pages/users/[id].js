@@ -60,7 +60,7 @@ const UserCard = ({user: {real_name_normalized, title, image_512}, mostRecentSet
         </Card.Content>
         <Card.Content extra>
             <Icon name='feed' />
-            Last set of {mostRecentSet.count} {formatDistanceToNow(parseISO(mostRecentSet.created), { addSuffix: true })}
+            {mostRecentSet.count} {mostRecentSet.count === 1 ? 'push-up' : 'push-ups'} {formatDistanceToNow(parseISO(mostRecentSet.created), { addSuffix: true })}
         </Card.Content>
     </Card>
 );
