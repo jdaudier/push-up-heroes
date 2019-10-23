@@ -131,6 +131,37 @@ const cellLinkCss = {
     position: 'relative',
 };
 
+const crownCss = {
+    left: -12,
+    top: -26,
+    position: 'absolute',
+    width: 50,
+    transform: 'rotate(-10deg)',
+    '@media(max-width: 767px)': {
+        top: 11,
+        position: 'relative',
+    }
+};
+
+const medalLinkCss = {
+    ...cellLinkCss,
+    height: 19,
+    '@media(max-width: 767px)': {
+        height: 'unset',
+    }
+};
+
+const medalCss = {
+    position: 'absolute',
+    top: '50%',
+    left: -7,
+    transform: 'translateY(-50%)',
+    '@media(max-width: 767px)': {
+        position: 'relative',
+        transform: 'unset',
+    }
+};
+
 const Leaderboard = ({data}) => {
     if (!data) return null;
 
@@ -140,18 +171,6 @@ const Leaderboard = ({data}) => {
     if (totalAthletes === 0) {
         return <EmptyView message="No one has done any push-ups yet!" />
     }
-
-    const crownCss = {
-        left: -12,
-        top: -26,
-        position: 'absolute',
-        width: 50,
-        transform: 'rotate(-10deg)',
-        '@media(max-width: 767px)': {
-            top: 11,
-            position: 'relative',
-        }
-    };
 
     return (
         <Table celled size='large' selectable textAlign="left">
@@ -207,14 +226,9 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="catch the leader" css={{...cellLinkCss, height: 19}}>
+                                    <a title="catch the leader" css={medalLinkCss}>
                                         {diffFromLeader > 0 ? `${diffFromLeader} more` : (
-                                            <div css={{
-                                                position: 'absolute',
-                                                top: '50%',
-                                                left: -7,
-                                                transform: 'translateY(-50%)',
-                                            }}>
+                                            <div css={medalCss}>
                                                 <Image src="/images/medal.png" style={{height: 50}} />
                                             </div>
                                         )}
