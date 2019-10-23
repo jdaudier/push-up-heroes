@@ -79,12 +79,54 @@ const Stats = ({data}) => {
             </Grid.Column>
             <Grid.Column>
                 <Stat color="red">
-                    <Statistic inverted label='Longest Streak' value={longestStreak.toLocaleString()} />
+                    <Statistic inverted>
+                        <Statistic.Value>
+                            <span css={{
+                                verticalAlign: 'top',
+                                display: 'inline-block',
+                            }}>
+                                {longestStreak.toLocaleString()}
+                            </span>
+                            <span css={{
+                                color: 'rgba(255,255,255,.7)',
+                                display: 'inline-block',
+                                fontSize: 14,
+                                fontWeight: 700,
+                                marginLeft: 5,
+                                textTransform: 'uppercase',
+                                verticalAlign: 'top',
+                            }}>
+                                days
+                            </span>
+                        </Statistic.Value>
+                        <Statistic.Label>Longest Streak</Statistic.Label>
+                    </Statistic>
                 </Stat>
             </Grid.Column>
             <Grid.Column>
                 <Stat color="blue">
-                    <Statistic inverted label='Current Streak' value={currentStreak.toLocaleString()} />
+                    <Statistic inverted>
+                        <Statistic.Value>
+                            <span css={{
+                                verticalAlign: 'top',
+                                display: 'inline-block',
+                            }}>
+                                {currentStreak.toLocaleString()}
+                            </span>
+                            <span css={{
+                                color: 'rgba(255,255,255,.7)',
+                                display: 'inline-block',
+                                fontSize: 14,
+                                fontWeight: 700,
+                                marginLeft: 5,
+                                textTransform: 'uppercase',
+                                verticalAlign: 'top',
+                            }}>
+                                days
+                            </span>
+                        </Statistic.Value>
+                        <Statistic.Label>Current Streak</Statistic.Label>
+                    </Statistic>
                 </Stat>
             </Grid.Column>
             <Popup content={firstSet.created}
