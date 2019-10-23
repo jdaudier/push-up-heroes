@@ -219,7 +219,7 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="count" css={cellLinkCss}>
+                                    <a title="total push-ups" css={cellLinkCss}>
                                         {count}
                                     </a>
                                 </Link>
