@@ -1,9 +1,10 @@
 import db from '../init-firebase';
-import startOfDay from 'date-fns/startOfDay';
+import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import getSlackProfile from './getSlackProfile';
+import {formatToTimeZone} from 'date-fns-timezone';
 
 export async function getFullLeaderboardData() {
     try {
@@ -13,13 +14,17 @@ export async function getFullLeaderboardData() {
             id: "myID",
             name: "joanne",
             count: 22,
-            created: "2019-10-07T09:08:22.000Z"
+            created: "2019-10-07T09:08:22.000Z",
+            timeZone: "America/New_York"
             */
-            const rawData = doc.data();
-            const {id, count, name, created} = {
-                ...rawData,
-                created: startOfDay(rawData.created.toDate()),
-            };
+            const data = doc.data();
+            const created = formatToTimeZone(
+                data.created.toDate(),
+                'ddd, MMM D',
+                { timeZone: data.timeZone }
+            );
+
+            const {id, count, name} = data;
 
             return {
                 ...acc,
@@ -47,6 +52,7 @@ export async function getFullLeaderboardData() {
                 count: 0,
                 id: '',
                 name: '',
+                created: '',
             },
         });
 
@@ -97,13 +103,12 @@ export async function getLeaderboardText(userId) {
              id: "myID",
              name: "joanne",
              count: 22,
-             created: "2019-10-07T09:08:22.000Z"
+             created: "2019-10-07T09:08:22.000Z",
+             timeZone: "America/New_York"
             */
-            const rawData = doc.data();
-            const {id, count, name} = {
-                ...rawData,
-                created: startOfDay(rawData.created.toDate()),
-            };
+            const data = doc.data();
+            const {id, count, name} = data;
+
             const countLength = (count).toString().length;
 
             return {
@@ -201,11 +206,8 @@ export async function getLeaderboardData() {
     try {
         const snapshot = await db.collection('users').get();
         const data = snapshot.docs.reduce((acc, doc) => {
-            const rawData = doc.data();
-            const {id, count, name} = {
-                ...rawData,
-                created: startOfDay(rawData.created.toDate()),
-            };
+            const data = doc.data();
+            const {id, count, name} = data;
             return {
                 ...acc,
                 slackIdMap: {
@@ -267,13 +269,15 @@ export async function getTotalPushUpsCount() {
 export async function addUserData({
                                       name,
                                       id,
-                                      count
+                                      count,
+                                      timeZone,
                                   }) {
     return db.collection('users').add({
         name,
         id,
         count: count,
         created: new Date(),
+        timeZone,
     });
 }
 
@@ -305,11 +309,16 @@ export async function getMostRecentSet() {
             .limit(1).get();
 
         return snapshot.docs.map(async (doc) => {
-            const rawData = doc.data();
-            const created = startOfDay(rawData.created.toDate());
-            const profile = await getSlackProfile(rawData.id);
+            const data = doc.data();
+            const created = formatToTimeZone(
+                data.created.toDate(),
+                'ddd, MMM D',
+                { timeZone: data.timeZone }
+            );
+
+            const profile = await getSlackProfile(data.id);
             return {
-                ...rawData,
+                ...data,
                 profile,
                 created,
             }
@@ -326,7 +335,12 @@ async function getUserSetsById(id) {
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
-            const created = format(data.created.toDate(), 'yyyy-M-d');
+            const created = formatToTimeZone(
+                data.created.toDate(),
+                'YYYY-M-D',
+                { timeZone: data.timeZone }
+            );
+
             const currentSet = {
                 ...data,
                 created,
@@ -354,10 +368,15 @@ export async function getDailySetsByUserId(id) {
     try {
         const {countsByDayMap, sortedList} = await getUserSetsById(id);
 
-        const firstEntryDate = sortedList[0].rawCreated;
+        const firstEntry = sortedList[0];
+        const firstEntryDateLocalTime = formatToTimeZone(
+            firstEntry.rawCreated,
+            'YYYY-M-D',
+            { timeZone: firstEntry.timeZone }
+        );
 
         const datesArray = eachDayOfInterval(
-            { start: firstEntryDate, end: new Date() }
+            { start: parseISO(firstEntryDateLocalTime), end: new Date() }
         );
 
         return datesArray.map(date => {
@@ -389,7 +408,12 @@ export async function getUserStats(id) {
         const results = snapshot.docs.reduce((acc, doc, index) => {
             const data = doc.data();
             const rawCreated = data.created.toDate();
-            const created = format(rawCreated, 'EEE, MMM d');
+            const created = formatToTimeZone(
+                rawCreated,
+                'ddd, MMM D',
+                { timeZone: data.timeZone }
+            );
+
             const {count} = data;
 
             return {
@@ -442,11 +466,23 @@ export async function getUserStats(id) {
 export async function getStreakData(id) {
     try {
         const {sortedList, countsByDayMap} = await getUserSetsById(id);
-        const firstEntryDate = sortedList[0].rawCreated;
-        const lastEntryDate = sortedList[sortedList.length - 1].rawCreated;
+        const firstEntry = sortedList[0];
+        const lastEntry = sortedList[sortedList.length - 1];
+
+        const firstEntryDate = formatToTimeZone(
+            firstEntry.rawCreated,
+            'YYYY-M-D',
+            { timeZone: firstEntry.timeZone }
+        );
+
+        const lastEntryDate = formatToTimeZone(
+            lastEntry.rawCreated,
+            'YYYY-M-D',
+            { timeZone: lastEntry.timeZone }
+        );
 
         const datesArray = eachDayOfInterval(
-            { start: firstEntryDate, end: lastEntryDate }
+            { start: parseISO(firstEntryDate), end: parseISO(lastEntryDate) }
         );
 
         return datesArray.reduce((acc, date) => {

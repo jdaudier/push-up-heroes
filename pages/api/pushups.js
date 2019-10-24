@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-unfetch';
 import { addUserData } from '../../utils/firebaseQueries';
+import getSlackUser from '../../utils/getSlackUser';
 
 async function handler(req, res) {
     const {user_id, user_name, text, channel_name} = req.body;
@@ -18,10 +19,13 @@ async function handler(req, res) {
         }
 
         try {
+            const user = await getSlackUser(user_id);
+
             await addUserData({
                 name: user_name,
                 id: user_id,
                 count: count,
+                timeZone: user.tz,
             });
 
             const pushUps = count === 1 ? 'push-up' : 'push-ups';

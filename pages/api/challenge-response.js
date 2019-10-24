@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-unfetch'
 import {addUserData} from "../../utils/firebaseQueries";
+import getSlackUser from '../../utils/getSlackUser';
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
 
@@ -46,10 +47,13 @@ async function handler(req, res) {
 
             if (hasAccepted) {
                 try {
+                    const user = await getSlackUser(user.id);
+
                     await addUserData({
                         name: user.username,
                         id: user.id,
                         count,
+                        timeZone: user.tz,
                     });
 
                     const slackResponse = {
