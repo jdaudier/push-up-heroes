@@ -59,20 +59,30 @@ const GET_USER_STATS = gql`
     }
 `;
 
+const cardWrapperCss = {
+    display: 'block',
+    '@media(max-width: 767px)': {
+        display: 'flex',
+        justifyContent: 'center',
+    }
+};
+
 const UserCard = ({user: {real_name, title, image_512}, mostRecentSet}) => (
-    <Card centered color='blue'>
-        <Image src={image_512} wrapped ui={false} />
-        <Card.Content>
-            <Card.Header>{real_name}</Card.Header>
-            <Card.Description>
-                {title}
-            </Card.Description>
-        </Card.Content>
-        <Card.Content extra>
-            <Icon name='feed' />
-            {mostRecentSet.count} {mostRecentSet.count === 1 ? 'push-up' : 'push-ups'} {formatDistanceToNow(parseISO(mostRecentSet.created), { addSuffix: true })}
-        </Card.Content>
-    </Card>
+    <div css={cardWrapperCss}>
+        <Card color='blue'>
+            <Image src={image_512} wrapped ui={false} />
+            <Card.Content>
+                <Card.Header>{real_name}</Card.Header>
+                <Card.Description>
+                    {title}
+                </Card.Description>
+            </Card.Content>
+            <Card.Content extra>
+                <Icon name='feed' />
+                {mostRecentSet.count} {mostRecentSet.count === 1 ? 'push-up' : 'push-ups'} {formatDistanceToNow(parseISO(mostRecentSet.created), { addSuffix: true })}
+            </Card.Content>
+        </Card>
+    </div>
 );
 
 function User() {

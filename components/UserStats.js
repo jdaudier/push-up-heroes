@@ -71,7 +71,7 @@ const Stats = ({data}) => {
     } = userStats;
 
     return (
-        <Grid doubling columns={3} stackable style={{marginBottom: 40}}>
+        <Grid doubling columns={3} stackable>
             <Grid.Column>
                 <Stat color="blue">
                     <Statistic inverted label='Your Rank' value={ranking.toLocaleString()} />

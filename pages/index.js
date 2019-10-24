@@ -270,7 +270,7 @@ const Leaderboard = ({data}) => {
                                 fontSize: '95%',
                                 padding: '.2em .4em',
                                 marginLeft: 4,
-                            }}>/leaderboard</code>.
+                            }}>/leaderboard</code>
                         </div>
                     </Table.HeaderCell>
                 </Table.Row>
