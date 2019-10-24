@@ -23,6 +23,7 @@
     "next-apollo": "^3.1.5",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
+    "recharts": "^1.8.5",
     "semantic-ui-react": "^0.88.1"
   }
 }

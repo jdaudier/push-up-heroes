@@ -1,12 +1,14 @@
+import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router';
 import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import Layout from '../../components/Layout';
-import {Grid, Card, Image, Icon, Header} from 'semantic-ui-react'
+import {Grid, Card, Image, Icon} from 'semantic-ui-react'
 import UserStats from '../../components/UserStats';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
+const UserChart = dynamic(() => import('../../components/UserChart'));
 
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
@@ -20,7 +22,7 @@ const GET_USER_STATS = gql`
         }
         dailySetsByUser(id: $id) {
             name
-            value
+            count
         }
         userStats(id: $id) {
             totalPushUps
@@ -95,7 +97,7 @@ function User() {
 
     if (!data) return null;
 
-    const {userSlackProfile, userStats: {mostRecentSet}} = data;
+    const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser} = data;
 
     return (
         <Layout>
@@ -109,6 +111,7 @@ function User() {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
+            <UserChart data={dailySetsByUser} />
         </Layout>
     );
 }

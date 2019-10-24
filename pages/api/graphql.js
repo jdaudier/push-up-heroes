@@ -46,7 +46,7 @@ const typeDefs = gql`
     }
     type CountByDay {
         name: Date!
-        value: Int!
+        count: Int!
     }
     type Set {
         id: ID!

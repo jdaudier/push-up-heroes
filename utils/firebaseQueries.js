@@ -375,8 +375,15 @@ export async function getDailySetsByUserId(id) {
             { timeZone: firstEntry.timeZone }
         );
 
+        const lastEntry = sortedList[sortedList.length - 1];
+        const lastEntryDateLocalTime = formatToTimeZone(
+            lastEntry.rawCreated,
+            'YYYY-M-D',
+            { timeZone: lastEntry.timeZone }
+        );
+
         const datesArray = eachDayOfInterval(
-            { start: parseISO(firstEntryDateLocalTime), end: new Date() }
+            { start: parseISO(firstEntryDateLocalTime), end: parseISO(lastEntryDateLocalTime) }
         );
 
         return datesArray.map(date => {
@@ -384,7 +391,7 @@ export async function getDailySetsByUserId(id) {
 
             return {
                 name: format(date, 'EEE, MMM d'),
-                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+                count: countsByDayMap[key] ? countsByDayMap[key] : 0,
             }
         });
     } catch (err) {
