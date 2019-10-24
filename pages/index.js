@@ -58,6 +58,7 @@ const GET_LEADERBOARD = gql`
                 id
                 name
                 count
+                created
                 profile {
                     image_48
                     real_name
@@ -68,6 +69,7 @@ const GET_LEADERBOARD = gql`
             id
             name
             count
+            created
             profile {
                 image_48
                 real_name

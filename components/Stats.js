@@ -100,7 +100,7 @@ const Stats = ({data}) => {
                             verticalAlign: 'middle',
                             marginLeft: 5,
                         }}>
-                            {bestIndividualSet.profile.real_name}
+                            {bestIndividualSet.profile.real_name} on {bestIndividualSet.created}
                         </span>
                     </a>
                 </Link>
@@ -125,7 +125,7 @@ const Stats = ({data}) => {
                             verticalAlign: 'middle',
                             marginLeft: 5,
                         }}>
-                            {mostRecentSet.profile.real_name}
+                            {mostRecentSet.profile.real_name} on {mostRecentSet.created}
                         </span>
                     </a>
                 </Link>
