@@ -432,6 +432,7 @@ export async function getUserStats(id) {
             avgSet: Math.round(totalPushUps / snapshot.docs.length),
             contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
             catchTheLeader: rankings[0].count - totalPushUps,
+            firstPlaceAthlete: rankings[0],
         }
     } catch (err) {
         throw new Error(err.message);

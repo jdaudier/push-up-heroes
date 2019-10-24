@@ -41,6 +41,14 @@ const GET_USER_STATS = gql`
                 count
                 created
             }
+            firstPlaceAthlete {
+                id
+                count
+                profile {
+                    image_48
+                    real_name_normalized
+                }
+            }
         }
         streakData(id: $id) {
             longestStreak

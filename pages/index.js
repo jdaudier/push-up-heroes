@@ -194,7 +194,7 @@ const Leaderboard = ({data}) => {
                         <Table.Row key={id}>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="rank" css={cellLinkCss}>
+                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
                                         <MaybeRibbon place={place} />
                                         {maybePlaceText}
                                     </a>
@@ -202,7 +202,7 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="athlete" css={cellLinkCss}>
+                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
                                         {place === 1 && (<div css={crownCss}>
                                             <Crown />
                                         </div>)}
@@ -219,14 +219,14 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="total push-ups" css={cellLinkCss}>
+                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
                                         {count}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="catch the leader" css={medalLinkCss}>
+                                    <a title={`${profile.real_name_normalized}'s page`} css={medalLinkCss}>
                                         {diffFromLeader > 0 ? `${diffFromLeader} more` : (
                                             <div css={medalCss}>
                                                 <Image src="/images/medal.png" style={{height: 50}} />
@@ -237,14 +237,14 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="daily average" css={cellLinkCss}>
+                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
                                         {dailyAvg}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title="contribution" css={cellLinkCss}>
+                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
                                         {contributionPercentage}%
                                     </a>
                                 </Link>

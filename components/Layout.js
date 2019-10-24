@@ -1,7 +1,7 @@
-import React from "react";
+import React from 'react';
 import Head from 'next/head';
-import Nav from "./nav";
-import {Grid} from "semantic-ui-react";
+import Nav from './nav';
+import {Grid} from 'semantic-ui-react';
 
 /** @jsx jsx */
 import { jsx } from '@emotion/core';

@@ -34,7 +34,7 @@ const statsBoxCss = ({color, hasPopup}) => {
     }
 };
 
-const cellLinkCss = {
+export const cellLinkCss = {
     display: 'block',
     cursor: 'pointer',
     color: 'initial',
@@ -80,7 +80,8 @@ const Stats = ({data}) => {
                     <Statistic inverted label='Average Set' value={avgSet.toLocaleString()} />
                 </Stat>
             </Grid.Column>
-            <Popup position='top center'
+            <Popup flowing
+                   position='top center'
                    hoverable
                    size='huge'
                    style={{top: 12}}
@@ -92,7 +93,7 @@ const Stats = ({data}) => {
                 </Grid.Column>}
             >
                 <Link href='/users/[id]' as={`/users/${bestIndividualSet.id}`}>
-                    <a title="athlete" css={cellLinkCss}>
+                    <a title={`${bestIndividualSet.profile.real_name_normalized}'s page`} css={cellLinkCss}>
                         <Image src={bestIndividualSet.profile.image_48} avatar />
                         <span css={{
                             display: 'inline-block',
@@ -104,7 +105,8 @@ const Stats = ({data}) => {
                     </a>
                 </Link>
             </Popup>
-            <Popup position='top center'
+            <Popup flowing
+                   position='top center'
                    hoverable
                    size='huge'
                    style={{top: 12}}
@@ -116,7 +118,7 @@ const Stats = ({data}) => {
                 </Grid.Column>}
             >
                 <Link href='/users/[id]' as={`/users/${mostRecentSet.id}`}>
-                    <a title="athlete" css={cellLinkCss}>
+                    <a title={`${mostRecentSet.profile.real_name_normalized}'s page`} css={cellLinkCss}>
                         <Image src={mostRecentSet.profile.image_48} avatar />
                         <span css={{
                             display: 'inline-block',

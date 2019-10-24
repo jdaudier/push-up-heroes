@@ -11,21 +11,16 @@ const typeDefs = gql`
         dailySetsByUser(id: ID!): [CountByDay]!
         summary: String!
         totalPushUps: Int!
-        mostRecentSet: MostRecentSet!
+        mostRecentSet: Set!
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
         streakData(id: ID!): Streak!
     }
-    interface Set {
+    interface Rank {
         id: ID!
         name: String!
         count: Int!
         profile: SlackProfile!
-        created: Date!
-    }
-    interface IndividualSet {
-        count: Int!
-        created: Date!
     }
     type UserStats {
         ranking: Int!
@@ -34,9 +29,10 @@ const typeDefs = gql`
         avgSet: Int!
         catchTheLeader: Int!
         contributionPercentage: Int!
-        bestSet: BestSetByUser!
-        firstSet: FirstSetByUser!
-        mostRecentSet: MostRecentSetByUser!
+        bestSet: IndividualSet!
+        firstSet: IndividualSet!
+        mostRecentSet: IndividualSet!
+        firstPlaceAthlete: BasicRanking!
     }
     type Streak {
         longestStreak: Int!
@@ -44,15 +40,7 @@ const typeDefs = gql`
         longestStreakDates: [Date]!
         currentStreakDates: [Date]!
     }
-    type BestSetByUser implements IndividualSet {
-        count: Int!
-        created: Date!
-    }
-    type FirstSetByUser implements IndividualSet {
-        count: Int!
-        created: Date!
-    }
-    type MostRecentSetByUser implements IndividualSet {
+    type IndividualSet {
         count: Int!
         created: Date!
     }
@@ -60,21 +48,20 @@ const typeDefs = gql`
         name: Date!
         value: Int!
     }
-    type BestIndividualSet implements Set {
+    type Set {
         id: ID!
         name: String!
         count: Int!
         profile: SlackProfile!
         created: Date!
     }
-    type MostRecentSet implements Set {
+    type BasicRanking implements Rank {
         id: ID!
         name: String!
         count: Int!
         profile: SlackProfile!
-        created: Date!
     }
-    type Ranking {
+    type Ranking implements Rank {
         id: ID!
         name: String!
         count: Int!
@@ -87,7 +74,7 @@ const typeDefs = gql`
         totalPushUps: Int!
         totalAthletes: Int!
         avgSet: Int!
-        bestIndividualSet: BestIndividualSet!
+        bestIndividualSet: Set!
         dailyAvg: Int!
     }
     type SlackProfile {
@@ -118,14 +105,13 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-    Set: {
-        __resolveType(set, context, info){
-            return null;
-        },
-    },
-    IndividualSet: {
-        __resolveType(set, context, info){
-            return null;
+    Rank: {
+        __resolveType(rank, context, info){
+            if (rank.dailyAvg || rank.contributionPercentage){
+                return 'Ranking';
+            }
+
+            return 'BasicRanking';
         },
     },
     Query: {

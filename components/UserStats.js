@@ -1,4 +1,7 @@
+import Link from "next/link";
 import {Grid, Statistic, Popup, Image} from 'semantic-ui-react';
+import Party from './Party';
+import {cellLinkCss} from './Stats';
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 
@@ -64,6 +67,7 @@ const Stats = ({data}) => {
         contributionPercentage,
         firstSet,
         bestSet,
+        firstPlaceAthlete,
     } = userStats;
 
     return (
@@ -78,11 +82,51 @@ const Stats = ({data}) => {
                     <Statistic inverted label='Total Push-Ups' value={totalPushUps.toLocaleString()} />
                 </Stat>
             </Grid.Column>
-            <Grid.Column>
-                <Stat color="red">
-                    <Statistic inverted label='Catch the Leader' value={catchTheLeader.toLocaleString()} />
-                </Stat>
-            </Grid.Column>
+            <Popup flowing
+                   hoverable={catchTheLeader !== 0}
+                   position='top center'
+                   size='huge'
+                   style={{top: 12}}
+                   trigger={
+                       <Grid.Column>
+                           <Stat color="red" hasPopup>
+                               <Statistic inverted label='Catch the Leader' value={catchTheLeader.toLocaleString()} />
+                           </Stat>
+                       </Grid.Column>
+                   }
+            >
+                {catchTheLeader === 0 ? (
+                    <div>
+                        <span css={{
+                            display: 'inline-block',
+                            verticalAlign: 'middle',
+                            marginRight: 10,
+                            width: 36,
+                        }}>
+                            <Party />
+                        </span>
+                        <span css={{
+                            display: 'inline-block',
+                            verticalAlign: 'middle',
+                        }}>
+                           Congrats! You're in the lead!
+                        </span>
+                    </div>
+                ) : (
+                    <Link href='/users/[id]' as={`/users/${firstPlaceAthlete.id}`}>
+                        <a title={`${firstPlaceAthlete.profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                            <Image src={firstPlaceAthlete.profile.image_48} avatar />
+                            <span css={{
+                                display: 'inline-block',
+                                verticalAlign: 'middle',
+                                marginLeft: 5,
+                            }}>
+                                {firstPlaceAthlete.profile.real_name_normalized} leading with {firstPlaceAthlete.count.toLocaleString()}
+                            </span>
+                        </a>
+                    </Link>
+                )}
+            </Popup>
             <Grid.Column>
                 <Stat color="yellow">
                     <Statistic inverted label='Daily Average' value={dailyAvg.toLocaleString()} />

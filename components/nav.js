@@ -1,6 +1,8 @@
-import React from 'react'
-import Link from 'next/link'
-import { Menu, Container, Image } from 'semantic-ui-react'
+import React from 'react';
+import Link from 'next/link';
+import { Menu, Container } from 'semantic-ui-react';
+import SuperGirl from './SuperGirl';
+
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 
@@ -10,7 +12,9 @@ const Nav = () => {
             <Container>
                 <Link href="/">
                     <Menu.Item as='a' header>
-                        <Image src='/android-chrome-192x192.png' css={{ marginRight: '1.5em', width: 50 }} />
+                        <span css={{marginRight: '1.5em', width: 50}}>
+                            <SuperGirl />
+                        </span>
                         <span css={{color: '#303030'}}>
                             Push-Up Heroes
                         </span>
