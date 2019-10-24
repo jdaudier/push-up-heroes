@@ -47,7 +47,7 @@ const GET_LEADERBOARD = gql`
                 contributionPercentage
                 profile {
                     image_48
-                    real_name_normalized
+                    real_name
                 }
             }
             totalPushUps
@@ -60,7 +60,7 @@ const GET_LEADERBOARD = gql`
                 count
                 profile {
                     image_48
-                    real_name_normalized
+                    real_name
                 }
             }
         }
@@ -70,7 +70,7 @@ const GET_LEADERBOARD = gql`
             count
             profile {
                 image_48
-                real_name_normalized
+                real_name
             }
         }
     }
@@ -194,7 +194,7 @@ const Leaderboard = ({data}) => {
                         <Table.Row key={id}>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                                    <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         <MaybeRibbon place={place} />
                                         {maybePlaceText}
                                     </a>
@@ -202,7 +202,7 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                                    <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {place === 1 && (<div css={crownCss}>
                                             <Crown />
                                         </div>)}
@@ -212,21 +212,21 @@ const Leaderboard = ({data}) => {
                                             verticalAlign: 'middle',
                                             marginLeft: 5,
                                         }}>
-                                            {profile.real_name_normalized}
+                                            {profile.real_name}
                                         </span>
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                                    <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {count}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title={`${profile.real_name_normalized}'s page`} css={medalLinkCss}>
+                                    <a title={`${profile.real_name}'s page`} css={medalLinkCss}>
                                         {diffFromLeader > 0 ? `${diffFromLeader} more` : (
                                             <div css={medalCss}>
                                                 <Image src="/images/medal.png" style={{height: 50}} />
@@ -237,14 +237,14 @@ const Leaderboard = ({data}) => {
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                                    <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {dailyAvg}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
-                                    <a title={`${profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                                    <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {contributionPercentage}%
                                     </a>
                                 </Link>

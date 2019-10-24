@@ -93,14 +93,14 @@ const Stats = ({data}) => {
                 </Grid.Column>}
             >
                 <Link href='/users/[id]' as={`/users/${bestIndividualSet.id}`}>
-                    <a title={`${bestIndividualSet.profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                    <a title={`${bestIndividualSet.profile.real_name}'s page`} css={cellLinkCss}>
                         <Image src={bestIndividualSet.profile.image_48} avatar />
                         <span css={{
                             display: 'inline-block',
                             verticalAlign: 'middle',
                             marginLeft: 5,
                         }}>
-                            {bestIndividualSet.profile.real_name_normalized}
+                            {bestIndividualSet.profile.real_name}
                         </span>
                     </a>
                 </Link>
@@ -118,14 +118,14 @@ const Stats = ({data}) => {
                 </Grid.Column>}
             >
                 <Link href='/users/[id]' as={`/users/${mostRecentSet.id}`}>
-                    <a title={`${mostRecentSet.profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                    <a title={`${mostRecentSet.profile.real_name}'s page`} css={cellLinkCss}>
                         <Image src={mostRecentSet.profile.image_48} avatar />
                         <span css={{
                             display: 'inline-block',
                             verticalAlign: 'middle',
                             marginLeft: 5,
                         }}>
-                            {mostRecentSet.profile.real_name_normalized}
+                            {mostRecentSet.profile.real_name}
                         </span>
                     </a>
                 </Link>

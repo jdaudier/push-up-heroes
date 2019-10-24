@@ -14,7 +14,7 @@ import { jsx } from '@emotion/core';
 const GET_USER_STATS = gql`
     query getUserStats($id: ID!) {
         userSlackProfile(id: $id) {
-            real_name_normalized
+            real_name
             title
             image_512
         }
@@ -46,7 +46,7 @@ const GET_USER_STATS = gql`
                 count
                 profile {
                     image_48
-                    real_name_normalized
+                    real_name
                 }
             }
         }
@@ -59,11 +59,11 @@ const GET_USER_STATS = gql`
     }
 `;
 
-const UserCard = ({user: {real_name_normalized, title, image_512}, mostRecentSet}) => (
+const UserCard = ({user: {real_name, title, image_512}, mostRecentSet}) => (
     <Card centered color='blue'>
         <Image src={image_512} wrapped ui={false} />
         <Card.Content>
-            <Card.Header>{real_name_normalized}</Card.Header>
+            <Card.Header>{real_name}</Card.Header>
             <Card.Description>
                 {title}
             </Card.Description>

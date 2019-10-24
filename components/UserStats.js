@@ -114,14 +114,14 @@ const Stats = ({data}) => {
                     </div>
                 ) : (
                     <Link href='/users/[id]' as={`/users/${firstPlaceAthlete.id}`}>
-                        <a title={`${firstPlaceAthlete.profile.real_name_normalized}'s page`} css={cellLinkCss}>
+                        <a title={`${firstPlaceAthlete.profile.real_name}'s page`} css={cellLinkCss}>
                             <Image src={firstPlaceAthlete.profile.image_48} avatar />
                             <span css={{
                                 display: 'inline-block',
                                 verticalAlign: 'middle',
                                 marginLeft: 5,
                             }}>
-                                {firstPlaceAthlete.profile.real_name_normalized} leading with {firstPlaceAthlete.count.toLocaleString()}
+                                {firstPlaceAthlete.profile.real_name} leading with {firstPlaceAthlete.count.toLocaleString()}
                             </span>
                         </a>
                     </Link>
