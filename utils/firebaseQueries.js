@@ -97,7 +97,7 @@ export async function getFullLeaderboardData() {
 
 export async function getAllUsersFeeds() {
     try {
-        const snapshot = await db.collection('users').get();
+        const snapshot = await db.collection('users').orderBy('created', 'desc').get();
 
         return await Promise.all(snapshot.docs.map(async (doc) => {
             const data = doc.data();
