@@ -4,7 +4,7 @@ import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import getSlackProfile from './getSlackProfile';
-import {formatToTimeZone} from 'date-fns-timezone';
+import { utcToZonedTime } from 'date-fns-tz';
 
 export async function getFullLeaderboardData() {
     try {
@@ -18,11 +18,10 @@ export async function getFullLeaderboardData() {
             timeZone: "America/New_York"
             */
             const data = doc.data();
-            const created = formatToTimeZone(
+            const created = format(utcToZonedTime(
                 data.created.toDate(),
-                'ddd, MMM D',
-                { timeZone: data.timeZone }
-            );
+                data.timeZone,
+            ), 'EEE, MMM d');
 
             const {id, count, name} = data;
 
@@ -91,6 +90,7 @@ export async function getFullLeaderboardData() {
             },
         }
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -250,6 +250,7 @@ export async function getLeaderboardData() {
             totalPushUps,
         }
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -262,6 +263,7 @@ export async function getTotalPushUpsCount() {
             return acc + count;
         }, 0);
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -298,6 +300,7 @@ export async function getTotalChallengeDays() {
 
         return differenceInCalendarDays(lastEntryDate, firstEntryDate) + 1
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -310,11 +313,10 @@ export async function getMostRecentSet() {
 
         return snapshot.docs.map(async (doc) => {
             const data = doc.data();
-            const created = formatToTimeZone(
+            const created = format(utcToZonedTime(
                 data.created.toDate(),
-                'ddd, MMM D',
-                { timeZone: data.timeZone }
-            );
+                data.timeZone,
+            ), 'EEE, MMM d');
 
             const profile = await getSlackProfile(data.id);
             return {
@@ -324,6 +326,7 @@ export async function getMostRecentSet() {
             }
         })[0];
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -335,11 +338,10 @@ async function getUserSetsById(id) {
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
-            const created = formatToTimeZone(
+            const created = format(utcToZonedTime(
                 data.created.toDate(),
-                'YYYY-M-D',
-                { timeZone: data.timeZone }
-            );
+                data.timeZone,
+            ), 'yyyy-M-d');
 
             const currentSet = {
                 ...data,
@@ -360,6 +362,7 @@ async function getUserSetsById(id) {
             countsByDayMap: {},
         });
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err);
     }
 }
@@ -369,18 +372,17 @@ export async function getDailySetsByUserId(id) {
         const {countsByDayMap, sortedList} = await getUserSetsById(id);
 
         const firstEntry = sortedList[0];
-        const firstEntryDateLocalTime = formatToTimeZone(
+        const firstEntryDateLocalTime = format(utcToZonedTime(
             firstEntry.rawCreated,
-            'YYYY-M-D',
-            { timeZone: firstEntry.timeZone }
-        );
+            firstEntry.timeZone,
+        ), 'yyyy-M-d');
+
 
         const lastEntry = sortedList[sortedList.length - 1];
-        const lastEntryDateLocalTime = formatToTimeZone(
+        const lastEntryDateLocalTime = format(utcToZonedTime(
             lastEntry.rawCreated,
-            'YYYY-M-D',
-            { timeZone: lastEntry.timeZone }
-        );
+            lastEntry.timeZone,
+        ), 'yyyy-M-d');
 
         const datesArray = eachDayOfInterval(
             { start: parseISO(firstEntryDateLocalTime), end: parseISO(lastEntryDateLocalTime) }
@@ -390,11 +392,12 @@ export async function getDailySetsByUserId(id) {
             const key = format(date, 'yyyy-M-d');
 
             return {
-                name: format(date, 'EEE, MMM d'),
-                count: countsByDayMap[key] ? countsByDayMap[key] : 0,
+                label: format(date, 'EEE, MMM d'),
+                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
             }
         });
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -415,11 +418,10 @@ export async function getUserStats(id) {
         const results = snapshot.docs.reduce((acc, doc, index) => {
             const data = doc.data();
             const rawCreated = data.created.toDate();
-            const created = formatToTimeZone(
+            const created = format(utcToZonedTime(
                 rawCreated,
-                'ddd, MMM D',
-                { timeZone: data.timeZone }
-            );
+                data.timeZone,
+            ), 'EEE, MMM d');
 
             const {count} = data;
 
@@ -466,6 +468,7 @@ export async function getUserStats(id) {
             firstPlaceAthlete: rankings[0],
         }
     } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }
@@ -476,17 +479,15 @@ export async function getStreakData(id) {
         const firstEntry = sortedList[0];
         const lastEntry = sortedList[sortedList.length - 1];
 
-        const firstEntryDate = formatToTimeZone(
+        const firstEntryDate = format(utcToZonedTime(
             firstEntry.rawCreated,
-            'YYYY-M-D',
-            { timeZone: firstEntry.timeZone }
-        );
+            firstEntry.timeZone,
+        ), 'yyyy-M-d');
 
-        const lastEntryDate = formatToTimeZone(
+        const lastEntryDate = format(utcToZonedTime(
             lastEntry.rawCreated,
-            'YYYY-M-D',
-            { timeZone: lastEntry.timeZone }
-        );
+            lastEntry.timeZone,
+        ), 'yyyy-M-d');
 
         const datesArray = eachDayOfInterval(
             { start: parseISO(firstEntryDate), end: parseISO(lastEntryDate) }
@@ -520,6 +521,42 @@ export async function getStreakData(id) {
             currentStreakDates: [],
         });
     } catch (err) {
+        console.error('Error:', error);
+        throw new Error(err.message);
+    }
+}
+
+export async function getUserFeed(id) {
+    try {
+        const snapshot = await db.collection('users').where('id', '==', id).orderBy('created', 'desc').get();
+
+        return snapshot.docs.map(doc => {
+            const data = doc.data();
+            const dayOfWeek = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'EEEE');
+
+                const date = format(utcToZonedTime(
+                    data.created.toDate(),
+                    data.timeZone,
+                ), 'MMM d, y');
+
+            const time = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'h:mm aaaa');
+
+
+            return {
+                ...data,
+                dayOfWeek,
+                date,
+                time,
+            }
+        });
+    } catch (err) {
+        console.error('Error:', error);
         throw new Error(err.message);
     }
 }

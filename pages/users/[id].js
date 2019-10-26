@@ -21,8 +21,14 @@ const GET_USER_STATS = gql`
             image_512
         }
         dailySetsByUser(id: $id) {
-            name
+            label
+            value
+        }
+         userFeed(id: $id) {
             count
+            dayOfWeek
+            date
+            time
         }
         userStats(id: $id) {
             totalPushUps
@@ -97,7 +103,7 @@ function User() {
 
     if (!data) return null;
 
-    const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser} = data;
+    const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed} = data;
 
     return (
         <Layout>

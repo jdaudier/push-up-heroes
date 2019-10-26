@@ -69,6 +69,7 @@ async function handler(req, res) {
                 blocks,
             });
         } catch (err) {
+            console.error('Error:', error);
             throw new Error(err.message);
         }
     }

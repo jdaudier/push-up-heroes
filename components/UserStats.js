@@ -47,6 +47,14 @@ function getDayorDays(count) {
     return count === 1 ? 'day' : 'days';
 }
 
+function getStreakText(streakArr) {
+    if (streakArr.length === 1) {
+        return streakArr[0];
+    }
+
+    return `${streakArr[0]} - ${streakArr[streakArr.length - 1]}`;
+}
+
 const Stats = ({data}) => {
     if (!data) return null;
 
@@ -132,7 +140,7 @@ const Stats = ({data}) => {
                     <Statistic inverted label='Daily Average' value={dailyAvg.toLocaleString()} />
                 </Stat>
             </Grid.Column>
-            <Popup content={`${longestStreakDates[0]} - ${longestStreakDates[longestStreakDates.length - 1]}`}
+            <Popup content={getStreakText(longestStreakDates)}
                    flowing
                    position='top center'
                    size='huge'
@@ -166,7 +174,7 @@ const Stats = ({data}) => {
                        </Grid.Column>
                    }
             />
-            <Popup content={`${currentStreakDates[0]} - ${currentStreakDates[currentStreakDates.length - 1]}`}
+            <Popup content={getStreakText(currentStreakDates)}
                    flowing
                    position='top center'
                    size='huge'

@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData } from '../../utils/firebaseQueries';
+import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData, getUserFeed } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -8,13 +8,14 @@ const typeDefs = gql`
 
     type Query {
         leaderboard: Leaderboard!
-        dailySetsByUser(id: ID!): [CountByDay]!
+        dailySetsByUser(id: ID!): [CountByDay!]!
         summary: String!
         totalPushUps: Int!
         mostRecentSet: Set!
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
         streakData(id: ID!): Streak!
+        userFeed(id: ID!): [UserFeed!]!
     }
     interface Rank {
         id: ID!
@@ -34,6 +35,12 @@ const typeDefs = gql`
         mostRecentSet: IndividualSet!
         firstPlaceAthlete: BasicRanking!
     }
+    type UserFeed {
+        count: Int!
+        dayOfWeek: String!
+        date: Date!
+        time: String!
+    }
     type Streak {
         longestStreak: Int!
         currentStreak: Int!
@@ -45,8 +52,8 @@ const typeDefs = gql`
         created: Date!
     }
     type CountByDay {
-        name: Date!
-        count: Int!
+        label: Date!
+        value: Int!
     }
     type Set {
         id: ID!
@@ -176,6 +183,14 @@ const resolvers = {
                 return await getSlackProfile(id);
             } catch (error) {
                 throw new ApolloError(`Error getting Slack profile for ${id}!`, 500, error);
+            }
+        },
+
+        async userFeed(parent, {id}) {
+            try {
+                return await getUserFeed(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting user feed for ${id}!`, 500, error);
             }
         }
     }

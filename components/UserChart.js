@@ -61,10 +61,10 @@ const UserChart = ({data}) => {
                 <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={data}>
                         <CartesianGrid strokeDasharray="3 3"/>
-                        <XAxis dataKey="name" height={60} tick={<CustomXAxisTick/>}/>
+                        <XAxis dataKey="label" height={60} tick={<CustomXAxisTick/>}/>
                         <YAxis tick={<CustomYAxisTick />}/>
                         <Tooltip content={CustomTooltip} cursor={{fill: 'rgba(185, 192, 201, .3)'}} />
-                        <Bar dataKey="count" fill={BLUE} />
+                        <Bar dataKey="value" fill={BLUE} />
                     </BarChart>
 
                 </ResponsiveContainer>
