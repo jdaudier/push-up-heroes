@@ -290,7 +290,7 @@ const Home = () => {
         <Layout>
             <Stats data={data} />
             <Header as='h1'>
-                <span css={{color: '#303030'}}>Leaderboard</span>
+                <span>Leaderboard</span>
             </Header>
             <Leaderboard data={data} />
         </Layout>

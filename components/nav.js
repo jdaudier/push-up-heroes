@@ -15,7 +15,7 @@ const Nav = () => {
                         <span css={{marginRight: '1.5em', width: 50}}>
                             <SuperGirl />
                         </span>
-                        <span css={{color: '#303030'}}>
+                        <span>
                             Push-Up Heroes
                         </span>
                     </Menu.Item>
