@@ -48,13 +48,13 @@ async function handler(req, res) {
 
             if (hasAccepted) {
                 try {
-                    const user = await getSlackUser(user.id);
+                    const slackUser = await getSlackUser(user.id);
 
                     await addUserData({
                         name: user.username,
                         id: user.id,
                         count,
-                        timeZone: user.tz,
+                        timeZone: slackUser.tz,
                     });
 
                     const slackResponse = {
