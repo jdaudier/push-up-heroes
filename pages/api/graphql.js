@@ -10,7 +10,7 @@ const typeDefs = gql`
         leaderboard: Leaderboard!
         summary: String!
         totalPushUps: Int!
-        mostRecentSet: Set!
+        mostRecentSet: MostRecentSet!
         globalUsersFeed: [GlobalUserFeed!]!
         
         dailySetsByUser(id: ID!): [CountByDay!]!
@@ -72,7 +72,14 @@ const typeDefs = gql`
         label: Date!
         value: Int!
     }
-    type Set {
+    type MostRecentSet {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlackProfile!
+        created: Date!
+    }
+    type BestIndividualSet {
         id: ID!
         name: String!
         count: Int!
@@ -98,7 +105,7 @@ const typeDefs = gql`
         totalPushUps: Int!
         totalAthletes: Int!
         avgSet: Int!
-        bestIndividualSet: Set!
+        bestIndividualSet: BestIndividualSet!
         dailyAvg: Int!
     }
     type SlackProfile {
