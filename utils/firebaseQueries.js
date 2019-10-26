@@ -90,7 +90,42 @@ export async function getFullLeaderboardData() {
             },
         }
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
+        throw new Error(err.message);
+    }
+}
+
+export async function getAllUsersFeeds() {
+    try {
+        const snapshot = await db.collection('users').get();
+
+        return await Promise.all(snapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            const dayOfWeek = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'EEEE');
+
+            const date = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'MMM d, y');
+
+            const time = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'h:mm aaaa');
+
+            return {
+                ...data,
+                dayOfWeek,
+                date,
+                time,
+                profile: await getSlackProfile(data.id)
+            }
+        }));
+    } catch (err) {
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -196,9 +231,9 @@ export async function getLeaderboardText(userId) {
         const date = `<!date^${Math.floor(new Date() / 1000)}^{date_short_pretty} at {time}|${fallbackDate}>`;
 
         return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${context}\n${webLink}` : '';
-    } catch (error) {
-        console.error('Error:', error);
-        return {error};
+    } catch (err) {
+        console.error('Error:', err);
+        throw new Error(err.message);
     }
 }
 
@@ -250,7 +285,7 @@ export async function getLeaderboardData() {
             totalPushUps,
         }
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -263,7 +298,7 @@ export async function getTotalPushUpsCount() {
             return acc + count;
         }, 0);
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -300,7 +335,7 @@ export async function getTotalChallengeDays() {
 
         return differenceInCalendarDays(lastEntryDate, firstEntryDate) + 1
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -326,7 +361,7 @@ export async function getMostRecentSet() {
             }
         })[0];
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -362,7 +397,7 @@ async function getUserSetsById(id) {
             countsByDayMap: {},
         });
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err);
     }
 }
@@ -397,7 +432,7 @@ export async function getDailySetsByUserId(id) {
             }
         });
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -468,7 +503,7 @@ export async function getUserStats(id) {
             firstPlaceAthlete: rankings[0],
         }
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -477,41 +512,50 @@ export async function getStreakData(id) {
     try {
         const {sortedList, countsByDayMap} = await getUserSetsById(id);
         const firstEntry = sortedList[0];
-        const lastEntry = sortedList[sortedList.length - 1];
 
         const firstEntryDate = format(utcToZonedTime(
             firstEntry.rawCreated,
             firstEntry.timeZone,
         ), 'yyyy-M-d');
 
-        const lastEntryDate = format(utcToZonedTime(
-            lastEntry.rawCreated,
-            lastEntry.timeZone,
+        const localToday = format(utcToZonedTime(
+            new Date(),
+            firstEntry.timeZone,
         ), 'yyyy-M-d');
 
         const datesArray = eachDayOfInterval(
-            { start: parseISO(firstEntryDate), end: parseISO(lastEntryDate) }
+            { start: parseISO(firstEntryDate), end: parseISO(localToday) }
         );
 
-        return datesArray.reduce((acc, date) => {
+        const results = datesArray.reduce((acc, date) => {
             const simplifiedDate = format(date, 'yyyy-M-d');
             const formattedDate = format(date, 'EEE, MMM d');
 
             const didPushUps = Boolean(countsByDayMap[simplifiedDate]);
 
             if (didPushUps) {
+                const lastIndex = acc.longestStreakDates.length - 1;
+                const lastArr = acc.longestStreakDates[lastIndex];
+
+                let updatedLongestStreakDates;
+                if (acc.currentStreak === 0) {
+                    updatedLongestStreakDates = [...acc.longestStreakDates, [formattedDate]];
+                } else {
+                    updatedLongestStreakDates = [...acc.longestStreakDates.slice(0, lastIndex), [...lastArr, formattedDate]];
+                }
+
                 return {
-                    longestStreak: acc.currentStreak + 1,
+                    longestStreak: acc.longestStreak,
                     currentStreak: acc.currentStreak + 1,
-                    longestStreakDates: [...acc.longestStreakDates, formattedDate],
+                    longestStreakDates: updatedLongestStreakDates,
                     currentStreakDates: [...acc.currentStreakDates, formattedDate],
                 }
             }
 
             return {
-                longestStreak: acc.longestStreak > acc.currentStreak ? acc.longestStreak : acc.currentStreak,
+                longestStreak: acc.currentStreak > acc.longestStreak ? acc.currentStreak : acc.longestStreak,
                 currentStreak: 0,
-                longestStreakDates: [],
+                longestStreakDates: acc.longestStreakDates,
                 currentStreakDates: [],
             };
         }, {
@@ -520,8 +564,33 @@ export async function getStreakData(id) {
             longestStreakDates: [],
             currentStreakDates: [],
         });
+
+        const {longestStreak, currentStreak, longestStreakDates, currentStreakDates} = results;
+
+        const longestStreakDatesFormatted = longestStreakDates.reduce((acc, curr) => {
+            if (curr.length > acc.length) {
+                return curr;
+            }
+
+            return acc;
+        }, []);
+
+        const longestStreakDatesText = longestStreakDatesFormatted.length === 1 ?
+            longestStreakDatesFormatted[0] :
+            `${longestStreakDatesFormatted[0]} - ${longestStreakDatesFormatted[longestStreakDatesFormatted.length - 1]}`;
+
+        const currentStreakDatesText = currentStreakDates.length === 1 ?
+            currentStreakDates[0] :
+            `${currentStreakDates[0]} - ${currentStreakDates[currentStreakDates.length - 1]}`;
+
+        return {
+            longestStreak,
+            currentStreak,
+            longestStreakDates: longestStreakDatesText,
+            currentStreakDates: currentStreakDatesText,
+        };
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }
@@ -556,7 +625,7 @@ export async function getUserFeed(id) {
             }
         });
     } catch (err) {
-        console.error('Error:', error);
+        console.error('Error:', err);
         throw new Error(err.message);
     }
 }

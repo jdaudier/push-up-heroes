@@ -27,11 +27,10 @@ const CustomTooltip = ({active, payload, label}) => {
 
         if (count > 0) {
             return (
-                <Segment compact raised css={{lineHeight: 1.4}}>
+                <Segment compact raised css={{lineHeight: 1.4, textAlign: 'center'}}>
                     <time css={{display: 'block', fontSize: 16}}>{label}</time>
-                    <div css={{color: BLUE, fontSize: 16}}>
-                        Count:&nbsp;
-                        <span css={{fontWeight: 'bold'}}>{count}</span>
+                    <div css={{color: BLUE, fontSize: 25, fontWeight: 900}}>
+                        {count}
                     </div>
                 </Segment>
             );

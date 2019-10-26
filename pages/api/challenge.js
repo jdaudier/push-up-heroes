@@ -102,7 +102,7 @@ async function handler(req, res) {
                 })
             });
         } catch (err) {
-            console.error('Error:', error);
+            console.error('Error:', err);
             throw new Error(err.message);
         }
 

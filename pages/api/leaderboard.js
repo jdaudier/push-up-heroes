@@ -57,9 +57,9 @@ async function handler(req, res) {
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
             res.json(slackEmptyLeaderboardMessage);
-        } catch (error) {
-            console.error('Error:', error);
-            return {error};
+        } catch (err) {
+            console.error('Error:', err);
+            throw new Error(err.message);
         }
     }
 }

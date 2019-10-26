@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData, getUserFeed } from '../../utils/firebaseQueries';
+import { getFullLeaderboardData, getLeaderboardText,  getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -8,10 +8,12 @@ const typeDefs = gql`
 
     type Query {
         leaderboard: Leaderboard!
-        dailySetsByUser(id: ID!): [CountByDay!]!
         summary: String!
         totalPushUps: Int!
         mostRecentSet: Set!
+        globalUsersFeed: [GlobalUserFeed!]!
+        
+        dailySetsByUser(id: ID!): [CountByDay!]!
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
         streakData(id: ID!): Streak!
@@ -22,6 +24,12 @@ const typeDefs = gql`
         name: String!
         count: Int!
         profile: SlackProfile!
+    }
+    interface Feed {
+        count: Int!
+        dayOfWeek: String!
+        date: Date!
+        time: String!
     }
     type UserStats {
         ranking: Int!
@@ -35,7 +43,16 @@ const typeDefs = gql`
         mostRecentSet: IndividualSet!
         firstPlaceAthlete: BasicRanking!
     }
-    type UserFeed {
+    type GlobalUserFeed implements Feed {
+        id: ID!
+        name: String!
+        profile: SlackProfile!
+        count: Int!
+        dayOfWeek: String!
+        date: Date!
+        time: String!
+    }
+    type UserFeed implements Feed {
         count: Int!
         dayOfWeek: String!
         date: Date!
@@ -44,8 +61,8 @@ const typeDefs = gql`
     type Streak {
         longestStreak: Int!
         currentStreak: Int!
-        longestStreakDates: [Date]!
-        currentStreakDates: [Date]!
+        longestStreakDates: String!
+        currentStreakDates: String!
     }
     type IndividualSet {
         count: Int!
@@ -113,12 +130,21 @@ const typeDefs = gql`
 
 const resolvers = {
     Rank: {
-        __resolveType(rank, context, info){
+        __resolveType(rank, context, info) {
             if (rank.dailyAvg || rank.contributionPercentage){
                 return 'Ranking';
             }
 
             return 'BasicRanking';
+        },
+    },
+    Feed: {
+        __resolveType(feed, context, info){
+            if (feed.name || feed.profile) {
+                return 'GlobalUserFeed';
+            }
+
+            return 'UserFeed';
         },
     },
     Query: {
@@ -130,27 +156,19 @@ const resolvers = {
             }
         },
 
-        async dailySetsByUser (parent, {id}) {
+        async mostRecentSet () {
             try {
-                return await getDailySetsByUserId(id);
+                return await getMostRecentSet();
             } catch (error) {
-                throw new ApolloError(`Error getting user ${id} data!`, 500, error);
+                throw new ApolloError('Error getting most recent set!', 500, error);
             }
         },
 
-        async userStats (parent, {id}) {
+        async globalUsersFeed () {
             try {
-                return await getUserStats(id);
+                return await getAllUsersFeeds();
             } catch (error) {
-                throw new ApolloError(`Error getting user ${id} stats!`, 500, error);
-            }
-        },
-
-        async streakData (parent, {id}) {
-            try {
-                return await getStreakData(id);
-            } catch (error) {
-                throw new ApolloError(`Error getting user ${id} streak data!`, 500, error);
+                throw new ApolloError("Error getting all users' feed!", 500, error);
             }
         },
 
@@ -170,11 +188,13 @@ const resolvers = {
             }
         },
 
-        async mostRecentSet () {
+        // INDIVIDUAL QUERIES
+
+        async userStats (parent, {id}) {
             try {
-                return await getMostRecentSet();
+                return await getUserStats(id);
             } catch (error) {
-                throw new ApolloError('Error getting most recent set!', 500, error);
+                throw new ApolloError(`Error getting user ${id} stats!`, 500, error);
             }
         },
 
@@ -183,6 +203,23 @@ const resolvers = {
                 return await getSlackProfile(id);
             } catch (error) {
                 throw new ApolloError(`Error getting Slack profile for ${id}!`, 500, error);
+            }
+        },
+
+        async dailySetsByUser (parent, {id}) {
+            try {
+                return await getDailySetsByUserId(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting user ${id} data!`, 500, error);
+            }
+        },
+
+
+        async streakData (parent, {id}) {
+            try {
+                return await getStreakData(id);
+            } catch (error) {
+                throw new ApolloError(`Error getting user ${id} streak data!`, 500, error);
             }
         },
 

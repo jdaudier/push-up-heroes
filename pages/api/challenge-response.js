@@ -34,7 +34,7 @@ async function handler(req, res) {
                         body: JSON.stringify(slackResponse)
                     });
                 } catch (err) {
-                    console.error('Error:', error);
+                    console.error('Error:', err);
                     throw new Error(err.message)
                 }
 
@@ -72,7 +72,7 @@ async function handler(req, res) {
                         body: JSON.stringify(slackResponse)
                     });
                 } catch (err) {
-                    console.error('Error:', error);
+                    console.error('Error:', err);
                     throw new Error(err.message)
                 }
             } else {
@@ -92,7 +92,7 @@ async function handler(req, res) {
                         body: JSON.stringify(slackResponse)
                     });
                 } catch (err) {
-                    console.error('Error:', error);
+                    console.error('Error:', err);
                     throw new Error(err.message)
                 }
             }
