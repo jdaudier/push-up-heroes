@@ -56,7 +56,10 @@ const UserChart = ({data}) => {
                     textAlign="center">
                 Push-Ups Over Time
             </Header>
-            <Segment attached='bottom' padded="very" style={{paddingLeft: 0}}>
+            <Segment attached='bottom' padded="very" style={{
+                paddingLeft: 0,
+                marginBottom: 64
+            }}>
                 <ResponsiveContainer width="100%" height={400}>
                     <BarChart data={data}>
                         <CartesianGrid strokeDasharray="3 3"/>

@@ -80,49 +80,47 @@ const GET_LEADERBOARD = gql`
 
 const EmptyView = ({message}) => {
     return (
-        <div>
-            <Table celled size='large' selectable textAlign="left">
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell>Rank</Table.HeaderCell>
-                        <Table.HeaderCell>Athlete</Table.HeaderCell>
-                        <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
-                        <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
-                        <Table.HeaderCell>Daily Average</Table.HeaderCell>
-                        <Table.HeaderCell>Contribution</Table.HeaderCell>
-                    </Table.Row>
-                </Table.Header>
+        <Table celled size='large' selectable textAlign="left">
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell>Rank</Table.HeaderCell>
+                    <Table.HeaderCell>Athlete</Table.HeaderCell>
+                    <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
+                    <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
+                    <Table.HeaderCell>Daily Average</Table.HeaderCell>
+                    <Table.HeaderCell>Contribution</Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>
 
-                <Table.Body>
-                    <Table.Row key="empty" textAlign="center">
-                        <Table.Cell colSpan='6'>
+            <Table.Body>
+                <Table.Row key="empty" textAlign="center">
+                    <Table.Cell colSpan='6'>
+                            <span css={{
+                                borderRadius: 4,
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: 20,
+                                background: 'url(/images/bg_purple.png)',
+                                backgroundRepeat: 'repeat-x',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'left top',
+                                height: '100%',
+                                overflow: 'hidden',
+                            }}>
+                                <p css={{color: 'white'}}>{message}</p>
+
                                 <span css={{
-                                    borderRadius: 4,
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    padding: 20,
-                                    background: 'url(/images/bg_purple.png)',
-                                    backgroundRepeat: 'repeat-x',
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'left top',
-                                    height: '100%',
-                                    overflow: 'hidden',
+                                    marginLeft: 45,
+                                    animation: `${floating} 3s infinite ease-in-out`,
                                 }}>
-                                    <p css={{color: 'white'}}>{message}</p>
-
-                                    <span css={{
-                                        marginLeft: 45,
-                                        animation: `${floating} 3s infinite ease-in-out`,
-                                    }}>
-                                        <Image src="/images/astronaut.svg" centered/>
-                                    </span>
+                                    <Image src="/images/astronaut.svg" centered/>
                                 </span>
-                        </Table.Cell>
-                    </Table.Row>
-                </Table.Body>
-            </Table>
-        </div>
+                            </span>
+                    </Table.Cell>
+                </Table.Row>
+            </Table.Body>
+        </Table>
     );
 };
 
@@ -175,7 +173,7 @@ const Leaderboard = ({data}) => {
     }
 
     return (
-        <Table celled size='large' selectable textAlign="left">
+        <Table celled size='large' selectable striped textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell>Rank</Table.HeaderCell>
@@ -265,7 +263,7 @@ const Leaderboard = ({data}) => {
                             marginTop: 6,
                             marginBottom: 6,
                         }}>
-                            You can also view this in Slack by typing
+                            View this in Slack by typing
                             <code css={{
                                 backgroundColor: 'rgba(27,31,35,.05)',
                                 borderRadius: 3,

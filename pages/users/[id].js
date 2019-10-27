@@ -4,11 +4,12 @@ import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import Layout from '../../components/Layout';
-import {Grid, Card, Image, Icon} from 'semantic-ui-react'
+import {Grid, Card, Image, Icon, Header} from 'semantic-ui-react'
 import UserStats from '../../components/UserStats';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
 const UserChart = dynamic(() => import('../../components/UserChart'));
+const UserFeed = dynamic(() => import('../../components/UserFeed'));
 
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
@@ -118,6 +119,10 @@ function User() {
                 </Grid.Row>
             </Grid>
             <UserChart data={dailySetsByUser} />
+            <Header as='h1'>
+                <span>Your Feed</span>
+            </Header>
+            <UserFeed data={userFeed} />
         </Layout>
     );
 }
