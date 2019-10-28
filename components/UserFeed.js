@@ -1,36 +1,78 @@
 import React from 'react';
-import { Table } from 'semantic-ui-react';
+import { Table, Icon } from 'semantic-ui-react';
+import { BLUE } from '../utils/constants';
+import Clap from './Clap';
 
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
 
-const UserFeed = ({data}) => {
+const UserFeed = ({feed, setsByDayMap, totalPushUps, bestSetCount}) => {
     return (
         <Table celled color="yellow" padded size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
+                    <Table.HeaderCell width={1}>Sets
+                        <span css={{color: BLUE, marginLeft: 6}}>
+                            ({feed.length.toLocaleString()})
+                        </span>
+                    </Table.HeaderCell>
                     <Table.HeaderCell>Day</Table.HeaderCell>
                     <Table.HeaderCell>Date</Table.HeaderCell>
                     <Table.HeaderCell>Time</Table.HeaderCell>
-                    <Table.HeaderCell>Count</Table.HeaderCell>
+                    <Table.HeaderCell width={2}>Count
+                        <span css={{color: BLUE, marginLeft: 6}}>
+                            ({totalPushUps.toLocaleString()})
+                        </span>
+                    </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
 
             <Table.Body>
-                {data.map(({dayOfWeek, date, time, count}, i) => {
+                {feed.map(({dayOfWeek, date, time, count, simplifiedDate}, i, arr) => {
+                    const rowspan = setsByDayMap[simplifiedDate];
+                    const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
+
+                    const maybeSetsCell = rowspan > 1 && i > firstIndex ? null : (
+                        <Table.Cell rowSpan={rowspan}>
+                            {rowspan}
+                        </Table.Cell>
+                    );
+
+                    const maybeDayCell = rowspan > 1 && i > firstIndex ? null : (
+                        <Table.Cell rowSpan={rowspan}>
+                            {dayOfWeek}
+                        </Table.Cell>
+                    );
+
+                    const maybeDateCell = rowspan > 1 && i > firstIndex ? null : (
+                        <Table.Cell rowSpan={rowspan}>
+                            {date}
+                        </Table.Cell>
+                    );
+
                     return (
                         <Table.Row key={i}>
-                            <Table.Cell>
-                                {dayOfWeek}
-                            </Table.Cell>
-                            <Table.Cell>
-                                {date}
-                            </Table.Cell>
+                            {maybeSetsCell}
+                            {maybeDayCell}
+                            {maybeDateCell}
                             <Table.Cell>
                                 {time}
                             </Table.Cell>
                             <Table.Cell>
-                                {count}
+                                <div css={{position: 'relative'}}>
+                                    {count}
+                                    {count === bestSetCount && (
+                                        <span css={{
+                                            marginLeft: 10,
+                                            position: 'absolute',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            width: 30,
+                                        }}>
+                                            <Clap />
+                                        </span>
+                                    )}
+                                </div>
                             </Table.Cell>
                         </Table.Row>
                     )

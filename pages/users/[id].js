@@ -4,7 +4,7 @@ import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import Layout from '../../components/Layout';
-import {Grid, Card, Image, Icon, Header} from 'semantic-ui-react'
+import {Grid, Card, Image, Icon, Header, Table} from 'semantic-ui-react'
 import UserStats from '../../components/UserStats';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
@@ -26,10 +26,14 @@ const GET_USER_STATS = gql`
             value
         }
          userFeed(id: $id) {
-            count
-            dayOfWeek
-            date
-            time
+            feed {
+                count
+                dayOfWeek
+                date
+                time
+                simplifiedDate
+            }
+             setsByDayMap
         }
         userStats(id: $id) {
             totalPushUps
@@ -104,7 +108,7 @@ function User() {
 
     if (!data) return null;
 
-    const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed} = data;
+    const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
 
     return (
         <Layout>
@@ -122,7 +126,11 @@ function User() {
             <Header as='h1'>
                 <span>Your Feed</span>
             </Header>
-            <UserFeed data={userFeed} />
+            <UserFeed bestSetCount={data.userStats.bestSet.count}
+                feed={feed}
+                setsByDayMap={setsByDayMap}
+                totalPushUps={data.userStats.totalPushUps}
+            />
         </Layout>
     );
 }

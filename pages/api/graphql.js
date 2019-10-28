@@ -17,7 +17,7 @@ const typeDefs = gql`
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
         streakData(id: ID!): Streak!
-        userFeed(id: ID!): [UserFeed!]!
+        userFeed(id: ID!): UserFeedData!
     }
     interface Rank {
         id: ID!
@@ -25,11 +25,24 @@ const typeDefs = gql`
         count: Int!
         profile: SlackProfile!
     }
+    enum DayOfWeek {
+        Monday
+        Tuesday
+        Wednesday
+        Thursday
+        Friday
+        Saturday
+        Sunday
+    }
     interface Feed {
         count: Int!
-        dayOfWeek: String!
+        dayOfWeek: DayOfWeek!
         date: Date!
         time: String!
+    }
+    type UserFeedData {
+        feed: [UserFeed!]!
+        setsByDayMap: GraphQLJSON
     }
     type UserStats {
         ranking: Int!
@@ -38,7 +51,7 @@ const typeDefs = gql`
         avgSet: Int!
         catchTheLeader: Int!
         contributionPercentage: Int!
-        bestSet: IndividualSet!
+        bestSet: BestSet!
         firstSet: IndividualSet!
         mostRecentSet: IndividualSet!
         firstPlaceAthlete: BasicRanking!
@@ -48,21 +61,26 @@ const typeDefs = gql`
         name: String!
         profile: SlackProfile!
         count: Int!
-        dayOfWeek: String!
+        dayOfWeek: DayOfWeek!
         date: Date!
         time: String!
     }
     type UserFeed implements Feed {
         count: Int!
-        dayOfWeek: String!
+        dayOfWeek: DayOfWeek!
         date: Date!
         time: String!
+        simplifiedDate: Date!
     }
     type Streak {
         longestStreak: Int!
         currentStreak: Int!
         longestStreakDates: String!
         currentStreakDates: String!
+    }
+    type BestSet {
+        count: Int!
+        created: [Date!]!
     }
     type IndividualSet {
         count: Int!

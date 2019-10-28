@@ -1,6 +1,6 @@
-import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer} from 'recharts';
-import {Segment, Header} from 'semantic-ui-react';
-import {BLUE} from '../utils/constants';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Segment, Header } from 'semantic-ui-react';
+import { BLUE } from '../utils/constants';
 
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';

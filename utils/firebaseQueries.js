@@ -464,7 +464,9 @@ export async function getUserStats(id) {
                 ...acc,
                 bestSet: {
                     count: count > acc.bestSet.count ? count : acc.bestSet.count,
-                    created: count > acc.bestSet.count ? created : acc.bestSet.created,
+                    created: count > acc.bestSet.count ? [created] :
+                        count === acc.bestSet.count && acc.bestSet.created.indexOf(created) === -1 ?
+                            [...acc.bestSet.created, created] : acc.bestSet.created,
                 },
                 firstSet: {
                     count: index === 0 ? count : acc.firstSet.count,
@@ -479,7 +481,7 @@ export async function getUserStats(id) {
         }, {
             bestSet: {
                 count: 0,
-                created: '',
+                created: [],
             },
             firstSet: {
                 count: 0,
@@ -599,7 +601,7 @@ export async function getUserFeed(id) {
     try {
         const snapshot = await db.collection('users').where('id', '==', id).orderBy('created', 'desc').get();
 
-        return snapshot.docs.map(doc => {
+        return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
             const dayOfWeek = format(utcToZonedTime(
                 data.created.toDate(),
@@ -616,13 +618,27 @@ export async function getUserFeed(id) {
                 data.timeZone,
             ), 'h:mm aaaa');
 
+            const simplifiedDate = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'yyyy-M-d');
 
             return {
-                ...data,
-                dayOfWeek,
-                date,
-                time,
+                feed: [...acc.feed, {
+                    ...data,
+                    dayOfWeek,
+                    date,
+                    time,
+                    simplifiedDate,
+                }],
+                setsByDayMap: {
+                    ...acc.setsByDayMap,
+                    [simplifiedDate]: acc.setsByDayMap[simplifiedDate] ? acc.setsByDayMap[simplifiedDate] + 1 : 1,
+                }
             }
+        }, {
+            feed: [],
+            setsByDayMap: {}
         });
     } catch (err) {
         console.error('Error:', err);

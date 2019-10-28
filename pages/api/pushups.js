@@ -29,7 +29,7 @@ async function handler(req, res) {
             });
 
             const pushUps = count === 1 ? 'push-up' : 'push-ups';
-            const context = "_Use the `/pushups` command to log your entry._";
+            const context = "_Use the `/pushups` command to log your set._";
 
             const blocks = [{
                 "type": "section",

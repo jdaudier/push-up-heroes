@@ -1,8 +1,8 @@
-import Link from "next/link";
-import {Grid, Statistic, Popup, Image} from 'semantic-ui-react';
+import Link from 'next/link';
+import { Grid, Statistic, Popup, Image } from 'semantic-ui-react';
 import Party from './Party';
 import Crown from './Crown';
-import {cellLinkCss} from './Stats';
+import { cellLinkCss } from './Stats';
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 
@@ -70,6 +70,11 @@ const Stats = ({data}) => {
         bestSet,
         firstPlaceAthlete,
     } = userStats;
+
+    const MAX_BEST_SET_DATES = 6;
+    const trimmedBestSetDates = bestSet.created.slice(0, MAX_BEST_SET_DATES);
+    const numberOfBestSetDates = bestSet.created.length;
+    const numberOfHiddenBestSetDates = numberOfBestSetDates - MAX_BEST_SET_DATES > 0 ? numberOfBestSetDates - MAX_BEST_SET_DATES : 0;
 
     return (
         <Grid doubling columns={3} stackable>
@@ -281,8 +286,7 @@ const Stats = ({data}) => {
                            </Stat>
                        </Grid.Column>}
             />
-            <Popup content={bestSet.created}
-                   position='top center'
+            <Popup position='top center'
                    size='huge'
                    style={{top: 12}}
                    trigger={
@@ -291,7 +295,15 @@ const Stats = ({data}) => {
                                <Statistic inverted label='Best Set' value={bestSet.count.toLocaleString()} />
                            </Stat>
                        </Grid.Column>}
-            />
+            >
+                {trimmedBestSetDates.map(date => <div css={{textAlign: 'center'}} key={date}>{date}</div>)}
+
+                {Boolean(numberOfHiddenBestSetDates) && (
+                    <div css={{textAlign: 'center'}}>
+                        and {numberOfHiddenBestSetDates} more {numberOfHiddenBestSetDates === 1 ? 'time' : 'times'}
+                    </div>
+                )}
+            </Popup>
             <Grid.Column>
                 <Stat color="yellow">
                     <Statistic inverted label='Average Set' value={avgSet.toLocaleString()} />
