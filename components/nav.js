@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Menu, Container } from 'semantic-ui-react';
+import { Header, Menu, Container } from 'semantic-ui-react';
 import SuperGirl from './SuperGirl';
 
 /** @jsx jsx */
@@ -15,9 +15,9 @@ const Nav = () => {
                         <span css={{marginRight: '1.5em', width: 50}}>
                             <SuperGirl />
                         </span>
-                        <span>
+                        <Header as='h1' style={{marginTop: 0}}>
                             Push-Up Heroes
-                        </span>
+                        </Header>
                     </Menu.Item>
                 </Link>
             </Container>

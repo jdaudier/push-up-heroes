@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link'
 import Crown from '../components/Crown';
-import { Label, Image, Table, Header } from 'semantic-ui-react';
+import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
 import withData from '../lib/apollo';
@@ -37,11 +37,11 @@ const floating = keyframes`
 `;
 
 const GET_LEADERBOARD = gql`
-    query leaderboard { 
-        leaderboard { 
+    query leaderboard {
+        leaderboard {
             rankings {
-                id 
-                name 
+                id
+                name
                 count
                 dailyAvg
                 contributionPercentage
@@ -287,13 +287,25 @@ const Home = () => {
         notifyOnNetworkStatusChange: true
     });
 
+    const panes = [{
+        menuItem: (
+            <Menu.Item key='leaderboard'>
+                <Header as='h2'>Leaderboard</Header>
+            </Menu.Item>
+        ),
+        render: () => <Tab.Pane loading={!data}><Leaderboard data={data} /></Tab.Pane> }, {
+        menuItem: (
+            <Menu.Item key='feed'>
+                <Header as='h2'>Feed</Header>
+            </Menu.Item>
+        ),
+        render: () => <Tab.Pane>Feed Data Coming Soon!</Tab.Pane>
+    }];
+
     return (
         <Layout>
             <Stats data={data} />
-            <Header as='h1'>
-                <span>Leaderboard</span>
-            </Header>
-            <Leaderboard data={data} />
+            <Tab panes={panes} />
         </Layout>
     )
 };

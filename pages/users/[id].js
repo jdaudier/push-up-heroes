@@ -123,9 +123,7 @@ function User() {
                 </Grid.Row>
             </Grid>
             <UserChart data={dailySetsByUser} />
-            <Header as='h1'>
-                <span>Your Feed</span>
-            </Header>
+            <Header as='h2'>Your Feed</Header>
             <UserFeed bestSetCount={data.userStats.bestSet.count}
                 feed={feed}
                 setsByDayMap={setsByDayMap}
