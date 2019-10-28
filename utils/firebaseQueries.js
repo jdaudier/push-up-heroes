@@ -5,6 +5,7 @@ import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import getSlackProfile from './getSlackProfile';
 import { utcToZonedTime } from 'date-fns-tz';
+import isYesterday from 'date-fns/isYesterday';
 
 export async function getFullLeaderboardData() {
     try {
@@ -525,11 +526,16 @@ export async function getUserStats(id) {
 export async function getStreakData(id) {
     try {
         const {sortedList, countsByDayMap} = await getUserSetsById(id);
-        const firstEntry = sortedList[0];
+        const {length, 0: firstEntry, [length - 1]: lastEntry} = sortedList;
 
         const firstEntryDate = format(utcToZonedTime(
             firstEntry.rawCreated,
             firstEntry.timeZone,
+        ), 'yyyy-M-d');
+
+        const lastEntryDate = format(utcToZonedTime(
+            lastEntry.rawCreated,
+            lastEntry.timeZone,
         ), 'yyyy-M-d');
 
         const localToday = format(utcToZonedTime(
@@ -537,8 +543,10 @@ export async function getStreakData(id) {
             firstEntry.timeZone,
         ), 'yyyy-M-d');
 
+        const yesterdayOrToday = isYesterday(parseISO(lastEntryDate)) ? lastEntryDate : localToday;
+
         const datesArray = eachDayOfInterval(
-            { start: parseISO(firstEntryDate), end: parseISO(localToday) }
+            { start: parseISO(firstEntryDate), end: parseISO(yesterdayOrToday) }
         );
 
         const results = datesArray.reduce((acc, date) => {
