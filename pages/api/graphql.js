@@ -11,7 +11,7 @@ const typeDefs = gql`
         summary: String!
         totalPushUps: Int!
         mostRecentSet: MostRecentSet!
-        globalUsersFeed: [GlobalUserFeed!]!
+        globalUsersFeed: GlobalUsersFeedData!
         
         dailySetsByUser(id: ID!): [CountByDay!]!
         userSlackProfile(id: ID!): SlackProfile!
@@ -26,19 +26,24 @@ const typeDefs = gql`
         profile: SlackProfile!
     }
     enum DayOfWeek {
-        Monday
-        Tuesday
-        Wednesday
-        Thursday
-        Friday
-        Saturday
-        Sunday
+        Mon
+        Tue
+        Wed
+        Thu
+        Fri
+        Sat
+        Sun
     }
     interface Feed {
         count: Int!
         dayOfWeek: DayOfWeek!
         date: Date!
         time: String!
+        simplifiedDate: Date!
+    }
+    type GlobalUsersFeedData {
+        feed: [GlobalUserFeed!]!
+        setsByDayMap: GraphQLJSON
     }
     type UserFeedData {
         feed: [UserFeed!]!
@@ -57,13 +62,14 @@ const typeDefs = gql`
         firstPlaceAthlete: BasicRanking!
     }
     type GlobalUserFeed implements Feed {
-        id: ID!
         name: String!
         profile: SlackProfile!
         count: Int!
         dayOfWeek: DayOfWeek!
         date: Date!
         time: String!
+        slackId: ID!
+        simplifiedDate: Date!
     }
     type UserFeed implements Feed {
         count: Int!

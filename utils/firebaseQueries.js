@@ -112,12 +112,14 @@ export async function getAllUsersFeeds() {
     try {
         const snapshot = await db.collection('users').orderBy('created', 'desc').get();
 
-        return await Promise.all(snapshot.docs.map(async (doc) => {
+        return snapshot.docs.reduce(async (acc, doc) => {
+            const prevAcc = await acc;
+
             const data = doc.data();
             const dayOfWeek = format(utcToZonedTime(
                 data.created.toDate(),
                 data.timeZone,
-            ), 'EEEE');
+            ), 'E');
 
             const date = format(utcToZonedTime(
                 data.created.toDate(),
@@ -129,13 +131,29 @@ export async function getAllUsersFeeds() {
                 data.timeZone,
             ), 'h:mm aaaa');
 
+            const simplifiedDate = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'yyyy-M-d');
+
             return {
-                ...data,
-                dayOfWeek,
-                date,
-                time,
-                profile: await getSlackProfile(data.id)
+                feed:[...prevAcc.feed, {
+                    ...data,
+                    slackId: data.id,
+                    dayOfWeek,
+                    date,
+                    time,
+                    simplifiedDate,
+                    profile: await getSlackProfile(data.id),
+                }],
+                setsByDayMap: {
+                    ...prevAcc.setsByDayMap,
+                    [simplifiedDate]: prevAcc.setsByDayMap[simplifiedDate] ? prevAcc.setsByDayMap[simplifiedDate] + 1 : 1,
+                }
             }
+        }, Promise.resolve({
+            feed: [],
+            setsByDayMap: {}
         }));
     } catch (err) {
         console.error('Error:', err);
@@ -626,7 +644,7 @@ export async function getUserFeed(id) {
             const dayOfWeek = format(utcToZonedTime(
                 data.created.toDate(),
                 data.timeZone,
-            ), 'EEEE');
+            ), 'E');
 
                 const date = format(utcToZonedTime(
                     data.created.toDate(),

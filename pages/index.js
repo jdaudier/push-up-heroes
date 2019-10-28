@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link'
-import Crown from '../components/Crown';
 import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
+import Crown from '../components/Crown';
+import GlobalFeed from '../components/GlobalFeed';
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
 import withData from '../lib/apollo';
@@ -299,7 +300,11 @@ const Home = () => {
                 <Header as='h2'>Feed</Header>
             </Menu.Item>
         ),
-        render: () => <Tab.Pane>Feed Data Coming Soon!</Tab.Pane>
+        render: () => <Tab.Pane loading={!data}>
+            <GlobalFeed totalPushUps={data.leaderboard.totalPushUps}
+                        bestIndividualSetCount={data.leaderboard.bestIndividualSet.count}
+            />
+        </Tab.Pane>
     }];
 
     return (
