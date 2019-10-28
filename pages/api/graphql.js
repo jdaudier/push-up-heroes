@@ -98,6 +98,10 @@ const typeDefs = gql`
         created: Date!
     }
     type BestIndividualSet {
+        count: Int!
+        athletes: [BestIndividualSetAthlete!]!
+    }
+    type BestIndividualSetAthlete {
         id: ID!
         name: String!
         count: Int!

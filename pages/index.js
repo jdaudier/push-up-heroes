@@ -55,13 +55,16 @@ const GET_LEADERBOARD = gql`
             avgSet
             dailyAvg
             bestIndividualSet {
-                id
-                name
                 count
-                created
-                profile {
-                    image_48
-                    real_name
+                athletes {
+                    id
+                    name
+                    count
+                    created
+                    profile {
+                        image_48
+                        real_name
+                    }
                 }
             }
         }

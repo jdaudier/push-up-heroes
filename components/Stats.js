@@ -58,6 +58,11 @@ const Stats = ({data}) => {
         return null;
     }
 
+    const MAX_BEST_SET_ATHLETES = 8;
+    const trimmedBestSetAthletes = bestIndividualSet.athletes.slice(0, MAX_BEST_SET_ATHLETES);
+    const numberOfBestSetAthletes = bestIndividualSet.athletes.length;
+    const numberOfHiddenBestSetAthletes = numberOfBestSetAthletes - MAX_BEST_SET_ATHLETES > 0 ? numberOfBestSetAthletes - MAX_BEST_SET_ATHLETES : 0;
+
     return (
         <Grid doubling columns={3} stackable style={{marginBottom: 40}}>
             <Grid.Column>
@@ -92,18 +97,34 @@ const Stats = ({data}) => {
                     </Stat>
                 </Grid.Column>}
             >
-                <Link href='/users/[id]' as={`/users/${bestIndividualSet.id}`}>
-                    <a title={`${bestIndividualSet.profile.real_name}'s page`} css={cellLinkCss}>
-                        <Image src={bestIndividualSet.profile.image_48} avatar />
-                        <span css={{
-                            display: 'inline-block',
-                            verticalAlign: 'middle',
-                            marginLeft: 5,
-                        }}>
-                            {bestIndividualSet.profile.real_name} on {bestIndividualSet.created}
-                        </span>
-                    </a>
-                </Link>
+                {trimmedBestSetAthletes.map(athlete => {
+                    return (
+                        <Link href='/users/[id]' as={`/users/${athlete.id}`} key={athlete.id}>
+                            <a title={`${athlete.profile.real_name}'s page`} css={{
+                                ...cellLinkCss,
+                                marginBottom: 10,
+                                '&:last-child': {
+                                    marginBottom: 0,
+                                }
+                            }}>
+                                <Image src={athlete.profile.image_48} avatar />
+                                <span css={{
+                                    display: 'inline-block',
+                                    verticalAlign: 'middle',
+                                    marginLeft: 5,
+                                }}>
+                                    {athlete.profile.real_name} on {athlete.created}
+                                </span>
+                            </a>
+                        </Link>
+                    )
+                })}
+
+                {Boolean(numberOfHiddenBestSetAthletes) && (
+                    <div css={{textAlign: 'center'}}>
+                        and {numberOfHiddenBestSetAthletes} more {numberOfHiddenBestSetAthletes === 1 ? 'athlete' : 'athletes'}
+                    </div>
+                )}
             </Popup>
             <Popup flowing
                    position='top center'

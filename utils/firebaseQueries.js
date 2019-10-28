@@ -24,6 +24,12 @@ export async function getFullLeaderboardData() {
             ), 'EEE, MMM d');
 
             const {id, count, name} = data;
+            const currentAthlete = {
+                id,
+                name,
+                count,
+                created,
+            };
 
             return {
                 ...acc,
@@ -38,9 +44,10 @@ export async function getFullLeaderboardData() {
                 totalPushUps: acc.totalPushUps + count,
                 bestIndividualSet: {
                     count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
-                    id: count > acc.bestIndividualSet.count ? id : acc.bestIndividualSet.id,
-                    name: count > acc.bestIndividualSet.count ? name : acc.bestIndividualSet.name,
-                    created: count > acc.bestIndividualSet.count ? created : acc.bestIndividualSet.created,
+                    athletes: count > acc.bestIndividualSet.count ? [currentAthlete] :
+                    count === acc.bestIndividualSet.count && !acc.bestIndividualSet.athletes.find(a => a.id === id) ?
+                        [...acc.bestIndividualSet.athletes, currentAthlete] :
+                        acc.bestIndividualSet.athletes,
                 }
             }
         }, {
@@ -49,9 +56,7 @@ export async function getFullLeaderboardData() {
             totalPushUps: 0,
             bestIndividualSet: {
                 count: 0,
-                id: '',
-                name: '',
-                created: '',
+                athletes: [],
             },
         });
 
@@ -77,7 +82,14 @@ export async function getFullLeaderboardData() {
             return bCount - aCount;
         });
 
-        const bestIndividualSetProfile = await getSlackProfile(bestIndividualSet.id);
+        const bestIndividualSetAthletes = await Promise.all(bestIndividualSet.athletes.map(async (athlete) => {
+            const bestIndividualSetProfile = await getSlackProfile(athlete.id);
+            return {
+                ...athlete,
+                profile: bestIndividualSetProfile,
+            };
+        }));
+
         return {
             rankings: sortedLeaderboard,
             totalPushUps,
@@ -85,9 +97,9 @@ export async function getFullLeaderboardData() {
             avgSet: Math.round(totalPushUps / snapshot.docs.length),
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
             bestIndividualSet: {
-                ...bestIndividualSet,
-                profile: bestIndividualSetProfile,
-            },
+                count: bestIndividualSet.count,
+                athletes: bestIndividualSetAthletes,
+            }
         }
     } catch (err) {
         console.error('Error:', err);
