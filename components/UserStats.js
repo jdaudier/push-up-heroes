@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {Grid, Statistic, Popup, Image} from 'semantic-ui-react';
 import Party from './Party';
+import Crown from './Crown';
 import {cellLinkCss} from './Stats';
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
@@ -90,7 +91,18 @@ const Stats = ({data}) => {
                    trigger={
                        <Grid.Column>
                            <Stat color="red" hasPopup>
-                               <Statistic inverted label='Catch the Leader' value={catchTheLeader.toLocaleString()} />
+                               <Statistic inverted>
+                                   <Statistic.Value>
+                                       {catchTheLeader === 0 ? (
+                                           <div css={{height: 56}}>
+                                               <Crown height={56} fill="white" />
+                                           </div>
+                                       ) : (
+                                           catchTheLeader.toLocaleString()
+                                       )}
+                                   </Statistic.Value>
+                                   <Statistic.Label>Catch the Leader</Statistic.Label>
+                               </Statistic>
                            </Stat>
                        </Grid.Column>
                    }
@@ -143,23 +155,23 @@ const Stats = ({data}) => {
                                <Stat color="red" hasPopup>
                                    <Statistic inverted>
                                        <Statistic.Value>
-                            <span css={{
-                                verticalAlign: 'top',
-                                display: 'inline-block',
-                            }}>
-                                {longestStreak.toLocaleString()}
-                            </span>
-                                           <span css={{
-                                               color: 'rgba(255,255,255,.7)',
-                                               display: 'inline-block',
-                                               fontSize: 14,
-                                               fontWeight: 700,
-                                               marginLeft: 5,
-                                               textTransform: 'uppercase',
-                                               verticalAlign: 'top',
-                                           }}>
-                                {getDayorDays(longestStreak)}
-                            </span>
+                                            <span css={{
+                                                verticalAlign: 'top',
+                                                display: 'inline-block',
+                                            }}>
+                                                {longestStreak.toLocaleString()}
+                                            </span>
+                                                           <span css={{
+                                                               color: 'rgba(255,255,255,.7)',
+                                                               display: 'inline-block',
+                                                               fontSize: 14,
+                                                               fontWeight: 700,
+                                                               marginLeft: 5,
+                                                               textTransform: 'uppercase',
+                                                               verticalAlign: 'top',
+                                                           }}>
+                                                {getDayorDays(longestStreak)}
+                                            </span>
                                        </Statistic.Value>
                                        <Statistic.Label>Longest Streak</Statistic.Label>
                                    </Statistic>
