@@ -1,4 +1,4 @@
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
 import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
@@ -106,7 +106,7 @@ function User() {
         variables: { id: router.query.id },
     });
 
-    if (!data) return null;
+    if (loading) return null;
 
     const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
 

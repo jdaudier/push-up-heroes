@@ -3,6 +3,7 @@ import { Grid, Statistic, Popup, Image } from 'semantic-ui-react';
 import Party from './Party';
 import Crown from './Crown';
 import { cellLinkCss } from './Stats';
+import { BLUE, RED, YELLOW } from '../utils/constants';
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 
@@ -19,18 +20,18 @@ const statsBoxCss = ({color, hasPopup}) => {
         case 'blue':
             return {
                 ...statsBoxBase(hasPopup),
-                backgroundColor: '#55acee',
+                backgroundColor: BLUE,
             };
         case 'yellow':
             return {
                 ...statsBoxBase(hasPopup),
-                backgroundColor: '#ffac33',
+                backgroundColor: YELLOW,
             };
 
         case 'red':
             return {
                 ...statsBoxBase(hasPopup),
-                backgroundColor: '#dd2e44',
+                backgroundColor: RED,
             };
 
     }
@@ -49,8 +50,6 @@ function getDayorDays(count) {
 }
 
 const Stats = ({data}) => {
-    if (!data) return null;
-
     const {userStats,
         streakData: {
             longestStreak,

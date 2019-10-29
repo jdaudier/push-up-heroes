@@ -1,8 +1,8 @@
 import {Grid, Statistic, Popup, Image} from 'semantic-ui-react';
 /** @jsx jsx */
-import { jsx, keyframes } from '@emotion/core';
-import Crown from "./Crown";
-import Link from "next/link";
+import { jsx } from '@emotion/core';
+import Link from 'next/link';
+import { BLUE, RED, YELLOW } from '../utils/constants';
 
 const statsBoxBase = (hasPopup) => ({
     borderRadius: 4,
@@ -17,18 +17,18 @@ const statsBoxCss = ({color, hasPopup}) => {
         case 'blue':
             return {
                 ...statsBoxBase(hasPopup),
-                backgroundColor: '#55acee',
+                backgroundColor: BLUE,
             };
         case 'yellow':
             return {
                 ...statsBoxBase(hasPopup),
-                backgroundColor: '#ffac33',
+                backgroundColor: YELLOW,
             };
 
         case 'red':
             return {
                 ...statsBoxBase(hasPopup),
-                backgroundColor: '#dd2e44',
+                backgroundColor: RED,
             };
 
     }
@@ -48,8 +48,8 @@ const Stat = ({color, hasPopup, children}) => {
     )
 };
 
-const Stats = ({data}) => {
-    if (!data) return null;
+const Stats = ({data, loading}) => {
+    if (loading) return null;
 
     const {mostRecentSet, leaderboard} = data;
     const {totalAthletes, totalPushUps, dailyAvg, avgSet, bestIndividualSet} = leaderboard;

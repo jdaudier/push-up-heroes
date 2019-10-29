@@ -1,47 +1,43 @@
 import React from 'react';
-import {Table, Icon, Image} from 'semantic-ui-react';
+import {Table, Image} from 'semantic-ui-react';
 import { BLUE } from '../utils/constants';
 import Clap from './Clap';
-import withData from '../lib/apollo';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
 
 /** @jsx jsx */
-import { jsx, keyframes } from '@emotion/core';
-import Crown from "./Crown";
+import { jsx } from '@emotion/core';
 import Link from "next/link";
 
-const GET_GLOBAL_FEED = gql`
-    query globalUsersFeed {
-        globalUsersFeed {
-            feed {
-                slackId
-                profile {
-                    image_48
-                    real_name
-                }
-                count
-                dayOfWeek
-                date
-                time
-                simplifiedDate
-            }
-            setsByDayMap
-        }
+const linkCss = {
+    display: 'block',
+    cursor: 'pointer',
+    color: 'initial',
+};
+
+function MaybeLink({rowspan, slackId, realName, children}) {
+    if (rowspan === 1) {
+        return (
+            <Table.Cell rowSpan={rowspan}>
+                <Link href='/users/[id]' as={`/users/${slackId}`}>
+                    <a title={`${realName}'s page`} css={linkCss}>
+                        {children}
+                    </a>
+                </Link>
+            </Table.Cell>
+        )
     }
-`;
-
-const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
-    const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_FEED, {
-        notifyOnNetworkStatusChange: true
-    });
-
-    if (!data) return null;
-
-    const {feed, setsByDayMap} = data.globalUsersFeed;
 
     return (
-        <Table celled color="yellow" padded size='large' striped textAlign="left">
+        <Table.Cell rowSpan={rowspan}>
+            {children}
+        </Table.Cell>
+    );
+}
+
+const GlobalFeed = ({globalUsersFeed, totalPushUps, bestIndividualSetCount}) => {
+    const {feed, setsByDayMap} = globalUsersFeed;
+
+    return (
+        <Table celled padded selectable size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell width={1}>Sets
@@ -68,21 +64,21 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                     const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
 
                     const maybeSetsCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell rowSpan={rowspan}>
+                        <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
                             {rowspan}
-                        </Table.Cell>
+                        </MaybeLink>
                     );
 
                     const maybeDayCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell rowSpan={rowspan}>
+                        <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
                             {dayOfWeek}
-                        </Table.Cell>
+                        </MaybeLink>
                     );
 
                     const maybeDateCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell rowSpan={rowspan}>
+                        <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
                             {date}
-                        </Table.Cell>
+                        </MaybeLink>
                     );
 
                     return (
@@ -91,15 +87,15 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                             {maybeDayCell}
                             {maybeDateCell}
                             <Table.Cell>
-                                {time}
+                                <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                    <a title={`${profile.real_name}'s page`} css={linkCss}>
+                                        {time}
+                                    </a>
+                                </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${slackId}`}>
-                                    <a title={`${profile.real_name}'s page`} css={{
-                                        display: 'block',
-                                        cursor: 'pointer',
-                                        color: 'initial',
-                                    }}>
+                                    <a title={`${profile.real_name}'s page`} css={linkCss}>
                                         <Image src={profile.image_48} avatar />
                                         <span css={{
                                             display: 'inline-block',
@@ -112,20 +108,22 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <div css={{position: 'relative'}}>
-                                    {count}
-                                    {count === bestIndividualSetCount && (
-                                        <span css={{
-                                            marginLeft: 10,
-                                            position: 'absolute',
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            width: 30,
-                                        }}>
-                                            <Clap />
-                                        </span>
-                                    )}
-                                </div>
+                                <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                    <a title={`${profile.real_name}'s page`} css={{...linkCss, position: 'relative'}}>
+                                        {count}
+                                        {count === bestIndividualSetCount && (
+                                            <span css={{
+                                                marginLeft: 10,
+                                                position: 'absolute',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                width: 30,
+                                            }}>
+                                                <Clap />
+                                            </span>
+                                        )}
+                                    </a>
+                                </Link>
                             </Table.Cell>
                         </Table.Row>
                     )
@@ -157,4 +155,4 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
     )
 };
 
-export default withData(props => <GlobalFeed {...props} />);
+export default GlobalFeed;

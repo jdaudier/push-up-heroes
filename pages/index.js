@@ -1,13 +1,15 @@
-import React from 'react';
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
 import Crown from '../components/Crown';
-import GlobalFeed from '../components/GlobalFeed';
+const GlobalFeed = dynamic(() => import('../components/GlobalFeed'));
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
 import withData from '../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
+import { RED, YELLOW } from '../utils/constants';
 
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
@@ -68,6 +70,21 @@ const GET_LEADERBOARD = gql`
                     }
                 }
             }
+        }
+        globalUsersFeed {
+            feed {
+                slackId
+                profile {
+                    image_48
+                    real_name
+                }
+                count
+                dayOfWeek
+                date
+                time
+                simplifiedDate
+            }
+            setsByDayMap
         }
         mostRecentSet {
             id
@@ -166,8 +183,8 @@ const medalCss = {
     }
 };
 
-const Leaderboard = ({data}) => {
-    if (!data) return null;
+const Leaderboard = ({data, loading}) => {
+    if (loading) return null;
 
     const {leaderboard} = data;
     const {rankings, totalAthletes} = leaderboard;
@@ -177,7 +194,7 @@ const Leaderboard = ({data}) => {
     }
 
     return (
-        <Table celled size='large' selectable striped textAlign="left">
+        <Table celled padded size='large' selectable striped textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell>Rank</Table.HeaderCell>
@@ -288,28 +305,39 @@ const Home = () => {
         notifyOnNetworkStatusChange: true
     });
 
+    const [activeTab, setActiveTab] = useState('leaderboard');
+
     const panes = [{
         menuItem: (
-            <Menu.Item key='leaderboard'>
+            <Menu.Item key='leaderboard'
+                       active={activeTab === 'leaderboard'}
+                       onClick={() => setActiveTab('leaderboard')}
+                       style={{borderTop: activeTab === 'leaderboard' ? `.2em solid ${RED}` : undefined}}
+            >
                 <Header as='h2'>Leaderboard</Header>
             </Menu.Item>
         ),
-        render: () => <Tab.Pane loading={!data}><Leaderboard data={data} /></Tab.Pane> }, {
+        render: () => <Tab.Pane loading={loading}><Leaderboard data={data} loading={loading} /></Tab.Pane> }, {
         menuItem: (
-            <Menu.Item key='feed'>
+            <Menu.Item key='feed'
+                       active={activeTab === 'feed'}
+                       onClick={() => setActiveTab('feed')}
+                       style={{borderTop: activeTab === 'feed' ? `.2em solid ${YELLOW}` : undefined}}
+            >
                 <Header as='h2'>Feed</Header>
             </Menu.Item>
         ),
-        render: () => <Tab.Pane loading={!data}>
+        render: () => <Tab.Pane loading={loading}>
             <GlobalFeed totalPushUps={data.leaderboard.totalPushUps}
                         bestIndividualSetCount={data.leaderboard.bestIndividualSet.count}
+                        globalUsersFeed={data.globalUsersFeed}
             />
         </Tab.Pane>
     }];
 
     return (
         <Layout>
-            <Stats data={data} />
+            <Stats data={data} loading={loading} />
             <Tab panes={panes} />
         </Layout>
     )
