@@ -7,6 +7,7 @@ import { Grid, Card, Image, Icon, Header } from 'semantic-ui-react'
 import Layout from '../../components/Layout';
 import LoadingView from '../../components/LoadingView';
 import UserStats from '../../components/UserStats';
+import LoadingUserView from '../../components/LoadingUserView';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
 const UserChart = dynamic(() => import('../../components/UserChart'));
@@ -108,7 +109,7 @@ function User() {
     });
 
     if (loading || !data) {
-        return <LoadingView />
+        return <LoadingUserView />
     }
 
     const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
