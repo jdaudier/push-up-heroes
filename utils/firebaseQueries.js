@@ -7,9 +7,11 @@ import getSlackProfile from './getSlackProfile';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 
+const CHALLENGE_ID = 'users';
+
 export async function getFullLeaderboardData() {
     try {
-        const snapshot = await db.collection('users').get();
+        const snapshot = await db.collection(CHALLENGE_ID).get();
         const data = snapshot.docs.reduce((acc, doc) => {
             /*
             id: "myID",
@@ -110,7 +112,7 @@ export async function getFullLeaderboardData() {
 
 export async function getAllUsersFeeds() {
     try {
-        const snapshot = await db.collection('users').orderBy('created', 'desc').get();
+        const snapshot = await db.collection(CHALLENGE_ID).orderBy('created', 'desc').get();
 
         return snapshot.docs.reduce(async (acc, doc) => {
             const prevAcc = await acc;
@@ -163,7 +165,7 @@ export async function getAllUsersFeeds() {
 
 export async function getLeaderboardText(userId) {
     try {
-        const snapshot = await db.collection('users').get();
+        const snapshot = await db.collection(CHALLENGE_ID).get();
         const data = snapshot.docs.reduce((acc, doc) => {
             /*
              id: "myID",
@@ -270,7 +272,7 @@ export async function getLeaderboardText(userId) {
 
 export async function getLeaderboardData() {
     try {
-        const snapshot = await db.collection('users').get();
+        const snapshot = await db.collection(CHALLENGE_ID).get();
         const data = snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
             const {id, count, name} = data;
@@ -323,7 +325,7 @@ export async function getLeaderboardData() {
 
 export async function getTotalPushUpsCount() {
     try {
-        const snapshot = await db.collection('users').get();
+        const snapshot = await db.collection(CHALLENGE_ID).get();
         return snapshot.docs.reduce((acc, doc) => {
             const {count} = doc.data();
             return acc + count;
@@ -340,7 +342,7 @@ export async function addUserData({
                                       count,
                                       timeZone,
                                   }) {
-    return db.collection('users').add({
+    return db.collection(CHALLENGE_ID).add({
         name,
         id,
         count: count,
@@ -352,11 +354,11 @@ export async function addUserData({
 export async function getTotalChallengeDays() {
     try {
         const [firstSnapshot, lastSnapshot] = await Promise.all([
-            await db.collection('users')
+            await db.collection(CHALLENGE_ID)
                 .orderBy('created', 'asc')
                 .limit(1).get(),
 
-            await db.collection('users')
+            await db.collection(CHALLENGE_ID)
                 .orderBy('created', 'desc')
                 .limit(1).get()
         ]);
@@ -373,7 +375,7 @@ export async function getTotalChallengeDays() {
 
 export async function getMostRecentSet() {
     try {
-        const snapshot = await db.collection('users')
+        const snapshot = await db.collection(CHALLENGE_ID)
             .orderBy('created', 'desc')
             .limit(1).get();
 
@@ -400,7 +402,7 @@ export async function getMostRecentSet() {
 /* INDIVIDUAL QUERIES */
 async function getUserSetsById(id) {
     try {
-        const snapshot = await db.collection('users').where('id', '==', id).orderBy('created').get();
+        const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
@@ -475,7 +477,7 @@ export async function getUserStats(id) {
             await getTotalChallengeDays(),
         ]);
 
-        const snapshot = await db.collection('users').where('id', '==', id).orderBy('created').get();
+        const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
 
         const {rankings, totalPushUps: totalPushUpsGlobally} = leaderboardData;
 
@@ -637,7 +639,7 @@ export async function getStreakData(id) {
 
 export async function getUserFeed(id) {
     try {
-        const snapshot = await db.collection('users').where('id', '==', id).orderBy('created', 'desc').get();
+        const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created', 'desc').get();
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();

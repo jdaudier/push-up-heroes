@@ -30,7 +30,6 @@ const statsBoxCss = ({color, hasPopup}) => {
                 ...statsBoxBase(hasPopup),
                 backgroundColor: RED,
             };
-
     }
 };
 
@@ -48,15 +47,9 @@ const Stat = ({color, hasPopup, children}) => {
     )
 };
 
-const Stats = ({data, loading}) => {
-    if (loading) return null;
-
+const Stats = ({data}) => {
     const {mostRecentSet, leaderboard} = data;
     const {totalAthletes, totalPushUps, dailyAvg, avgSet, bestIndividualSet} = leaderboard;
-
-    if (totalAthletes === 0) {
-        return null;
-    }
 
     const MAX_BEST_SET_ATHLETES = 8;
     const trimmedBestSetAthletes = bestIndividualSet.athletes.slice(0, MAX_BEST_SET_ATHLETES);

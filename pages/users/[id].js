@@ -3,8 +3,9 @@ import { useRouter } from 'next/router';
 import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
+import { Grid, Card, Image, Icon, Header } from 'semantic-ui-react'
 import Layout from '../../components/Layout';
-import {Grid, Card, Image, Icon, Header, Table} from 'semantic-ui-react'
+import LoadingView from '../../components/LoadingView';
 import UserStats from '../../components/UserStats';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
@@ -106,7 +107,9 @@ function User() {
         variables: { id: router.query.id },
     });
 
-    if (loading) return null;
+    if (loading || !data) {
+        return <LoadingView />
+    }
 
     const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
 

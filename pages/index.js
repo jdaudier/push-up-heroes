@@ -3,6 +3,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
 import Crown from '../components/Crown';
+import LoadingView from '../components/LoadingView';
 const GlobalFeed = dynamic(() => import('../components/GlobalFeed'));
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
@@ -10,9 +11,8 @@ import withData from '../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { RED, YELLOW } from '../utils/constants';
-
+import { jsx } from '@emotion/core';
 /** @jsx jsx */
-import { jsx, keyframes } from '@emotion/core';
 
 const MaybeRibbon = ({place}) => {
     switch (place) {
@@ -26,18 +26,6 @@ const MaybeRibbon = ({place}) => {
             return null;
     }
 };
-
-const floating = keyframes`
-   from {
-        transform: translateY(0px);
-   }
-   65% {
-        transform: translateY(15px);
-   }
-   to {
-        transform: translateY(0px);
-   }
-`;
 
 const GET_LEADERBOARD = gql`
     query leaderboard {
@@ -99,52 +87,6 @@ const GET_LEADERBOARD = gql`
     }
 `;
 
-const EmptyView = ({message}) => {
-    return (
-        <Table celled size='large' selectable textAlign="left">
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell>Rank</Table.HeaderCell>
-                    <Table.HeaderCell>Athlete</Table.HeaderCell>
-                    <Table.HeaderCell>Total Push-Ups</Table.HeaderCell>
-                    <Table.HeaderCell>Catch the Leader</Table.HeaderCell>
-                    <Table.HeaderCell>Daily Average</Table.HeaderCell>
-                    <Table.HeaderCell>Contribution</Table.HeaderCell>
-                </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-                <Table.Row key="empty" textAlign="center">
-                    <Table.Cell colSpan='6'>
-                            <span css={{
-                                borderRadius: 4,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                padding: 20,
-                                background: 'url(/images/bg_purple.png)',
-                                backgroundRepeat: 'repeat-x',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'left top',
-                                height: '100%',
-                                overflow: 'hidden',
-                            }}>
-                                <p css={{color: 'white'}}>{message}</p>
-
-                                <span css={{
-                                    marginLeft: 45,
-                                    animation: `${floating} 3s infinite ease-in-out`,
-                                }}>
-                                    <Image src="/images/astronaut.svg" centered/>
-                                </span>
-                            </span>
-                    </Table.Cell>
-                </Table.Row>
-            </Table.Body>
-        </Table>
-    );
-};
-
 const cellLinkCss = {
     display: 'block',
     cursor: 'pointer',
@@ -183,16 +125,7 @@ const medalCss = {
     }
 };
 
-const Leaderboard = ({data, loading}) => {
-    if (loading) return null;
-
-    const {leaderboard} = data;
-    const {rankings, totalAthletes} = leaderboard;
-
-    if (totalAthletes === 0) {
-        return <EmptyView message="No one has done any push-ups yet!" />
-    }
-
+const Leaderboard = ({leaderboard: {rankings}}) => {
     return (
         <Table celled padded size='large' selectable striped textAlign="left">
             <Table.Header>
@@ -307,6 +240,12 @@ const Home = () => {
 
     const [activeTab, setActiveTab] = useState('leaderboard');
 
+    if (loading || !data) {
+        return <LoadingView />
+    }
+
+    const {leaderboard} = data;
+
     const panes = [{
         menuItem: (
             <Menu.Item key='leaderboard'
@@ -317,7 +256,9 @@ const Home = () => {
                 <Header as='h2'>Leaderboard</Header>
             </Menu.Item>
         ),
-        render: () => <Tab.Pane loading={loading}><Leaderboard data={data} loading={loading} /></Tab.Pane> }, {
+        render: () => (
+            <Tab.Pane loading={loading}><Leaderboard leaderboard={leaderboard} /></Tab.Pane>
+        ) }, {
         menuItem: (
             <Menu.Item key='feed'
                        active={activeTab === 'feed'}
@@ -327,17 +268,19 @@ const Home = () => {
                 <Header as='h2'>Feed</Header>
             </Menu.Item>
         ),
-        render: () => <Tab.Pane loading={loading}>
-            <GlobalFeed totalPushUps={data.leaderboard.totalPushUps}
-                        bestIndividualSetCount={data.leaderboard.bestIndividualSet.count}
-                        globalUsersFeed={data.globalUsersFeed}
-            />
-        </Tab.Pane>
+        render: () => (
+            <Tab.Pane loading={loading}>
+                <GlobalFeed totalPushUps={leaderboard.totalPushUps}
+                            bestIndividualSetCount={leaderboard.bestIndividualSet.count}
+                            globalUsersFeed={data.globalUsersFeed}
+                />
+            </Tab.Pane>
+        )
     }];
 
     return (
         <Layout>
-            <Stats data={data} loading={loading} />
+            <Stats data={data} />
             <Tab panes={panes} />
         </Layout>
     )
