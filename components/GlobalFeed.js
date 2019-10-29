@@ -1,11 +1,35 @@
 import React from 'react';
+import Link from 'next/link';
+import { gql } from 'apollo-boost';
+import withData from '../lib/apollo';
 import {Table, Image} from 'semantic-ui-react';
 import { BLUE } from '../utils/constants';
 import Clap from './Clap';
+import LoadingTableView from './LoadingTableView';
 
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import Link from "next/link";
+import {useQuery} from "@apollo/react-hooks";
+
+const GET_GLOBAL_USERS_FEED = gql`
+    query globalUsersFeed {
+        globalUsersFeed {
+            feed {
+                slackId
+                profile {
+                    image_48
+                    real_name
+                }
+                count
+                dayOfWeek
+                date
+                time
+                simplifiedDate
+            }
+            setsByDayMap
+        }
+    }
+`;
 
 const linkCss = {
     display: 'block',
@@ -33,17 +57,21 @@ function MaybeLink({rowspan, slackId, realName, children}) {
     );
 }
 
-const GlobalFeed = ({globalUsersFeed, totalPushUps, bestIndividualSetCount}) => {
-    const {feed, setsByDayMap} = globalUsersFeed;
+const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
+    const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_USERS_FEED, {
+        notifyOnNetworkStatusChange: true
+    });
 
     return (
         <Table celled padded selectable size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell width={1}>Sets
-                        <span css={{color: BLUE, marginLeft: 6}}>
-                            ({feed.length.toLocaleString()})
-                        </span>
+                        {data && (
+                            <span css={{color: BLUE, marginLeft: 6}}>
+                                ({data.globalUsersFeed.feed.length.toLocaleString()})
+                            </span>
+                        )}
                     </Table.HeaderCell>
                     <Table.HeaderCell>Day</Table.HeaderCell>
                     <Table.HeaderCell>Date</Table.HeaderCell>
@@ -57,78 +85,80 @@ const GlobalFeed = ({globalUsersFeed, totalPushUps, bestIndividualSetCount}) => 
                 </Table.Row>
             </Table.Header>
 
-            <Table.Body>
-                {feed.map(({slackId, dayOfWeek, date, time, count, simplifiedDate, profile}, i, arr) => {
-                    const rowspan = setsByDayMap[simplifiedDate];
+            {(loading || !data) ? <LoadingTableView /> : (
+                <Table.Body>
+                    {data.globalUsersFeed.feed.map(({slackId, dayOfWeek, date, time, count, simplifiedDate, profile}, i, arr) => {
+                        const rowspan = data.globalUsersFeed.setsByDayMap[simplifiedDate];
 
-                    const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
+                        const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
 
-                    const maybeSetsCell = rowspan > 1 && i > firstIndex ? null : (
-                        <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
-                            {rowspan}
-                        </MaybeLink>
-                    );
+                        const maybeSetsCell = rowspan > 1 && i > firstIndex ? null : (
+                            <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
+                                {rowspan}
+                            </MaybeLink>
+                        );
 
-                    const maybeDayCell = rowspan > 1 && i > firstIndex ? null : (
-                        <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
-                            {dayOfWeek}
-                        </MaybeLink>
-                    );
+                        const maybeDayCell = rowspan > 1 && i > firstIndex ? null : (
+                            <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
+                                {dayOfWeek}
+                            </MaybeLink>
+                        );
 
-                    const maybeDateCell = rowspan > 1 && i > firstIndex ? null : (
-                        <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
-                            {date}
-                        </MaybeLink>
-                    );
+                        const maybeDateCell = rowspan > 1 && i > firstIndex ? null : (
+                            <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
+                                {date}
+                            </MaybeLink>
+                        );
 
-                    return (
-                        <Table.Row key={i}>
-                            {maybeSetsCell}
-                            {maybeDayCell}
-                            {maybeDateCell}
-                            <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${slackId}`}>
-                                    <a title={`${profile.real_name}'s page`} css={linkCss}>
-                                        {time}
-                                    </a>
-                                </Link>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${slackId}`}>
-                                    <a title={`${profile.real_name}'s page`} css={linkCss}>
-                                        <Image src={profile.image_48} avatar />
-                                        <span css={{
-                                            display: 'inline-block',
-                                            verticalAlign: 'middle',
-                                            marginLeft: 5,
-                                        }}>
+                        return (
+                            <Table.Row key={i}>
+                                {maybeSetsCell}
+                                {maybeDayCell}
+                                {maybeDateCell}
+                                <Table.Cell>
+                                    <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                        <a title={`${profile.real_name}'s page`} css={linkCss}>
+                                            {time}
+                                        </a>
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                        <a title={`${profile.real_name}'s page`} css={linkCss}>
+                                            <Image src={profile.image_48} avatar />
+                                            <span css={{
+                                                display: 'inline-block',
+                                                verticalAlign: 'middle',
+                                                marginLeft: 5,
+                                            }}>
                                             {profile.real_name}
                                         </span>
-                                    </a>
-                                </Link>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${slackId}`}>
-                                    <a title={`${profile.real_name}'s page`} css={{...linkCss, position: 'relative'}}>
-                                        {count}
-                                        {count === bestIndividualSetCount && (
-                                            <span css={{
-                                                marginLeft: 10,
-                                                position: 'absolute',
-                                                top: '50%',
-                                                transform: 'translateY(-50%)',
-                                                width: 30,
-                                            }}>
+                                        </a>
+                                    </Link>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                        <a title={`${profile.real_name}'s page`} css={{...linkCss, position: 'relative'}}>
+                                            {count}
+                                            {count === bestIndividualSetCount && (
+                                                <span css={{
+                                                    marginLeft: 10,
+                                                    position: 'absolute',
+                                                    top: '50%',
+                                                    transform: 'translateY(-50%)',
+                                                    width: 30,
+                                                }}>
                                                 <Clap />
                                             </span>
-                                        )}
-                                    </a>
-                                </Link>
-                            </Table.Cell>
-                        </Table.Row>
-                    )
-                })}
-            </Table.Body>
+                                            )}
+                                        </a>
+                                    </Link>
+                                </Table.Cell>
+                            </Table.Row>
+                        )
+                    })}
+                </Table.Body>
+            )}
 
             <Table.Footer>
                 <Table.Row>
@@ -155,4 +185,4 @@ const GlobalFeed = ({globalUsersFeed, totalPushUps, bestIndividualSetCount}) => 
     )
 };
 
-export default GlobalFeed;
+export default withData(props => <GlobalFeed {...props} />);

@@ -59,21 +59,6 @@ const GET_LEADERBOARD = gql`
                 }
             }
         }
-        globalUsersFeed {
-            feed {
-                slackId
-                profile {
-                    image_48
-                    real_name
-                }
-                count
-                dayOfWeek
-                date
-                time
-                simplifiedDate
-            }
-            setsByDayMap
-        }
         mostRecentSet {
             id
             name
@@ -272,7 +257,6 @@ const Home = () => {
             <Tab.Pane loading={loading}>
                 <GlobalFeed totalPushUps={leaderboard.totalPushUps}
                             bestIndividualSetCount={leaderboard.bestIndividualSet.count}
-                            globalUsersFeed={data.globalUsersFeed}
                 />
             </Tab.Pane>
         )
