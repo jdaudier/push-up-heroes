@@ -112,7 +112,7 @@ function User() {
         return <LoadingUserView />
     }
 
-    const {userSlackProfile, userStats: {mostRecentSet}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
+    const {userSlackProfile, userStats: {mostRecentSet, dailyAvg}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
 
     return (
         <Layout>
@@ -126,7 +126,7 @@ function User() {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            <UserChart data={dailySetsByUser} />
+            <UserChart dailyAvg={dailyAvg} data={dailySetsByUser} />
             <Header as='h2'>Your Feed</Header>
             <UserFeed bestSetCount={data.userStats.bestSet.count}
                 feed={feed}

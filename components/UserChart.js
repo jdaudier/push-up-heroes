@@ -1,11 +1,11 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Segment, Header } from 'semantic-ui-react';
-import { BLUE } from '../utils/constants';
+import { BLUE, YELLOW } from '../utils/constants';
 
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
 
-const CustomXAxisTick = ({x, y, stroke, payload}) => {
+const CustomXAxisTick = ({x, y, payload}) => {
     return (
         <g transform={`translate(${x},${y})`}>
             <text x={0} y={0} dy={16} textAnchor="end" fill="#666" transform="rotate(-35)" fontWeight="bold">{payload.value}</text>
@@ -13,7 +13,7 @@ const CustomXAxisTick = ({x, y, stroke, payload}) => {
     );
 };
 
-const CustomYAxisTick = ({x, y, stroke, payload}) => {
+const CustomYAxisTick = ({x, y, payload}) => {
     return (
         <g transform={`translate(${x},${y})`}>
             <text x={0} y={0} dy={5} textAnchor="end" fill="#666" fontWeight="bold">{payload.value}</text>
@@ -42,7 +42,15 @@ const CustomTooltip = ({active, payload, label}) => {
     return null;
 };
 
-const UserChart = ({data}) => {
+const CustomLabel = ({viewBox}) => {
+    const x = viewBox.width + viewBox.x + 30;
+    const y = viewBox.y + 5;
+    return (
+        <text x={x} y={y} textAnchor="end" fill={YELLOW} fontWeight="bold">Avg</text>
+    )
+};
+
+const UserChart = ({data, dailyAvg}) => {
     return (
         <>
             <Header as='h2'
@@ -58,15 +66,17 @@ const UserChart = ({data}) => {
             </Header>
             <Segment attached='bottom' padded="very" style={{
                 paddingLeft: 0,
+                paddingRight: 0,
                 marginBottom: 64
             }}>
                 <ResponsiveContainer width="100%" height={400}>
-                    <BarChart data={data}>
+                    <BarChart data={data} margin={{right: 42}}>
                         <CartesianGrid strokeDasharray="3 3"/>
                         <XAxis dataKey="label" height={60} tick={<CustomXAxisTick/>}/>
                         <YAxis allowDecimals={false} tick={<CustomYAxisTick />}/>
                         <Tooltip content={CustomTooltip} cursor={{fill: 'rgba(185, 192, 201, .3)'}} />
                         <Bar dataKey="value" fill={BLUE} maxBarSize={100} />
+                        {data.length > 3 && <ReferenceLine y={dailyAvg} label={<CustomLabel />} stroke={YELLOW} strokeWidth={2} strokeDasharray="8" />}
                     </BarChart>
 
                 </ResponsiveContainer>
