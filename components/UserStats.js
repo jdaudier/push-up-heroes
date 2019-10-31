@@ -283,7 +283,8 @@ const Stats = ({data}) => {
                            <Stat color="red" hasPopup>
                                <Statistic inverted label='Starting Set' value={firstSet.count.toLocaleString()} />
                            </Stat>
-                       </Grid.Column>}
+                       </Grid.Column>
+                   }
             />
             <Popup position='top center'
                    size='huge'
@@ -293,7 +294,8 @@ const Stats = ({data}) => {
                            <Stat color="blue" hasPopup>
                                <Statistic inverted label='Best Set' value={bestSet.count.toLocaleString()} />
                            </Stat>
-                       </Grid.Column>}
+                       </Grid.Column>
+                   }
             >
                 {trimmedBestSetDates.map(date => <div css={{textAlign: 'center'}} key={date}>{date}</div>)}
 
@@ -303,11 +305,18 @@ const Stats = ({data}) => {
                     </div>
                 )}
             </Popup>
-            <Grid.Column>
-                <Stat color="yellow">
-                    <Statistic inverted label='Average Set' value={avgSet.toLocaleString()} />
-                </Stat>
-            </Grid.Column>
+            <Popup content="Average push-ups per set"
+                   position='top center'
+                   size='huge'
+                   style={{top: 12, textAlign: 'center'}}
+                   trigger={
+                       <Grid.Column>
+                           <Stat color="yellow">
+                               <Statistic inverted label='Average Set' value={avgSet.toLocaleString()} />
+                           </Stat>
+                       </Grid.Column>
+                   }
+            />
         </Grid>
     )
 };
