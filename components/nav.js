@@ -15,7 +15,7 @@ const Nav = () => {
                         <span css={{marginRight: '1.5em', width: 50}}>
                             <SuperGirl />
                         </span>
-                        <Header as='h1' style={{marginTop: 0}}>
+                        <Header as='h1' style={{fontSize: 24, marginTop: 0}}>
                             Push-Up Heroes
                         </Header>
                     </Menu.Item>
