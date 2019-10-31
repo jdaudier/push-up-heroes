@@ -15,7 +15,10 @@ const LoadingTableView = () => {
                                 fontStyle: 'italic',
                                 lineHeight: 1.4,
                                 marginBottom: '.5em',
-                                marginTop: '.4em'
+                                marginTop: '.4em',
+                                '@media(max-width: 767px)': {
+                                    width: '70vw'
+                                }
                             }}>
                                 &ldquo;{quote.text}&rdquo;
                             </blockquote>

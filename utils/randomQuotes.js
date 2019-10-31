@@ -20,7 +20,7 @@ const quotes = [{
     text: "The first step to achieving your goal, is to take a moment to respect your goal. Know what it means to you to achieve it.",
     author: 'Dwayne “The Rock” Johnson',
 }, {
-    text: "Training for me is a metaphor for life, period. The dedication, the determination, the desire, the work ethic, the great successes and the great failures – I take that into life.",
+    text: "Training is a metaphor for life. The dedication, determination, desire, work ethic, the great successes and the great failures – I take that into life.",
     author: 'Dwayne “The Rock” Johnson',
 }, {
     text: "There is no substitute for hard work. Always be humble and hungry.",
