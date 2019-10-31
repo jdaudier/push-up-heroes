@@ -48,9 +48,9 @@ export async function getFullLeaderboardData() {
                 bestIndividualSet: {
                     count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
                     athletes: count > acc.bestIndividualSet.count ? [currentAthlete] :
-                    count === acc.bestIndividualSet.count && !acc.bestIndividualSet.athletes.find(a => a.id === id) ?
-                        [...acc.bestIndividualSet.athletes, currentAthlete] :
-                        acc.bestIndividualSet.athletes,
+                        count === acc.bestIndividualSet.count && !acc.bestIndividualSet.athletes.find(a => a.id === id) ?
+                            [...acc.bestIndividualSet.athletes, currentAthlete] :
+                            acc.bestIndividualSet.athletes,
                 }
             }
         }, {
@@ -491,6 +491,11 @@ export async function getUserStats(id) {
                 data.timeZone,
             ), 'EEE, MMM d');
 
+            const createdShort = format(utcToZonedTime(
+                rawCreated,
+                data.timeZone,
+            ), 'MMM d');
+
             const {count} = data;
 
             return {
@@ -500,10 +505,14 @@ export async function getUserStats(id) {
                     created: count > acc.bestSet.count ? [created] :
                         count === acc.bestSet.count && acc.bestSet.created.indexOf(created) === -1 ?
                             [...acc.bestSet.created, created] : acc.bestSet.created,
+                    createdShort: count > acc.bestSet.count ? [createdShort] :
+                        count === acc.bestSet.count && acc.bestSet.created.indexOf(created) === -1 ?
+                            [...acc.bestSet.createdShort, createdShort] : acc.bestSet.createdShort,
                 },
                 firstSet: {
                     count: index === 0 ? count : acc.firstSet.count,
                     created: index === 0 ? created : acc.firstSet.created,
+                    createdShort: index === 0 ? createdShort : acc.firstSet.createdShort,
                 },
                 mostRecentSet: {
                     count,
@@ -515,10 +524,12 @@ export async function getUserStats(id) {
             bestSet: {
                 count: 0,
                 created: [],
+                createdShort: [],
             },
             firstSet: {
                 count: 0,
                 created: '',
+                createdShort: '',
             },
             mostRecentSet: {
                 count: 0,
@@ -572,25 +583,31 @@ export async function getStreakData(id) {
         const results = datesArray.reduce((acc, date) => {
             const simplifiedDate = format(date, 'yyyy-M-d');
             const formattedDate = format(date, 'EEE, MMM d');
+            const formattedDateShort = format(date, 'MMM d');
 
             const didPushUps = Boolean(countsByDayMap[simplifiedDate]);
 
             if (didPushUps) {
                 const lastIndex = acc.longestStreakDates.length - 1;
                 const lastArr = acc.longestStreakDates[lastIndex];
+                const lastArrShort = acc.longestStreakDatesShort[lastIndex];
 
-                let updatedLongestStreakDates;
+                let updatedLongestStreakDates, updatedLongestStreakDatesShort;
                 if (acc.currentStreak === 0) {
                     updatedLongestStreakDates = [...acc.longestStreakDates, [formattedDate]];
+                    updatedLongestStreakDatesShort = [...acc.longestStreakDatesShort, [formattedDateShort]];
                 } else {
                     updatedLongestStreakDates = [...acc.longestStreakDates.slice(0, lastIndex), [...lastArr, formattedDate]];
+                    updatedLongestStreakDatesShort = [...acc.longestStreakDatesShort.slice(0, lastIndex), [...lastArrShort, formattedDateShort]];
                 }
 
                 return {
                     longestStreak: acc.longestStreak,
                     currentStreak: acc.currentStreak + 1,
                     longestStreakDates: updatedLongestStreakDates,
+                    longestStreakDatesShort: updatedLongestStreakDatesShort,
                     currentStreakDates: [...acc.currentStreakDates, formattedDate],
+                    currentStreakDatesShort: [...acc.currentStreakDatesShort, formattedDateShort],
                 }
             }
 
@@ -598,16 +615,20 @@ export async function getStreakData(id) {
                 longestStreak: acc.currentStreak > acc.longestStreak ? acc.currentStreak : acc.longestStreak,
                 currentStreak: 0,
                 longestStreakDates: acc.longestStreakDates,
+                longestStreakDatesShort: acc.longestStreakDatesShort,
                 currentStreakDates: [],
+                currentStreakDatesShort: [],
             };
         }, {
             longestStreak: 0,
             currentStreak: 0,
             longestStreakDates: [],
+            longestStreakDatesShort: [],
             currentStreakDates: [],
+            currentStreakDatesShort: [],
         });
 
-        const {longestStreak, currentStreak, longestStreakDates, currentStreakDates} = results;
+        const {longestStreak, currentStreak, longestStreakDates, currentStreakDates, longestStreakDatesShort, currentStreakDatesShort} = results;
 
         const longestStreakDatesFormatted = longestStreakDates.reduce((acc, curr) => {
             if (curr.length > acc.length) {
@@ -617,19 +638,38 @@ export async function getStreakData(id) {
             return acc;
         }, []);
 
+        const longestStreakDatesShortFormatted = longestStreakDatesShort.reduce((acc, curr) => {
+            if (curr.length > acc.length) {
+                return curr;
+            }
+
+            return acc;
+        }, []);
+
+
         const longestStreakDatesText = longestStreakDatesFormatted.length === 1 ?
             longestStreakDatesFormatted[0] :
             `${longestStreakDatesFormatted[0]} - ${longestStreakDatesFormatted[longestStreakDatesFormatted.length - 1]}`;
 
-        const currentStreakDatesText = currentStreakDates.length === 1 ?
-            currentStreakDates[0] :
-            `${currentStreakDates[0]} - ${currentStreakDates[currentStreakDates.length - 1]}`;
+        const currentStreakDatesText = currentStreakDates.length === 0 ? '' :
+            currentStreakDates.length === 1 ? currentStreakDates[0] :
+                `${currentStreakDates[0]} - ${currentStreakDates[currentStreakDates.length - 1]}`;
+
+        const longestStreakDatesShortText = longestStreakDatesShortFormatted.length === 1 ?
+            longestStreakDatesShortFormatted[0] :
+            `${longestStreakDatesShortFormatted[0]} - ${longestStreakDatesShortFormatted[longestStreakDatesShortFormatted.length - 1]}`;
+
+        const currentStreakDatesShortText = currentStreakDatesShort.length === 0 ? '' :
+            currentStreakDatesShort.length === 1 ? currentStreakDatesShort[0] :
+                `${currentStreakDatesShort[0]} - ${currentStreakDatesShort[currentStreakDatesShort.length - 1]}`;
 
         return {
             longestStreak,
             currentStreak,
             longestStreakDates: longestStreakDatesText,
+            longestStreakDatesShort: longestStreakDatesShortText,
             currentStreakDates: currentStreakDatesText,
+            currentStreakDatesShort: currentStreakDatesShortText,
         };
     } catch (err) {
         console.error('Error:', err);
@@ -648,10 +688,10 @@ export async function getUserFeed(id) {
                 data.timeZone,
             ), 'E');
 
-                const date = format(utcToZonedTime(
-                    data.created.toDate(),
-                    data.timeZone,
-                ), 'MMM d, y');
+            const date = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'MMM d, y');
 
             const time = format(utcToZonedTime(
                 data.created.toDate(),

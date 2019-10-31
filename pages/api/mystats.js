@@ -7,8 +7,6 @@ async function handler(req, res) {
     if (req.method === 'POST') {
         try {
             const [stats, streakData] = await Promise.all([getUserStats(user_id), getStreakData(user_id)]);
-            console.log('stats',stats);
-            console.log('streakData', streakData);
 
             if (stats && streakData) {
                 const {
@@ -21,14 +19,11 @@ async function handler(req, res) {
                     dailyAvg,
                     avgSet,
                     contributionPercentage,
-                    firstPlaceAthlete,
                 } = stats;
 
                 const {
                     longestStreak,
                     currentStreak,
-                    longestStreakDates,
-                    currentStreakDates,
                 } = streakData;
 
                 const dayOrDays = (number) => number === 1 ? 'day' : 'days';
@@ -36,32 +31,63 @@ async function handler(req, res) {
                 const fallbackDate = format(new Date(), 'EEE, MMM dd');
                 const date = `<!date^${Math.floor(new Date() / 1000)}^{date_short_pretty} at {time}|${fallbackDate}>`;
 
-                const formattedTextFull = [
-                    `Rank: ${ranking.toLocaleString()} ${ranking === 1 ? "Congrats! You're in the lead!" : ''}`,
-                    `Total Push-Ups: ${totalPushUps.toLocaleString()}`,
-                    `Catch the Leader: ${catchTheLeader.toLocaleString()} more`,
-                    `First Place: ${firstPlaceAthlete.profile.real_name} is in the lead with ${firstPlaceAthlete.count.toLocaleString()}`,
-                    `Daily Average: ${dailyAvg.toLocaleString()}`,
-                    `Longest Streak: ${longestStreak.toLocaleString()} ${dayOrDays(longestStreak)} ${longestStreak === 0 ? '' : `(${longestStreakDates})`}`,
-                    `Current Streak: ${currentStreak.toLocaleString()} ${dayOrDays(currentStreak)} ${currentStreak === 0 ? '' : `(${currentStreakDates})`}`,
-                    `Starting Set: ${firstSet.count.toLocaleString()} on ${firstSet.created}`,
-                    `Best Set: ${bestSet.count.toLocaleString()} on ${bestSet.created.join(', ')}`,
-                    `Average Set: ${avgSet.toLocaleString()}`,
-                    `Latest Set: ${mostRecentSet.count.toLocaleString()} on ${format(mostRecentSet.created, 'EEE, MMM dd')}`,
-                    `Contribution: ${contributionPercentage}% of the total push-ups`,
-                ];
+                const padding = 8;
+                const longestHeadingLength = 'Catch the Leader'.length;
+                const totalColumnLength = longestHeadingLength + padding;
 
-                const firstTwo = formattedTextFull.slice(0, 2);
-                const lastPortion = formattedTextFull.slice(4);
+                const fullList = [{
+                    label: 'Rank',
+                    value: `${ranking.toLocaleString()} ${ranking === 1 ? "Congrats!" : ''}`
+                }, {
+                    label: 'Total Push-Ups',
+                    value:  `${totalPushUps.toLocaleString()}`,
+                }, {
+                    label: 'Catch the Leader',
+                    value: `${catchTheLeader.toLocaleString()} more`,
+                }, {
+                    label: 'Daily Average',
+                    value: `${dailyAvg.toLocaleString()}`,
+                }, {
+                    label: 'Longest Streak',
+                    value: `${longestStreak.toLocaleString()} ${dayOrDays(longestStreak)}`,
+                }, {
+                    label: 'Current Streak',
+                    value: `${currentStreak.toLocaleString()} ${dayOrDays(currentStreak)}`,
+                }, {
+                    label: 'Starting Set',
+                    value: `${firstSet.count.toLocaleString()} (${firstSet.createdShort})`,
+                }, {
+                    label: 'Best Set',
+                    value: `${bestSet.count.toLocaleString()}`,
+                }, {
+                    label: 'Average Set',
+                    value: `${avgSet.toLocaleString()}`,
+                }, {
+                    label: 'Latest Set',
+                    value: `${mostRecentSet.count.toLocaleString()} (${format(mostRecentSet.created, 'MMM dd')})`,
+                }, {
+                    label: 'Contribution',
+                    value: `${contributionPercentage}%`,
+                }];
+
+                const firstTwo = fullList.slice(0, 2);
+                const lastPortion = fullList.slice(3);
                 const trimmedList = [...firstTwo, ...lastPortion];
-                const formattedText = ranking === 1 ? trimmedList.join(`\n`) : formattedTextFull.join(`\n`);
+                const textList = ranking === 1 ? trimmedList : fullList;
+
+                const formattedText = textList.reduce((acc, curr) => {
+                    const {label, value} = curr;
+                    const spacing = totalColumnLength - (curr.label.length + 1);
+
+                    return acc + `${label}:${new Array(spacing).join(' ')}${value}\n`;
+                }, '');
 
                 const blocks = [
                     {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `*YOUR STATS - ${date}* :bar_chart:`,
+                            "text": `*YOUR STATS - ${date}*`,
                         }
                     },
                     {
@@ -74,7 +100,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "_More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._",
+                            "text": ":bar_chart: _More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._",
                         }
                     }];
 
@@ -85,6 +111,8 @@ async function handler(req, res) {
                     blocks,
                 });
             }
+        } catch (err) {
+            console.error('Error:', err);
 
             const userNotFoundMessage = {
                 response_type: 'ephemeral',
@@ -94,9 +122,6 @@ async function handler(req, res) {
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
             res.json(userNotFoundMessage);
-        } catch (err) {
-            console.error('Error:', err);
-            throw new Error(err.message);
         }
     }
 }

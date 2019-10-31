@@ -57,7 +57,7 @@ const typeDefs = gql`
         catchTheLeader: Int!
         contributionPercentage: Int!
         bestSet: BestSet!
-        firstSet: IndividualSet!
+        firstSet: FirstSet!
         mostRecentSet: IndividualSet!
         firstPlaceAthlete: BasicRanking!
     }
@@ -82,11 +82,19 @@ const typeDefs = gql`
         longestStreak: Int!
         currentStreak: Int!
         longestStreakDates: String!
+        longestStreakDatesShort: String!
         currentStreakDates: String!
+        currentStreakDatesShort: String!
     }
     type BestSet {
         count: Int!
         created: [Date!]!
+        createdShort: [Date!]!
+    }
+    type FirstSet {
+        count: Int!
+        created: Date!
+        createdShort: Date!
     }
     type IndividualSet {
         count: Int!
