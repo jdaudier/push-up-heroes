@@ -92,7 +92,7 @@ const UserCard = ({user: {real_name, title, image_512}, mostRecentSet}) => (
                     {title}
                 </Card.Description>
             </Card.Content>
-            <Card.Content extra>
+            <Card.Content extra style={{color: 'rgba(0, 0, 0, .5)'}}>
                 <Icon name='feed' />
                 {mostRecentSet.count} {mostRecentSet.count === 1 ? 'push-up' : 'push-ups'} {formatDistanceToNow(parseISO(mostRecentSet.created), { addSuffix: true })}
             </Card.Content>
