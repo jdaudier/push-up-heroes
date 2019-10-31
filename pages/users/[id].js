@@ -5,7 +5,6 @@ import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
 import { Grid, Card, Image, Icon, Header } from 'semantic-ui-react'
 import Layout from '../../components/Layout';
-import LoadingView from '../../components/LoadingView';
 import UserStats from '../../components/UserStats';
 import LoadingUserView from '../../components/LoadingUserView';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
