@@ -136,7 +136,7 @@ export async function getAllUsersFeeds() {
             const simplifiedDate = format(utcToZonedTime(
                 data.created.toDate(),
                 data.timeZone,
-            ), 'yyyy-M-d');
+            ), 'yyyy-MM-dd');
 
             return {
                 feed:[...prevAcc.feed, {
@@ -409,7 +409,7 @@ async function getUserSetsById(id) {
             const created = format(utcToZonedTime(
                 data.created.toDate(),
                 data.timeZone,
-            ), 'yyyy-M-d');
+            ), 'yyyy-MM-dd');
 
             const currentSet = {
                 ...data,
@@ -443,21 +443,21 @@ export async function getDailySetsByUserId(id) {
         const firstEntryDateLocalTime = format(utcToZonedTime(
             firstEntry.rawCreated,
             firstEntry.timeZone,
-        ), 'yyyy-M-d');
+        ), 'yyyy-MM-dd');
 
 
         const lastEntry = sortedList[sortedList.length - 1];
         const lastEntryDateLocalTime = format(utcToZonedTime(
             lastEntry.rawCreated,
             lastEntry.timeZone,
-        ), 'yyyy-M-d');
+        ), 'yyyy-MM-dd');
 
         const datesArray = eachDayOfInterval(
             { start: parseISO(firstEntryDateLocalTime), end: parseISO(lastEntryDateLocalTime) }
         );
 
         return datesArray.map(date => {
-            const key = format(date, 'yyyy-M-d');
+            const key = format(date, 'yyyy-MM-dd');
 
             return {
                 label: format(date, 'EEE, MMM d'),
@@ -562,17 +562,17 @@ export async function getStreakData(id) {
         const firstEntryDate = format(utcToZonedTime(
             firstEntry.rawCreated,
             firstEntry.timeZone,
-        ), 'yyyy-M-d');
+        ), 'yyyy-MM-dd');
 
         const lastEntryDate = format(utcToZonedTime(
             lastEntry.rawCreated,
             lastEntry.timeZone,
-        ), 'yyyy-M-d');
+        ), 'yyyy-MM-dd');
 
         const localToday = format(utcToZonedTime(
             new Date(),
             firstEntry.timeZone,
-        ), 'yyyy-M-d');
+        ), 'yyyy-MM-dd');
 
         const yesterdayOrToday = isYesterday(parseISO(lastEntryDate)) ? lastEntryDate : localToday;
 
@@ -581,7 +581,7 @@ export async function getStreakData(id) {
         );
 
         const results = datesArray.reduce((acc, date) => {
-            const simplifiedDate = format(date, 'yyyy-M-d');
+            const simplifiedDate = format(date, 'yyyy-MM-dd');
             const formattedDate = format(date, 'EEE, MMM d');
             const formattedDateShort = format(date, 'MMM d');
 
@@ -701,7 +701,7 @@ export async function getUserFeed(id) {
             const simplifiedDate = format(utcToZonedTime(
                 data.created.toDate(),
                 data.timeZone,
-            ), 'yyyy-M-d');
+            ), 'yyyy-MM-dd');
 
             return {
                 feed: [...acc.feed, {
