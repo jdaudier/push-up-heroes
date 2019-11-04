@@ -219,9 +219,7 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
 };
 
 const Home = () => {
-    const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD, {
-        notifyOnNetworkStatusChange: true
-    });
+    const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD);
 
     const [activeTab, setActiveTab] = useState('leaderboard');
 

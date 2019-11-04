@@ -103,7 +103,6 @@ function User() {
     const router = useRouter();
 
     const { loading, error, data, fetchMore } = useQuery(GET_USER_STATS, {
-        notifyOnNetworkStatusChange: true,
         variables: { id: router.query.id },
     });
 
