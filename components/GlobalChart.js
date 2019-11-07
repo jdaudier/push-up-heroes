@@ -1,3 +1,6 @@
+import withData from '../lib/apollo';
+import { gql } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Segment, Header } from 'semantic-ui-react';
 import { BLUE, YELLOW } from '../utils/constants';
@@ -5,12 +8,26 @@ import CustomXAxisTick from './Chart/CustomXAxisTick';
 import CustomYAxisTick from './Chart/CustomYAxisTick';
 import CustomTooltip from './Chart/CustomTooltip';
 import CustomRefLineLabel from './Chart/CustomRefLineLabel';
-
+import LoadingChartView from './LoadingChartView';
 import { jsx, keyframes } from '@emotion/core';
 /** @jsx jsx */
 
-const UserChart = ({data, dailyAvg}) => {
-    const shouldShowAvg = data.length > 3;
+const GET_GLOBAL_CHART_DATA = gql`
+    query globalChartData {
+        globalChartData {
+            value
+            label
+        }
+    }
+`;
+
+function GlobalChart({dailyAvg}) {
+    const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_CHART_DATA);
+
+    if (!data) return <LoadingChartView />;
+
+    const {globalChartData} = data;
+    const shouldShowAvg = globalChartData.length > 3;
 
     return (
         <>
@@ -18,7 +35,6 @@ const UserChart = ({data, dailyAvg}) => {
                     attached='top'
                     style={{
                         backgroundColor: '#f9fafb',
-                        marginTop: 40,
                         paddingBottom: 20,
                         paddingTop: 20,
                     }}
@@ -28,14 +44,13 @@ const UserChart = ({data, dailyAvg}) => {
             <Segment attached='bottom' padded="very" style={{
                 paddingLeft: 0,
                 paddingRight: 0,
-                marginBottom: 64
             }}>
                 <ResponsiveContainer width="100%" height={410}>
                     <BarChart
-                        data={data}
+                        data={globalChartData}
                         margin={{right: shouldShowAvg ? 50 : 42}}
                     >
-                        <CartesianGrid strokeDasharray="3 3"/>
+                        <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="label" height={70} tick={<CustomXAxisTick/>}/>
                         <YAxis allowDecimals={false} tick={<CustomYAxisTick />}/>
                         <Tooltip content={CustomTooltip} cursor={{fill: 'rgba(185, 192, 201, .3)'}} />
@@ -49,11 +64,10 @@ const UserChart = ({data, dailyAvg}) => {
                             />
                         )}
                     </BarChart>
-
                 </ResponsiveContainer>
             </Segment>
         </>
     );
-};
+}
 
-export default UserChart;
+export default withData(props => <GlobalChart {...props} />);

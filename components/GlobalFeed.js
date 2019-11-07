@@ -2,14 +2,14 @@ import React from 'react';
 import Link from 'next/link';
 import { gql } from 'apollo-boost';
 import withData from '../lib/apollo';
+import {useQuery} from '@apollo/react-hooks';
 import {Table, Image} from 'semantic-ui-react';
 import { BLUE } from '../utils/constants';
 import Clap from './Clap';
 import LoadingTableView from './LoadingTableView';
 
-/** @jsx jsx */
 import { jsx } from '@emotion/core';
-import {useQuery} from "@apollo/react-hooks";
+/** @jsx jsx */
 
 const GET_GLOBAL_USERS_FEED = gql`
     query globalUsersFeed {
@@ -58,9 +58,7 @@ function MaybeLink({rowspan, slackId, realName, children}) {
 }
 
 const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
-    const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_USERS_FEED, {
-        notifyOnNetworkStatusChange: true
-    });
+    const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_USERS_FEED);
 
     return (
         <Table celled padded selectable size='large' striped textAlign="left">

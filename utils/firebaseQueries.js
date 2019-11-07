@@ -7,7 +7,7 @@ import getSlackProfile from './getSlackProfile';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 
-const CHALLENGE_ID = 'users';
+export const CHALLENGE_ID = 'users';
 
 export async function getFullLeaderboardData() {
     try {
@@ -393,6 +393,70 @@ export async function getMostRecentSet() {
                 created,
             }
         })[0];
+    } catch (err) {
+        console.error('Error:', err);
+        throw new Error(err.message);
+    }
+}
+
+export async function getGlobalChartData() {
+    try {
+        const snapshot = await db.collection(CHALLENGE_ID).orderBy('created').get();
+
+        const {
+            firstEntry,
+            lastEntry,
+            countsByDayMap,
+        } = snapshot.docs.reduce((acc, doc, i, arr) => {
+            const data = doc.data();
+            const created = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'yyyy-MM-dd');
+
+            const currentSet = {
+                ...data,
+                created,
+                rawCreated: data.created.toDate(),
+            };
+            const prevCount = acc.countsByDayMap[created];
+            return {
+                ...acc,
+                firstEntry: i === 0 ? currentSet : acc.firstEntry,
+                lastEntry: i === arr.length - 1 ? currentSet : acc.lastEntry,
+                countsByDayMap: {
+                    ...acc.countsByDayMap,
+                    [created]: prevCount ? prevCount + currentSet.count : currentSet.count,
+                }
+            }
+        }, {
+            firstEntry: {},
+            lastEntry: {},
+            countsByDayMap: {},
+        });
+
+        const firstEntryDateLocalTime = format(utcToZonedTime(
+            firstEntry.rawCreated,
+            firstEntry.timeZone,
+        ), 'yyyy-MM-dd');
+
+        const lastEntryDateLocalTime = format(utcToZonedTime(
+            lastEntry.rawCreated,
+            lastEntry.timeZone,
+        ), 'yyyy-MM-dd');
+
+        const datesArray = eachDayOfInterval(
+            { start: parseISO(firstEntryDateLocalTime), end: parseISO(lastEntryDateLocalTime) }
+        );
+
+        return datesArray.map(date => {
+            const key = format(date, 'yyyy-MM-dd');
+
+            return {
+                label: format(date, 'EEE, MMM d'),
+                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+            }
+        });
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);

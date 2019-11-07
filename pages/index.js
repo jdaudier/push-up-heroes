@@ -5,12 +5,13 @@ import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
 import Crown from '../components/Crown';
 import LoadingView from '../components/LoadingView';
 const GlobalFeed = dynamic(() => import('../components/GlobalFeed'));
+const GlobalChart = dynamic(() => import('../components/GlobalChart'));
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
 import withData from '../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { RED, YELLOW } from '../utils/constants';
+import { BLUE, RED, YELLOW } from '../utils/constants';
 import { jsx } from '@emotion/core';
 /** @jsx jsx */
 
@@ -107,6 +108,14 @@ const medalCss = {
     '@media(max-width: 767px)': {
         position: 'relative',
         transform: 'unset',
+    }
+};
+
+const tabCss = {
+    display: 'inline-block',
+    fontSize: '1.71428571rem',
+    '@media(max-width: 767px)': {
+        fontSize: 'calc(1.15rem + .6vw)'
     }
 };
 
@@ -236,25 +245,53 @@ const Home = () => {
                        onClick={() => setActiveTab('leaderboard')}
                        style={{borderTop: activeTab === 'leaderboard' ? `.2em solid ${RED}` : undefined}}
             >
-                <Header as='h2'>Leaderboard</Header>
+                <Header as='h2'>
+                    <span css={tabCss}>
+                        Leaderboard
+                    </span>
+                </Header>
             </Menu.Item>
         ),
         render: () => (
             <Tab.Pane loading={loading}><Leaderboard leaderboard={leaderboard} /></Tab.Pane>
-        ) }, {
+        )}, {
         menuItem: (
             <Menu.Item key='feed'
                        active={activeTab === 'feed'}
                        onClick={() => setActiveTab('feed')}
                        style={{borderTop: activeTab === 'feed' ? `.2em solid ${YELLOW}` : undefined}}
             >
-                <Header as='h2'>Feed</Header>
+                <Header as='h2'>
+                    <span css={tabCss}>
+                        Feed
+                    </span>
+                </Header>
             </Menu.Item>
         ),
         render: () => (
             <Tab.Pane loading={loading}>
                 <GlobalFeed totalPushUps={leaderboard.totalPushUps}
                             bestIndividualSetCount={leaderboard.bestIndividualSet.count}
+                />
+            </Tab.Pane>
+        )
+    }, {
+        menuItem: (
+            <Menu.Item key='chart'
+                       active={activeTab === 'chart'}
+                       onClick={() => setActiveTab('chart')}
+                       style={{borderTop: activeTab === 'chart' ? `.2em solid ${BLUE}` : undefined}}
+            >
+                <Header as='h2'>
+                    <span css={tabCss}>
+                        Chart
+                    </span>
+                </Header>
+            </Menu.Item>
+        ),
+        render: () => (
+            <Tab.Pane loading={loading}>
+                <GlobalChart dailyAvg={leaderboard.dailyAvg}
                 />
             </Tab.Pane>
         )
