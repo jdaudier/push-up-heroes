@@ -665,6 +665,7 @@ export async function getStreakData(id) {
                 const lastIndex = acc.longestStreakDates.length - 1;
                 const lastArr = acc.longestStreakDates[lastIndex];
                 const lastArrShort = acc.longestStreakDatesShort[lastIndex];
+                const currentStreak = acc.currentStreak + 1;
 
                 let updatedLongestStreakDates, updatedLongestStreakDatesShort;
                 if (acc.currentStreak === 0) {
@@ -676,8 +677,8 @@ export async function getStreakData(id) {
                 }
 
                 return {
-                    longestStreak: acc.longestStreak,
-                    currentStreak: acc.currentStreak + 1,
+                    longestStreak: currentStreak > acc.longestStreak ? currentStreak : acc.longestStreak,
+                    currentStreak,
                     longestStreakDates: updatedLongestStreakDates,
                     longestStreakDatesShort: updatedLongestStreakDatesShort,
                     currentStreakDates: [...acc.currentStreakDates, formattedDate],
