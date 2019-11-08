@@ -24,7 +24,7 @@ const typeDefs = gql`
         id: ID!
         name: String!
         count: Int!
-        profile: SlackProfile!
+        profile: SlimSlackProfile!
     }
     enum DayOfWeek {
         Mon
@@ -64,7 +64,7 @@ const typeDefs = gql`
     }
     type GlobalUserFeed implements Feed {
         name: String!
-        profile: SlackProfile!
+        profile: SlimSlackProfile!
         count: Int!
         dayOfWeek: DayOfWeek!
         date: Date!
@@ -109,7 +109,7 @@ const typeDefs = gql`
         id: ID!
         name: String!
         count: Int!
-        profile: SlackProfile!
+        profile: SlimSlackProfile!
         created: Date!
     }
     type BestIndividualSet {
@@ -120,20 +120,20 @@ const typeDefs = gql`
         id: ID!
         name: String!
         count: Int!
-        profile: SlackProfile!
+        profile: SlimSlackProfile!
         created: Date!
     }
     type BasicRanking implements Rank {
         id: ID!
         name: String!
         count: Int!
-        profile: SlackProfile!
+        profile: SlimSlackProfile!
     }
     type Ranking implements Rank {
         id: ID!
         name: String!
         count: Int!
-        profile: SlackProfile!
+        profile: SlimSlackProfile!
         dailyAvg: Int!
         contributionPercentage: Int!
     }
@@ -145,7 +145,29 @@ const typeDefs = gql`
         bestIndividualSet: BestIndividualSet!
         dailyAvg: Int!
     }
-    type SlackProfile {
+    interface Profile {
+        display_name: String!
+        real_name: String!
+        image_original: String!
+        image_24: String!
+        image_32: String!
+        image_48: String!
+        image_72: String!
+        image_192: String!
+        image_512: String!
+    }
+    type SlimSlackProfile implements Profile {
+        display_name: String!
+        real_name: String!
+        image_original: String!
+        image_24: String!
+        image_32: String!
+        image_48: String!
+        image_72: String!
+        image_192: String!
+        image_512: String!
+    }
+    type SlackProfile implements Profile {
         title: String!
         phone: String!
         skype: String!
@@ -189,6 +211,15 @@ const resolvers = {
             }
 
             return 'UserFeed';
+        },
+    },
+    Profile: {
+        __resolveType(profile, context, info){
+            if (profile.real_name_normalized || profile.title) {
+                return 'SlackProfile';
+            }
+
+            return 'SlimSlackProfile';
         },
     },
     Query: {

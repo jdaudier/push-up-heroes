@@ -3,11 +3,10 @@ import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
-import getSlackProfile from './getSlackProfile';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 
-export const CHALLENGE_ID = 'users';
+export const CHALLENGE_ID = 'challenge-beta';
 
 export async function getFullLeaderboardData() {
     try {
@@ -26,7 +25,7 @@ export async function getFullLeaderboardData() {
                 data.timeZone,
             ), 'EEE, MMM d');
 
-            const {id, count, name} = data;
+            const {id, count, name, profile} = data;
             const currentAthlete = {
                 id,
                 name,
@@ -39,6 +38,10 @@ export async function getFullLeaderboardData() {
                 slackIdMap: {
                     ...acc.slackIdMap,
                     [id]: name,
+                },
+                slackProfileMap: {
+                    ...acc.slackProfileMap,
+                    [id]: profile,
                 },
                 leaderboard: {
                     ...acc.leaderboard,
@@ -55,6 +58,7 @@ export async function getFullLeaderboardData() {
             }
         }, {
             slackIdMap: {},
+            slackProfileMap: {},
             leaderboard: {},
             totalPushUps: 0,
             bestIndividualSet: {
@@ -63,21 +67,22 @@ export async function getFullLeaderboardData() {
             },
         });
 
-        const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap} = data;
+        const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap, slackProfileMap} = data;
         const totalChallengeDays = await getTotalChallengeDays();
 
-        const leaderArr = await Promise.all(Object.keys(leaderboard).map(async (id) => {
+        const leaderArr = Object.keys(leaderboard).map((id) => {
             const name = slackIdMap[id];
             const count =  leaderboard[id];
+            const profile = slackProfileMap[id];
             return {
                 name,
                 count,
                 id,
-                profile: await getSlackProfile(id),
+                profile,
                 dailyAvg: Math.round(count / totalChallengeDays),
                 contributionPercentage: Math.round((count / totalPushUps) * 100),
             };
-        }));
+        });
 
         const sortedLeaderboard = leaderArr.sort((aPerson, bPerson) => {
             const aCount = aPerson.count;
@@ -85,13 +90,13 @@ export async function getFullLeaderboardData() {
             return bCount - aCount;
         });
 
-        const bestIndividualSetAthletes = await Promise.all(bestIndividualSet.athletes.map(async (athlete) => {
-            const bestIndividualSetProfile = await getSlackProfile(athlete.id);
+        const bestIndividualSetAthletes = bestIndividualSet.athletes.map((athlete) => {
+            const bestIndividualSetProfile = slackProfileMap[athlete.id];
             return {
                 ...athlete,
                 profile: bestIndividualSetProfile,
             };
-        }));
+        });
 
         return {
             rankings: sortedLeaderboard,
@@ -146,7 +151,6 @@ export async function getAllUsersFeeds() {
                     date,
                     time,
                     simplifiedDate,
-                    profile: await getSlackProfile(data.id),
                 }],
                 setsByDayMap: {
                     ...prevAcc.setsByDayMap,
@@ -275,12 +279,16 @@ export async function getLeaderboardData() {
         const snapshot = await db.collection(CHALLENGE_ID).get();
         const data = snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
-            const {id, count, name} = data;
+            const {id, count, name, profile} = data;
             return {
                 ...acc,
                 slackIdMap: {
                     ...acc.slackIdMap,
                     [id]: name,
+                },
+                slackProfileMap: {
+                    ...acc.slackProfileMap,
+                    [id]: profile,
                 },
                 leaderboard: {
                     ...acc.leaderboard,
@@ -290,22 +298,24 @@ export async function getLeaderboardData() {
             }
         }, {
             slackIdMap: {},
+            slackProfileMap: {},
             leaderboard: {},
             totalPushUps: 0,
         });
 
-        const {totalPushUps, leaderboard, slackIdMap} = data;
+        const {totalPushUps, leaderboard, slackIdMap, slackProfileMap} = data;
 
-        const leaderArr = await Promise.all(Object.keys(leaderboard).map(async id => {
+        const leaderArr = Object.keys(leaderboard).map(id => {
             const name = slackIdMap[id];
+            const profile = slackProfileMap[id];
 
             return {
                 id,
                 name,
                 count: leaderboard[id],
-                profile: await getSlackProfile(id),
+                profile,
             }
-        }));
+        });
 
         const sortedLeaderboard = leaderArr.sort((aPerson, bPerson) => {
             const aCount = aPerson.count;
@@ -341,6 +351,7 @@ export async function addUserData({
                                       id,
                                       count,
                                       timeZone,
+                                      profile,
                                   }) {
     return db.collection(CHALLENGE_ID).add({
         name,
@@ -348,6 +359,7 @@ export async function addUserData({
         count: count,
         created: new Date(),
         timeZone,
+        profile,
     });
 }
 
@@ -379,17 +391,15 @@ export async function getMostRecentSet() {
             .orderBy('created', 'desc')
             .limit(1).get();
 
-        return snapshot.docs.map(async (doc) => {
+        return snapshot.docs.map((doc) => {
             const data = doc.data();
             const created = format(utcToZonedTime(
                 data.created.toDate(),
                 data.timeZone,
             ), 'EEE, MMM d');
 
-            const profile = await getSlackProfile(data.id);
             return {
                 ...data,
-                profile,
                 created,
             }
         })[0];

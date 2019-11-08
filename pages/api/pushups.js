@@ -19,13 +19,37 @@ async function handler(req, res) {
         }
 
         try {
-            const user = await getSlackUser(user_id);
+            const {
+                tz,
+                name: display_name,
+                real_name,
+                profile: {
+                    image_original,
+                    image_24,
+                    image_32,
+                    image_48,
+                    image_72,
+                    image_192,
+                    image_512,
+                }
+            } = await getSlackUser(user_id);
 
             await addUserData({
                 name: user_name,
                 id: user_id,
                 count: count,
-                timeZone: user.tz,
+                timeZone: tz,
+                profile: {
+                    display_name,
+                    real_name,
+                    image_original,
+                    image_24,
+                    image_32,
+                    image_48,
+                    image_72,
+                    image_192,
+                    image_512,
+                }
             });
 
             const pushUps = count === 1 ? 'push-up' : 'push-ups';
