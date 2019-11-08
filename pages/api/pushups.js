@@ -21,7 +21,6 @@ async function handler(req, res) {
         try {
             const {
                 tz,
-                name: display_name,
                 real_name,
                 profile: {
                     image_original,
@@ -40,7 +39,6 @@ async function handler(req, res) {
                 count: count,
                 timeZone: tz,
                 profile: {
-                    display_name,
                     real_name,
                     image_original,
                     image_24,

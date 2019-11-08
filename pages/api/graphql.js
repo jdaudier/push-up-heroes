@@ -146,7 +146,6 @@ const typeDefs = gql`
         dailyAvg: Int!
     }
     interface Profile {
-        display_name: String!
         real_name: String!
         image_original: String!
         image_24: String!
@@ -157,7 +156,6 @@ const typeDefs = gql`
         image_512: String!
     }
     type SlimSlackProfile implements Profile {
-        display_name: String!
         real_name: String!
         image_original: String!
         image_24: String!
