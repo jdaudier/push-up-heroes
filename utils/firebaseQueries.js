@@ -354,11 +354,11 @@ export async function addUserData({
 export async function getTotalChallengeDays() {
     try {
         const [firstSnapshot, lastSnapshot] = await Promise.all([
-            await db.collection(CHALLENGE_ID)
+            db.collection(CHALLENGE_ID)
                 .orderBy('created', 'asc')
                 .limit(1).get(),
 
-            await db.collection(CHALLENGE_ID)
+            db.collection(CHALLENGE_ID)
                 .orderBy('created', 'desc')
                 .limit(1).get()
         ]);
@@ -537,8 +537,8 @@ export async function getDailySetsByUserId(id) {
 export async function getUserStats(id) {
     try {
         const [leaderboardData, totalChallengeDays] = await Promise.all([
-            await getLeaderboardData(),
-            await getTotalChallengeDays(),
+            getLeaderboardData(),
+            getTotalChallengeDays(),
         ]);
 
         const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
