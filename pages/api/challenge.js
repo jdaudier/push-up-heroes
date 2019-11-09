@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-unfetch'
 
+const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
+
 async function handler(req, res) {
     const {user_id, text, channel_name, team_id} = req.body;
     // text: <@U8BBPU36K|joanne> 3
@@ -39,7 +41,7 @@ async function handler(req, res) {
         const context = "_You too can challenge someone with the `/challenge` command._";
 
         try {
-            await fetch('https://slack.com/api/chat.postMessage', {
+            await fetch(slackPostMessageUrl, {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json',
