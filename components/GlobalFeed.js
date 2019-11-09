@@ -3,9 +3,8 @@ import Link from 'next/link';
 import { gql } from 'apollo-boost';
 import withData from '../lib/apollo';
 import {useQuery} from '@apollo/react-hooks';
-import {Table, Image} from 'semantic-ui-react';
+import {Table, Image, Icon} from 'semantic-ui-react';
 import { BLUE } from '../utils/constants';
-import Clap from './Clap';
 import LoadingTableView from './LoadingTableView';
 
 import { jsx } from '@emotion/core';
@@ -136,18 +135,14 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                                 </Table.Cell>
                                 <Table.Cell>
                                     <Link href='/users/[id]' as={`/users/${slackId}`}>
-                                        <a title={`${profile.real_name}'s page`} css={{...linkCss, position: 'relative'}}>
+                                        <a title={`${profile.real_name}'s page`} css={linkCss}>
                                             {count}
                                             {count === bestIndividualSetCount && (
                                                 <span css={{
                                                     marginLeft: 10,
-                                                    position: 'absolute',
-                                                    top: '50%',
-                                                    transform: 'translateY(-50%)',
-                                                    width: 30,
                                                 }}>
-                                                <Clap />
-                                            </span>
+                                                    <Icon color="yellow" name="star" />
+                                                </span>
                                             )}
                                         </a>
                                     </Link>

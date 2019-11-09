@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table, Icon } from 'semantic-ui-react';
 import { BLUE } from '../utils/constants';
-import Clap from './Clap';
 
 /** @jsx jsx */
 import { jsx, keyframes } from '@emotion/core';
@@ -59,20 +58,14 @@ const UserFeed = ({feed, setsByDayMap, totalPushUps, bestSetCount}) => {
                                 {time}
                             </Table.Cell>
                             <Table.Cell>
-                                <div css={{position: 'relative'}}>
-                                    {count}
-                                    {count === bestSetCount && (
-                                        <span css={{
-                                            marginLeft: 10,
-                                            position: 'absolute',
-                                            top: '50%',
-                                            transform: 'translateY(-50%)',
-                                            width: 30,
-                                        }}>
-                                            <Clap />
-                                        </span>
-                                    )}
-                                </div>
+                                {count}
+                                {count === bestSetCount && (
+                                    <span css={{
+                                        marginLeft: 10,
+                                    }}>
+                                        <Icon color="yellow" name="star" />
+                                    </span>
+                                )}
                             </Table.Cell>
                         </Table.Row>
                     )
