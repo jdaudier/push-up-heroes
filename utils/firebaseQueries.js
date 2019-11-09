@@ -31,6 +31,7 @@ export async function getFullLeaderboardData() {
                 name,
                 count,
                 created,
+                profile,
             };
 
             return {
@@ -90,24 +91,13 @@ export async function getFullLeaderboardData() {
             return bCount - aCount;
         });
 
-        const bestIndividualSetAthletes = bestIndividualSet.athletes.map((athlete) => {
-            const bestIndividualSetProfile = slackProfileMap[athlete.id];
-            return {
-                ...athlete,
-                profile: bestIndividualSetProfile,
-            };
-        });
-
         return {
             rankings: sortedLeaderboard,
             totalPushUps,
             totalAthletes: sortedLeaderboard.length,
             avgSet: Math.round(totalPushUps / snapshot.docs.length),
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
-            bestIndividualSet: {
-                count: bestIndividualSet.count,
-                athletes: bestIndividualSetAthletes,
-            }
+            bestIndividualSet
         }
     } catch (err) {
         console.error('Error:', err);
@@ -279,7 +269,22 @@ export async function getLeaderboardData() {
         const snapshot = await db.collection(CHALLENGE_ID).get();
         const data = snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
+
+            const created = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'EEE, MMM d');
+
             const {id, count, name, profile} = data;
+
+            const currentAthlete = {
+                id,
+                name,
+                count,
+                created,
+                profile,
+            };
+
             return {
                 ...acc,
                 slackIdMap: {
@@ -290,6 +295,17 @@ export async function getLeaderboardData() {
                     ...acc.slackProfileMap,
                     [id]: profile,
                 },
+                setsMapById: {
+                    ...acc.setsMapById,
+                    [id]: acc.setsMapById[id] ? acc.setsMapById[id] + 1 : 1,
+                },
+                bestIndividualSet: {
+                    count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
+                    athletes: count > acc.bestIndividualSet.count ? [currentAthlete] :
+                        count === acc.bestIndividualSet.count && !acc.bestIndividualSet.athletes.find(a => a.id === id) ?
+                            [...acc.bestIndividualSet.athletes, currentAthlete] :
+                            acc.bestIndividualSet.athletes,
+                },
                 leaderboard: {
                     ...acc.leaderboard,
                     [id]: acc.leaderboard[id] ? acc.leaderboard[id] + count : count,
@@ -299,11 +315,16 @@ export async function getLeaderboardData() {
         }, {
             slackIdMap: {},
             slackProfileMap: {},
+            setsMapById: {},
+            bestIndividualSet: {
+                count: 0,
+                athletes: [],
+            },
             leaderboard: {},
             totalPushUps: 0,
         });
 
-        const {totalPushUps, leaderboard, slackIdMap, slackProfileMap} = data;
+        const {totalPushUps, leaderboard, slackIdMap, slackProfileMap, setsMapById, bestIndividualSet} = data;
 
         const leaderArr = Object.keys(leaderboard).map(id => {
             const name = slackIdMap[id];
@@ -313,6 +334,7 @@ export async function getLeaderboardData() {
                 id,
                 name,
                 count: leaderboard[id],
+                totalSets: setsMapById[id],
                 profile,
             }
         });
@@ -326,6 +348,8 @@ export async function getLeaderboardData() {
         return {
             rankings: sortedLeaderboard,
             totalPushUps,
+            bestIndividualSet,
+            totalSets: snapshot.docs.length,
         }
     } catch (err) {
         console.error('Error:', err);
@@ -553,7 +577,7 @@ export async function getUserStats(id) {
 
         const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
 
-        const {rankings, totalPushUps: totalPushUpsGlobally} = leaderboardData;
+        const {rankings, totalPushUps: totalPushUpsGlobally, bestIndividualSet, totalSets} = leaderboardData;
 
         const ranking = rankings.findIndex((r) => r.id === id) + 1;
 
@@ -613,14 +637,24 @@ export async function getUserStats(id) {
         });
 
         const {totalPushUps} = results;
+
+        const firstPlaceAthlete = rankings[0];
+
         return {
             ...results,
             ranking,
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
+            globalDailyAvg: Math.round(totalPushUpsGlobally / totalChallengeDays),
             avgSet: Math.round(totalPushUps / snapshot.docs.length),
+            globalAvgSet: Math.round(totalPushUps / totalSets),
             contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
             catchTheLeader: rankings[0].count - totalPushUps,
-            firstPlaceAthlete: rankings[0],
+            firstPlaceAthlete: {
+                ...firstPlaceAthlete,
+                dailyAvg: Math.round(firstPlaceAthlete.count / totalChallengeDays),
+                avgSet: Math.round(firstPlaceAthlete.count / firstPlaceAthlete.totalSets),
+            },
+            globalBestIndividualSet: bestIndividualSet,
         }
     } catch (err) {
         console.error('Error:', err);

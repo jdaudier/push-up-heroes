@@ -84,27 +84,33 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
             const myStatsCommand = '_Use the `/mystats` command to see your latest stats._';
             const context = tagUser ? `${myStatsCommand}\n${webAppLink}` : webAppLink;
 
-            return [
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": `*${YOUR} STATS - ${date}*`,
-                    }
-                },
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": "```" + formattedText + "```",
-                    }
-                }, {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": context,
-                    }
-                }];
+            return {
+                blocks: [
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `*${YOUR} STATS - ${date}*`,
+                        }
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": "```" + formattedText + "```",
+                        }
+                    }, {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": context,
+                        }
+                    }],
+                rawStats: {
+                    ...stats,
+                    ...streakData,
+                }
+            }
         }
     } catch (err) {
         console.error('Error:', err);

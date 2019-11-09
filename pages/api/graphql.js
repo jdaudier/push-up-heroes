@@ -54,13 +54,16 @@ const typeDefs = gql`
         ranking: Int!
         totalPushUps: Int!
         dailyAvg: Int!
+        globalDailyAvg: Int!
         avgSet: Int!
+        globalAvgSet: Int!
         catchTheLeader: Int!
         contributionPercentage: Int!
         bestSet: BestSet!
         firstSet: FirstSet!
         mostRecentSet: IndividualSet!
         firstPlaceAthlete: BasicRanking!
+        globalBestIndividualSet: BestIndividualSet!
     }
     type GlobalUserFeed implements Feed {
         name: String!
@@ -127,12 +130,15 @@ const typeDefs = gql`
         id: ID!
         name: String!
         count: Int!
+        dailyAvg: Int!
+        avgSet: Int!
         profile: SlimSlackProfile!
     }
     type Ranking implements Rank {
         id: ID!
         name: String!
         count: Int!
+        totalSets: Int!
         profile: SlimSlackProfile!
         dailyAvg: Int!
         contributionPercentage: Int!

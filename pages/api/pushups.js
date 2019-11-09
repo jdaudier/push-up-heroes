@@ -3,6 +3,7 @@ import { addUserData } from '../../utils/firebaseQueries';
 import getSlackUser from '../../utils/getSlackUser';
 import getMyStats from '../../utils/getMyStats';
 import randomCelebrations from '../../utils/randomCelebrations';
+import getSmartResponse from '../../utils/smartResponse';
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
 
@@ -58,15 +59,18 @@ async function handler(req, res) {
                 const pushUps = count === 1 ? 'push-up' : 'push-ups';
                 const context = "_Use the `/pushups` command to log your set._";
 
-                const blocks = [{
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>Wow! Good job!\n${context}`,
-                    }
-                }];
-
                 try {
+                    const {blocks: myStatsBlocks, rawStats} = await getMyStats(user_id, {tagUser: true});
+                    const smartResponse = getSmartResponse({id: user_id, count, ...rawStats});
+
+                    const blocks = [{
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>${smartResponse}\n${context}`,
+                        }
+                    }];
+
                     const response = await fetch(slackPostMessageUrl, {
                         method: 'POST',
                         headers: {
@@ -80,8 +84,6 @@ async function handler(req, res) {
                     });
 
                     const {channel, ts} = await response.json();
-
-                    const myStatsBlocks = await getMyStats(user_id, {tagUser: true});
 
                     const myStatsResponse = {
                         channel,

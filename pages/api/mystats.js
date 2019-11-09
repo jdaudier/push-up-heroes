@@ -5,7 +5,7 @@ async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
-            const blocks = await getMyStats(user_id);
+            const {blocks} = await getMyStats(user_id);
 
             if (blocks) {
                 res.setHeader('Content-Type', 'application/json');
