@@ -1,7 +1,8 @@
 import fetch from 'isomorphic-unfetch';
 import { addUserData } from '../../utils/firebaseQueries';
 import getSlackUser from '../../utils/getSlackUser';
-import getMyStats from "../../utils/getMyStats";
+import getMyStats from '../../utils/getMyStats';
+import randomCelebrations from '../../utils/randomCelebrations';
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
 
@@ -61,7 +62,7 @@ async function handler(req, res) {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>Wow! Good job!\n${context}`
+                        "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>Wow! Good job!\n${context}`,
                     }
                 }];
 
@@ -95,6 +96,30 @@ async function handler(req, res) {
                             Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
                         },
                         body: JSON.stringify(myStatsResponse)
+                    });
+
+                    function getRandomInt(max) {
+                        return Math.floor(Math.random() * Math.floor(max));
+                    }
+
+                    const randomIndex = getRandomInt(randomCelebrations.length);
+                    const randomCelebration = randomCelebrations[randomIndex];
+
+                    const habitReminder = `According to the book _Tiny Habits_, immediately after you do your new habit, celebrate so you feel a positive emotion. That’s what wires the habit into your brain.\n\nHere's one idea:\n>*${randomCelebration}*`;
+
+                    const habitResponse = {
+                        channel,
+                        thread_ts: ts,
+                        text: habitReminder,
+                    };
+
+                    await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(habitResponse)
                     });
                 } catch (err) {
                     console.error('Error:', err);
