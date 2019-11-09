@@ -52,7 +52,7 @@ async function handler(req, res) {
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": ":alarm_clock: *CHALLENGE TIME!*"
+                                "text": "*CHALLENGE TIME!* :alarm_clock:"
                             }
                         },
                         {
