@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-unfetch';
 import { addUserData } from '../../utils/firebaseQueries';
 import getSlackUser from '../../utils/getSlackUser';
+import getMyStats from "../../utils/getMyStats";
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
 
@@ -52,18 +53,18 @@ async function handler(req, res) {
                 }
             });
 
-            const pushUps = count === 1 ? 'push-up' : 'push-ups';
-            const context = "_Use the `/pushups` command to log your set._";
-
-            const blocks = [{
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>Wow! That's a lot! Good job!\n${context}`
-                }
-            }];
-
             async function postToChannel() {
+                const pushUps = count === 1 ? 'push-up' : 'push-ups';
+                const context = "_Use the `/pushups` command to log your set._";
+
+                const blocks = [{
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>Wow! Good job!\n${context}`
+                    }
+                }];
+
                 try {
                     const response = await fetch(slackPostMessageUrl, {
                         method: 'POST',
@@ -77,8 +78,24 @@ async function handler(req, res) {
                         })
                     });
 
-                    const responseJson = await response.json();
-                    console.log(responseJson);
+                    const {channel, ts} = await response.json();
+
+                    const myStatsBlocks = await getMyStats(user_id, {tagUser: true});
+
+                    const myStatsResponse = {
+                        channel,
+                        thread_ts: ts,
+                        blocks: myStatsBlocks,
+                    };
+
+                    await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(myStatsResponse)
+                    });
                 } catch (err) {
                     console.error('Error:', err);
                     throw new Error(err.message);

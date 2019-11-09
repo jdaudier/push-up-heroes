@@ -1,7 +1,7 @@
 import { getUserStats, getStreakData } from './firebaseQueries';
 import format from 'date-fns/format';
 
-async function getMyStats(userId) {
+async function getMyStats(userId, {tagUser} = {tagUser: false}) {
     try {
         const [stats, streakData] = await Promise.all([getUserStats(userId), getStreakData(userId)]);
 
@@ -79,12 +79,17 @@ async function getMyStats(userId) {
                 return acc + `${label}:${new Array(spacing).join(' ')}${value}\n`;
             }, '');
 
+            const YOUR = tagUser ? `<@${userId}>'s` : 'YOUR';
+            const webAppLink = ':bar_chart: _More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._';
+            const myStatsCommand = '_Use the `/mystats` command to see your latest stats._';
+            const context = tagUser ? `${myStatsCommand}\n${webAppLink}` : webAppLink;
+
             return [
                 {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": `*YOUR STATS - ${date}*`,
+                        "text": `*${YOUR} STATS - ${date}*`,
                     }
                 },
                 {
@@ -97,7 +102,7 @@ async function getMyStats(userId) {
                     "type": "section",
                     "text": {
                         "type": "mrkdwn",
-                        "text": ":bar_chart: _More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._",
+                        "text": context,
                     }
                 }];
         }

@@ -150,12 +150,6 @@ async function handler(req, res) {
                 }
             } else {
                 try {
-                    const slackResponse = {
-                        "channel": channel.id,
-                        "thread_ts": message.ts,
-                        "text": `<@${user.id}> We get it! You're too busy to get down and do *${count}* ${pushUps}. Don't worry, there's plenty of other chances to make <@${challengerId}> proud. :grandpa-simpson-shake-fist:`
-                    };
-
                     const updatedMessage = {
                         "channel": channel.id,
                         "ts": message.ts,
@@ -205,6 +199,12 @@ async function handler(req, res) {
                         },
                         body: JSON.stringify(updatedMessage)
                     });
+
+                    const slackResponse = {
+                        "channel": channel.id,
+                        "thread_ts": message.ts,
+                        "text": `<@${user.id}> We get it! You're too busy to get down and do *${count}* ${pushUps}. Don't worry, there's plenty of other chances to make <@${challengerId}> proud. :grandpa-simpson-shake-fist:`
+                    };
 
                     await fetch(slackPostMessageUrl, {
                         method: 'POST',
