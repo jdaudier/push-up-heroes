@@ -3,6 +3,7 @@ import { addUserData } from "../../utils/firebaseQueries";
 import getSlackUser from '../../utils/getSlackUser';
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
+const slackUpdateMessageUrl = 'https://slack.com/api/chat.update';
 
 async function handler(req, res) {
     const {user, actions: [action], team, message, channel} = JSON.parse(req.body.payload);
@@ -85,6 +86,56 @@ async function handler(req, res) {
                         "text": `<@${user.id}> We've logged *${count}* new ${pushUps} for you. Kudos for accepting the challenge from <@${challengerId}>! :party:`
                     };
 
+                    const updatedMessage = {
+                        "channel": channel.id,
+                        "ts": message.ts,
+                        "text": message.text,
+                        "blocks": [
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "*CHALLENGE TIME!* :alarm_clock:"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": `<@${challengerId}> just challenged <@${user.id}> to *${count}* ${pushUps}!\n*Do you accept this challenge <@${user.id}>?*\n\n_If you accept, *${count}* more ${pushUps} will be logged for you_.`
+                                },
+                                "accessory": {
+                                    "type": "image",
+                                    "image_url": "https://zappy.zapier.com/ooh-cat%202019-10-1219%20at%2019.22.51.gif",
+                                    "alt_text": "funny image"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": ":white_check_mark: *ACCEPTED!*"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "_You too can challenge someone with the `/challenge` command._"
+                                }
+                            }
+                        ]
+                    };
+
+                    await fetch(slackUpdateMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(updatedMessage)
+                    });
+
                     await fetch(slackPostMessageUrl, {
                         method: 'POST',
                         headers: {
@@ -102,8 +153,58 @@ async function handler(req, res) {
                     const slackResponse = {
                         "channel": channel.id,
                         "thread_ts": message.ts,
-                        "text": `<@${user.id}> We get it! You're too busy to get down and do *${count}* ${pushUps}. Don't worry, plenty of chances to make <@${challengerId}> proud. :grandpa-simpson-shake-fist:`
+                        "text": `<@${user.id}> We get it! You're too busy to get down and do *${count}* ${pushUps}. Don't worry, there's plenty of other chances to make <@${challengerId}> proud. :grandpa-simpson-shake-fist:`
                     };
+
+                    const updatedMessage = {
+                        "channel": channel.id,
+                        "ts": message.ts,
+                        "text": message.text,
+                        "blocks": [
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "*CHALLENGE TIME!* :alarm_clock:"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": `<@${challengerId}> just challenged <@${user.id}> to *${count}* ${pushUps}!\n*Do you accept this challenge <@${user.id}>?*\n\n_If you accept, *${count}* more ${pushUps} will be logged for you_.`
+                                },
+                                "accessory": {
+                                    "type": "image",
+                                    "image_url": "https://zappy.zapier.com/ooh-cat%202019-10-1219%20at%2019.22.51.gif",
+                                    "alt_text": "funny image"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": ":x: DECLINED!"
+                                }
+                            },
+                            {
+                                "type": "section",
+                                "text": {
+                                    "type": "mrkdwn",
+                                    "text": "_You too can challenge someone with the `/challenge` command._"
+                                }
+                            }
+                        ]
+                    };
+
+                    await fetch(slackUpdateMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                        },
+                        body: JSON.stringify(updatedMessage)
+                    });
 
                     await fetch(slackPostMessageUrl, {
                         method: 'POST',
