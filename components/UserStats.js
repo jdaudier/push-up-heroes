@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Grid, Statistic, Popup, Image } from 'semantic-ui-react';
-import Party from './Party';
 import Crown from './Crown';
 import { cellLinkCss } from './Stats';
 import { BLUE, RED, YELLOW } from '../utils/constants';
@@ -119,7 +118,7 @@ const Stats = ({data}) => {
                             marginRight: 10,
                             width: 36,
                         }}>
-                            <Party />
+                            <Image src="/images/celebrate.gif" />
                         </span>
                         <span css={{
                             display: 'inline-block',
