@@ -80,7 +80,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
             }, '');
 
             const YOUR = tagUser ? `<@${userId}>'s` : 'YOUR';
-            const webAppLink = ':bar_chart: _More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._';
+            const webAppLink = ':bar_chart: _More fun data at <https://pushupheroes.com|pushupheroes.com>._';
             const myStatsCommand = '_Use the `/mystats` command to see your latest stats._';
             const context = tagUser ? `${myStatsCommand}\n${webAppLink}` : webAppLink;
 

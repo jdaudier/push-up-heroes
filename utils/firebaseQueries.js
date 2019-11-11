@@ -244,7 +244,7 @@ export async function getLeaderboardText(userId) {
         const leaderboardText = "```" + formattedText + "```";
 
         const context = userId ? `_<@${userId}>` + " triggered this from the `/leaderboard` command._" : '_Use the `/leaderboard` command to see the latest data._';
-        const webLink = ':linechart: _More fun data at <https://push-up-heroes.now.sh|push-up-heroes.now.sh>._';
+        const webLink = ':linechart: _More fun data at <https://pushupheroes.com|pushupheroes.com>._';
 
         const summary = sortedLeaderboard.map((person, i) => {
             switch (i) {
