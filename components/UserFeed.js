@@ -31,22 +31,36 @@ const UserFeed = ({feed, setsByDayMap, totalPushUps, bestSetCount}) => {
                     const rowspan = setsByDayMap[simplifiedDate];
                     const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
 
-                    const cellCss = rowspan === 1 ? undefined : {verticalAlign: 'top'};
+                    const shouldCellBeHidden = rowspan > 1 && i > firstIndex;
 
-                    const maybeSetsCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell css={cellCss} rowSpan={rowspan}>
+                    const cellCss = {
+                        display: shouldCellBeHidden ? 'none' : 'table-cell',
+                        verticalAlign: rowspan > 1 ? 'top' : 'inherit',
+                        '@media(max-width: 767px)': {
+                            display: 'inherit',
+                            verticalAlign: 'inherit',
+                        }
+                    };
+
+                    const maybeSetsCell = shouldCellBeHidden ? null : (
+                        <Table.Cell css={{
+                            verticalAlign: rowspan > 1 ? 'top' : 'inherit',
+                        }}
+                                    rowSpan={rowspan}>
                             {rowspan}
                         </Table.Cell>
                     );
 
-                    const maybeDayCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell css={cellCss} rowSpan={rowspan}>
+                    const maybeDayCell = (
+                        <Table.Cell css={cellCss}
+                                    rowSpan={rowspan}>
                             {dayOfWeek}
                         </Table.Cell>
                     );
 
-                    const maybeDateCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell css={cellCss} rowSpan={rowspan}>
+                    const maybeDateCell = (
+                        <Table.Cell css={cellCss}
+                                    rowSpan={rowspan}>
                             {date}
                         </Table.Cell>
                     );
