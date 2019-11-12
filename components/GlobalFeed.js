@@ -36,17 +36,17 @@ const linkCss = {
     color: 'initial',
 };
 
-function MaybeLink({rowspan, shouldCellBeHidden, slackId, realName, children}) {
+function MaybeLink({rowSpan, shouldCellBeHidden, slackId, realName, children}) {
     const cellCss = {
         display: shouldCellBeHidden ? 'none' : 'table-cell',
-        verticalAlign: rowspan > 1 ? 'top' : 'inherit',
+        verticalAlign: rowSpan > 1 ? 'top' : 'inherit',
         '@media(max-width: 767px)': {
             display: 'inherit',
             verticalAlign: 'inherit',
         }
     };
 
-    if (rowspan === 1) {
+    if (rowSpan === 1) {
         return (
             <Table.Cell>
                 <Link href='/users/[id]' as={`/users/${slackId}`}>
@@ -59,7 +59,7 @@ function MaybeLink({rowspan, shouldCellBeHidden, slackId, realName, children}) {
     }
 
     return (
-        <Table.Cell css={cellCss} rowSpan={rowspan}>
+        <Table.Cell css={cellCss} rowSpan={rowSpan}>
             {children}
         </Table.Cell>
     );
@@ -94,20 +94,20 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
             {(loading || !data) ? <LoadingTableView /> : (
                 <Table.Body>
                     {data.globalUsersFeed.feed.map(({slackId, dayOfWeek, date, time, count, simplifiedDate, profile}, i, arr) => {
-                        const rowspan = data.globalUsersFeed.setsByDayMap[simplifiedDate];
+                        const rowSpan = data.globalUsersFeed.setsByDayMap[simplifiedDate];
 
                         const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
 
-                        const shouldCellBeHidden = rowspan > 1 && i > firstIndex;
+                        const shouldCellBeHidden = rowSpan > 1 && i > firstIndex;
 
                         const maybeSetsCell = shouldCellBeHidden ? null : (
-                            <MaybeLink rowspan={rowspan} realName={profile.real_name} slackId={slackId}>
-                                {rowspan}
+                            <MaybeLink rowSpan={rowSpan} realName={profile.real_name} slackId={slackId}>
+                                {rowSpan}
                             </MaybeLink>
                         );
 
                         const maybeDayCell = (
-                            <MaybeLink rowspan={rowspan}
+                            <MaybeLink rowSpan={rowSpan}
                                        realName={profile.real_name}
                                        shouldCellBeHidden={shouldCellBeHidden}
                                        slackId={slackId}>
@@ -116,7 +116,7 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                         );
 
                         const maybeDateCell = (
-                            <MaybeLink rowspan={rowspan}
+                            <MaybeLink rowSpan={rowSpan}
                                        realName={profile.real_name}
                                        shouldCellBeHidden={shouldCellBeHidden}
                                        slackId={slackId}>
