@@ -36,7 +36,7 @@ const linkCss = {
     color: 'initial',
 };
 
-function MaybeLink({rowSpan, shouldCellBeHidden, slackId, realName, children}) {
+function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, children}) {
     const cellCss = {
         display: shouldCellBeHidden ? 'none' : 'table-cell',
         verticalAlign: rowSpan > 1 ? 'top' : 'inherit',
@@ -48,7 +48,7 @@ function MaybeLink({rowSpan, shouldCellBeHidden, slackId, realName, children}) {
 
     if (rowSpan === 1) {
         return (
-            <Table.Cell>
+            <Table.Cell className={className}>
                 <Link href='/users/[id]' as={`/users/${slackId}`}>
                     <a title={`${realName}'s page`} css={linkCss}>
                         {children}
@@ -59,7 +59,7 @@ function MaybeLink({rowSpan, shouldCellBeHidden, slackId, realName, children}) {
     }
 
     return (
-        <Table.Cell css={cellCss} rowSpan={rowSpan}>
+        <Table.Cell className={className} css={cellCss} rowSpan={rowSpan}>
             {children}
         </Table.Cell>
     );
@@ -72,7 +72,7 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
         <Table celled padded selectable size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell width={1}>Sets
+                    <Table.HeaderCell className="mobile-hidden" width={1}>Sets
                         {data && (
                             <span css={{color: BLUE, marginLeft: 6}}>
                                 ({data.globalUsersFeed.feed.length.toLocaleString()})
@@ -101,7 +101,10 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                         const shouldCellBeHidden = rowSpan > 1 && i > firstIndex;
 
                         const maybeSetsCell = shouldCellBeHidden ? null : (
-                            <MaybeLink rowSpan={rowSpan} realName={profile.real_name} slackId={slackId}>
+                            <MaybeLink className="mobile-hidden"
+                                       realName={profile.real_name}
+                                       rowSpan={rowSpan}
+                                       slackId={slackId}>
                                 {rowSpan}
                             </MaybeLink>
                         );

@@ -10,7 +10,7 @@ const UserFeed = ({feed, setsByDayMap, totalPushUps, bestSetCount}) => {
         <Table celled color="yellow" padded size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
-                    <Table.HeaderCell width={1}>Sets
+                    <Table.HeaderCell className="mobile-hidden" width={1}>Sets
                         <span css={{color: BLUE, marginLeft: 6}}>
                             ({feed.length.toLocaleString()})
                         </span>
@@ -43,10 +43,10 @@ const UserFeed = ({feed, setsByDayMap, totalPushUps, bestSetCount}) => {
                     };
 
                     const maybeSetsCell = shouldCellBeHidden ? null : (
-                        <Table.Cell css={{
-                            verticalAlign: rowSpan > 1 ? 'top' : 'inherit',
-                        }}
-                                    rowSpan={rowSpan}>
+                        <Table.Cell
+                            className="mobile-hidden"
+                            css={{verticalAlign: rowSpan > 1 ? 'top' : 'inherit'}}
+                            rowSpan={rowSpan}>
                             {rowSpan}
                         </Table.Cell>
                     );
