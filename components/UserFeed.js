@@ -31,20 +31,22 @@ const UserFeed = ({feed, setsByDayMap, totalPushUps, bestSetCount}) => {
                     const rowspan = setsByDayMap[simplifiedDate];
                     const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
 
+                    const cellCss = rowspan === 1 ? undefined : {verticalAlign: 'top'};
+
                     const maybeSetsCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell rowSpan={rowspan}>
+                        <Table.Cell css={cellCss} rowSpan={rowspan}>
                             {rowspan}
                         </Table.Cell>
                     );
 
                     const maybeDayCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell rowSpan={rowspan}>
+                        <Table.Cell css={cellCss} rowSpan={rowspan}>
                             {dayOfWeek}
                         </Table.Cell>
                     );
 
                     const maybeDateCell = rowspan > 1 && i > firstIndex ? null : (
-                        <Table.Cell rowSpan={rowspan}>
+                        <Table.Cell css={cellCss} rowSpan={rowspan}>
                             {date}
                         </Table.Cell>
                     );

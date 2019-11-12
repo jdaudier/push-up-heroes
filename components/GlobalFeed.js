@@ -50,7 +50,7 @@ function MaybeLink({rowspan, slackId, realName, children}) {
     }
 
     return (
-        <Table.Cell rowSpan={rowspan}>
+        <Table.Cell css={{verticalAlign: 'top'}} rowSpan={rowspan}>
             {children}
         </Table.Cell>
     );
