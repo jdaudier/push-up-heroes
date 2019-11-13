@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getDailyPushUpsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
+import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getDailyPushUpsByUserId, getMostRecentSet, getUserStats, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -9,7 +9,6 @@ const typeDefs = gql`
     type Query {
         leaderboard: Leaderboard!
         summary: String!
-        totalPushUps: Int!
         mostRecentSet: MostRecentSet!
         globalUsersFeed(page: Int!): GlobalUsersFeedData!
         globalChartData: [CountByDay!]!
@@ -258,14 +257,6 @@ const resolvers = {
                 return await getGlobalChartData();
             } catch (error) {
                 throw new ApolloError("Error getting global chart data!", 500, error);
-            }
-        },
-
-        async totalPushUps () {
-            try {
-               return await getTotalPushUpsCount();
-            } catch (error) {
-                throw new ApolloError('Error getting total push-up count!', 500, error);
             }
         },
 

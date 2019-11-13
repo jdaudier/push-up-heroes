@@ -382,19 +382,6 @@ export async function getLeaderboardData() {
     }
 }
 
-export async function getTotalPushUpsCount() {
-    try {
-        const snapshot = await db.collection(CHALLENGE_ID).get();
-        return snapshot.docs.reduce((acc, doc) => {
-            const {count} = doc.data();
-            return acc + count;
-        }, 0);
-    } catch (err) {
-        console.error('Error:', err);
-        throw new Error(err.message);
-    }
-}
-
 export async function addUserData({
                                       name,
                                       id,
