@@ -532,7 +532,7 @@ export async function getGlobalChartData() {
 }
 
 /* INDIVIDUAL QUERIES */
-async function getUserSetsById(id) {
+async function getUserPushUpsById(id) {
     try {
         const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
 
@@ -569,7 +569,7 @@ async function getUserSetsById(id) {
 
 export async function getDailyPushUpsByUserId(id) {
     try {
-        const {countsByDayMap, sortedList} = await getUserSetsById(id);
+        const {countsByDayMap, sortedList} = await getUserPushUpsById(id);
 
         const firstEntry = sortedList[0];
         const firstEntryDateLocalTime = format(utcToZonedTime(
@@ -698,7 +698,7 @@ export async function getUserStats(id) {
 
 export async function getStreakData(id) {
     try {
-        const {sortedList, countsByDayMap} = await getUserSetsById(id);
+        const {sortedList, countsByDayMap} = await getUserPushUpsById(id);
         const {length, 0: firstEntry, [length - 1]: lastEntry} = sortedList;
 
         const firstEntryDate = format(utcToZonedTime(
