@@ -289,7 +289,7 @@ export async function getLeaderboardText(userId) {
     }
 }
 
-export async function getLeaderboardData() {
+async function getLeaderboardData() {
     try {
         const snapshot = await db.collection(CHALLENGE_ID).get();
         const data = snapshot.docs.reduce((acc, doc) => {
@@ -374,7 +374,7 @@ export async function getLeaderboardData() {
             rankings: sortedLeaderboard,
             totalPushUps,
             bestIndividualSet,
-            totalSets: snapshot.docs.length,
+            totalSets: snapshot.size,
         }
     } catch (err) {
         console.error('Error:', err);
