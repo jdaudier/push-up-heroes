@@ -5,6 +5,7 @@ import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
+import { FEED_LIMIT } from '../utils/constants';
 
 export const CHALLENGE_ID = 'challenge-beta';
 
@@ -105,9 +106,42 @@ export async function getFullLeaderboardData() {
     }
 }
 
-export async function getAllUsersFeeds() {
+export async function getTotalSetCount() {
+    const snapshot = await db.collection(CHALLENGE_ID).get();
+
+    if (snapshot.empty) {
+        return 0;
+    }
+
+    return snapshot.size;
+}
+
+export async function getAllUsersFeeds({page} = {page: 1}) {
+    const firstPageQuery = db.collection(CHALLENGE_ID)
+        .orderBy('created', 'desc')
+        .limit(FEED_LIMIT);
+    let currentPage = 1;
+
+    async function getPaginatedPage(query) {
+        if (currentPage < page) {
+            const snapshot = await query.get();
+            const { length, [length - 1]: last } = snapshot.docs;
+
+            const next = db.collection(CHALLENGE_ID)
+                .orderBy('created', 'desc')
+                .startAfter(last)
+                .limit(FEED_LIMIT);
+
+            currentPage++;
+            return await getPaginatedPage(next);
+        }
+
+        return query;
+    }
+
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).orderBy('created', 'desc').get();
+        const query = await getPaginatedPage(firstPageQuery);
+        const snapshot = await query.get();
 
         return snapshot.docs.reduce(async (acc, doc) => {
             const prevAcc = await acc;

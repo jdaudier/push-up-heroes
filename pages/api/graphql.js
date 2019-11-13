@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
+import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getDailySetsByUserId, getMostRecentSet, getUserStats, getTotalPushUpsCount, getStreakData, getUserFeed, getAllUsersFeeds, getTotalSetCount } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -11,8 +11,9 @@ const typeDefs = gql`
         summary: String!
         totalPushUps: Int!
         mostRecentSet: MostRecentSet!
-        globalUsersFeed: GlobalUsersFeedData!
+        globalUsersFeed(page: Int): GlobalUsersFeedData!
         globalChartData: [CountByDay!]!
+        totalSetCount: Int!
         
         dailySetsByUser(id: ID!): [CountByDay!]!
         userSlackProfile(id: ID!): SlackProfile!
@@ -243,11 +244,19 @@ const resolvers = {
             }
         },
 
-        async globalUsersFeed () {
+        async globalUsersFeed (parent, {page}) {
             try {
-                return await getAllUsersFeeds();
+                return await getAllUsersFeeds({page});
             } catch (error) {
                 throw new ApolloError("Error getting global feed!", 500, error);
+            }
+        },
+
+        async totalSetCount () {
+            try {
+                return await getTotalSetCount();
+            } catch (error) {
+                throw new ApolloError("Error getting total set count!", 500, error);
             }
         },
 

@@ -1,18 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { gql } from 'apollo-boost';
 import withData from '../lib/apollo';
-import {useQuery} from '@apollo/react-hooks';
-import {Table, Image, Icon} from 'semantic-ui-react';
-import { BLUE } from '../utils/constants';
+import { useQuery } from '@apollo/react-hooks';
+import { Table, Image, Icon } from 'semantic-ui-react';
+import {BLUE, FEED_LIMIT } from '../utils/constants';
 import LoadingTableView from './LoadingTableView';
+import FeedPagination from './FeedPagination';
 
 import { jsx } from '@emotion/core';
 /** @jsx jsx */
 
 const GET_GLOBAL_USERS_FEED = gql`
-    query globalUsersFeed {
-        globalUsersFeed {
+    query globalUsersFeed($page: Int!) {
+        globalUsersFeed(page: $page) {
             feed {
                 slackId
                 profile {
@@ -27,6 +28,12 @@ const GET_GLOBAL_USERS_FEED = gql`
             }
             setsByDayMap
         }
+    }
+`;
+
+const GET_TOTAL_SET_COUNT = gql`
+    query totalSetCount {
+        totalSetCount
     }
 `;
 
@@ -46,6 +53,18 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
         }
     };
 
+    const mobileCss = {
+        '@media(max-width: 767px)': {
+            display: 'none',
+        }
+    };
+
+    const desktopCss = {
+        '@media(min-width: 768px)': {
+            display: 'none',
+        }
+    };
+
     if (rowSpan === 1) {
         return (
             <Table.Cell className={className}>
@@ -60,22 +79,38 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
 
     return (
         <Table.Cell className={className} css={cellCss} rowSpan={rowSpan}>
-            {children}
+            <div css={mobileCss}>
+                {children}
+            </div>
+            <div css={desktopCss}>
+                <Link href='/users/[id]' as={`/users/${slackId}`}>
+                    <a title={`${realName}'s page`} css={linkCss}>
+                        {children}
+                    </a>
+                </Link>
+            </div>
         </Table.Cell>
     );
 }
 
 const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
-    const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_USERS_FEED);
+    const [activePage, setActivePage] = useState(1);
+    const { loading, error, data } = useQuery(GET_GLOBAL_USERS_FEED, {
+        variables: { page: activePage },
+    });
+
+    const { loading: setCountLoading, data: setCountData } = useQuery(GET_TOTAL_SET_COUNT);
+
+    const totalPages = setCountData ? Math.ceil(setCountData.totalSetCount / FEED_LIMIT) : 1;
 
     return (
         <Table celled padded selectable size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell className="mobile-hidden" width={1}>Sets
-                        {data && (
+                        {setCountData && (
                             <span css={{color: BLUE, marginLeft: 6}}>
-                                ({data.globalUsersFeed.feed.length.toLocaleString()})
+                                ({setCountData.totalSetCount.toLocaleString()})
                             </span>
                         )}
                     </Table.HeaderCell>
@@ -177,19 +212,47 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                 <Table.Row>
                     <Table.HeaderCell colSpan='6'>
                         <div css={{
-                            color: 'rgba(0,0,0,.6)',
-                            textAlign: 'right',
-                            marginTop: 6,
-                            marginBottom: 6,
+                            alignItems: 'center',
+                            display: 'flex',
+                            justifyContent: totalPages > 1 ? 'normal': 'flex-end',
                         }}>
-                            Log your sets in Slack by typing
-                            <code css={{
-                                backgroundColor: 'rgba(27,31,35,.05)',
-                                borderRadius: 3,
-                                fontSize: '95%',
-                                padding: '.2em .4em',
-                                marginLeft: 4,
-                            }}>/pushups</code>
+                            <div css={{
+                                color: 'rgba(0,0,0,.6)',
+                            }}>
+                                Use
+                                <code css={{
+                                    backgroundColor: 'rgba(27,31,35,.05)',
+                                    borderRadius: 3,
+                                    fontSize: '95%',
+                                    padding: '.2em .4em',
+                                    marginLeft: 4,
+                                    marginRight: 4,
+                                }}>/pushups
+                                </code>
+                                in Slack to log sets and
+                                <code css={{
+                                    backgroundColor: 'rgba(27,31,35,.05)',
+                                    borderRadius: 3,
+                                    fontSize: '95%',
+                                    padding: '.2em .4em',
+                                    marginLeft: 4,
+                                    marginRight: 4,
+                                }}>/challenge
+                                </code>
+                                to challenge someone
+                            </div>
+                            {totalPages > 1 && (
+                                <div css={{marginLeft: 'auto'}}>
+                                    <FeedPagination
+                                        activePage={activePage}
+                                        disabled={setCountLoading || !setCountData}
+                                        onPageChange={(e, {activePage}) => {
+                                            setActivePage(activePage);
+                                        }}
+                                        totalPages={totalPages}
+                                    />
+                                </div>
+                            )}
                         </div>
                     </Table.HeaderCell>
                 </Table.Row>
