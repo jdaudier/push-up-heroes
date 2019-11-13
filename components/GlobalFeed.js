@@ -4,7 +4,7 @@ import { gql } from 'apollo-boost';
 import withData from '../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { Table, Image, Icon } from 'semantic-ui-react';
-import {BLUE, FEED_LIMIT } from '../utils/constants';
+import { BLUE, FEED_LIMIT } from '../utils/constants';
 import LoadingTableView from './LoadingTableView';
 import FeedPagination from './FeedPagination';
 
@@ -28,12 +28,6 @@ const GET_GLOBAL_USERS_FEED = gql`
             }
             setsByDayMap
         }
-    }
-`;
-
-const GET_TOTAL_SET_COUNT = gql`
-    query totalSetCount {
-        totalSetCount
     }
 `;
 
@@ -93,26 +87,22 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
     );
 }
 
-const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
+const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
     const [activePage, setActivePage] = useState(1);
     const { loading, error, data } = useQuery(GET_GLOBAL_USERS_FEED, {
         variables: { page: activePage },
     });
 
-    const { loading: setCountLoading, data: setCountData } = useQuery(GET_TOTAL_SET_COUNT);
-
-    const totalPages = setCountData ? Math.ceil(setCountData.totalSetCount / FEED_LIMIT) : 1;
+    const totalPages = Math.ceil(totalSets / FEED_LIMIT);
 
     return (
         <Table celled padded selectable size='large' striped textAlign="left">
             <Table.Header>
                 <Table.Row>
                     <Table.HeaderCell className="mobile-hidden" width={1}>Sets
-                        {setCountData && (
-                            <span css={{color: BLUE, marginLeft: 6}}>
-                                ({setCountData.totalSetCount.toLocaleString()})
-                            </span>
-                        )}
+                        <span css={{color: BLUE, marginLeft: 6}}>
+                            ({totalSets.toLocaleString()})
+                        </span>
                     </Table.HeaderCell>
                     <Table.HeaderCell>Day</Table.HeaderCell>
                     <Table.HeaderCell>Date</Table.HeaderCell>
@@ -259,7 +249,6 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                                 }}>
                                     <FeedPagination
                                         activePage={activePage}
-                                        disabled={setCountLoading || !setCountData}
                                         onPageChange={(e, {activePage}) => {
                                             setActivePage(activePage);
                                         }}

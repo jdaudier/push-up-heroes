@@ -1,7 +1,7 @@
 import React from 'react'
 import { Pagination } from 'semantic-ui-react'
 
-const FeedPagination = ({activePage, disabled, onPageChange, totalPages}) => {
+const FeedPagination = ({activePage, disabled = false, onPageChange, totalPages}) => {
     return (
         <Pagination
             activePage={activePage}

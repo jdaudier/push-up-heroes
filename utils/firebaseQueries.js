@@ -95,6 +95,7 @@ export async function getFullLeaderboardData() {
         return {
             rankings: sortedLeaderboard,
             totalPushUps,
+            totalSets: snapshot.size,
             totalAthletes: sortedLeaderboard.length,
             avgSet: Math.round(totalPushUps / snapshot.docs.length),
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
@@ -104,16 +105,6 @@ export async function getFullLeaderboardData() {
         console.error('Error:', err);
         throw new Error(err.message);
     }
-}
-
-export async function getTotalSetCount() {
-    const snapshot = await db.collection(CHALLENGE_ID).get();
-
-    if (snapshot.empty) {
-        return 0;
-    }
-
-    return snapshot.size;
 }
 
 export async function getAllUsersFeeds({page}) {

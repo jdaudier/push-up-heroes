@@ -43,6 +43,7 @@ const GET_LEADERBOARD = gql`
                 }
             }
             totalPushUps
+            totalSets
             totalAthletes
             avgSet
             dailyAvg
@@ -270,8 +271,9 @@ const Home = () => {
         ),
         render: () => (
             <Tab.Pane loading={loading}>
-                <GlobalFeed totalPushUps={leaderboard.totalPushUps}
-                            bestIndividualSetCount={leaderboard.bestIndividualSet.count}
+                <GlobalFeed bestIndividualSetCount={leaderboard.bestIndividualSet.count}
+                            totalPushUps={leaderboard.totalPushUps}
+                            totalSets={leaderboard.totalSets}
                 />
             </Tab.Pane>
         )
