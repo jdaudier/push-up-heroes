@@ -11,7 +11,7 @@ const typeDefs = gql`
         summary: String!
         totalPushUps: Int!
         mostRecentSet: MostRecentSet!
-        globalUsersFeed(page: Int): GlobalUsersFeedData!
+        globalUsersFeed(page: Int!): GlobalUsersFeedData!
         globalChartData: [CountByDay!]!
         totalSetCount: Int!
         
@@ -19,7 +19,7 @@ const typeDefs = gql`
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
         streakData(id: ID!): Streak!
-        userFeed(id: ID!): UserFeedData!
+        userFeed(id: ID! page: Int!): UserFeedData!
     }
     interface Rank {
         id: ID!
@@ -54,6 +54,7 @@ const typeDefs = gql`
     type UserStats {
         ranking: Int!
         totalPushUps: Int!
+        totalSets: Int!
         dailyAvg: Int!
         globalDailyAvg: Int!
         avgSet: Int!
@@ -310,7 +311,6 @@ const resolvers = {
             }
         },
 
-
         async streakData (parent, {id}) {
             try {
                 return await getStreakData(id);
@@ -319,9 +319,9 @@ const resolvers = {
             }
         },
 
-        async userFeed(parent, {id}) {
+        async userFeed(parent, {id, page}) {
             try {
-                return await getUserFeed(id);
+                return await getUserFeed({id, page});
             } catch (error) {
                 throw new ApolloError(`Error getting user feed for ${id}!`, 500, error);
             }

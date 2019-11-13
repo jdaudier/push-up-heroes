@@ -116,7 +116,7 @@ export async function getTotalSetCount() {
     return snapshot.size;
 }
 
-export async function getAllUsersFeeds({page} = {page: 1}) {
+export async function getAllUsersFeeds({page}) {
     const firstPageQuery = db.collection(CHALLENGE_ID)
         .orderBy('created', 'desc')
         .limit(FEED_LIMIT);
@@ -668,6 +668,7 @@ export async function getUserStats(id) {
                 created: '',
             },
             totalPushUps: 0,
+            totalSets: snapshot.size,
         });
 
         const {totalPushUps} = results;
@@ -820,9 +821,34 @@ export async function getStreakData(id) {
     }
 }
 
-export async function getUserFeed(id) {
+export async function getUserFeed({id, page}) {
+    const firstPageQuery = db.collection(CHALLENGE_ID)
+        .where('id', '==', id)
+        .orderBy('created', 'desc')
+        .limit(FEED_LIMIT);
+    let currentPage = 1;
+
+    async function getPaginatedPage(query) {
+        if (currentPage < page) {
+            const snapshot = await query.get();
+            const { length, [length - 1]: last } = snapshot.docs;
+
+            const next = db.collection(CHALLENGE_ID)
+                .where('id', '==', id)
+                .orderBy('created', 'desc')
+                .startAfter(last)
+                .limit(FEED_LIMIT);
+
+            currentPage++;
+            return await getPaginatedPage(next);
+        }
+
+        return query;
+    }
+
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created', 'desc').get();
+        const query = await getPaginatedPage(firstPageQuery);
+        const snapshot = await query.get();
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();

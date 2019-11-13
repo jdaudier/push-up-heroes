@@ -215,9 +215,17 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                             alignItems: 'center',
                             display: 'flex',
                             justifyContent: totalPages > 1 ? 'normal': 'flex-end',
+                            '@media(max-width: 767px)': {
+                                flexDirection: 'column',
+                                justifyContent: 'normal',
+                            }
                         }}>
                             <div css={{
                                 color: 'rgba(0,0,0,.6)',
+                                '@media(max-width: 767px)': {
+                                    textAlign: 'center',
+                                    lineHeight: 1.6,
+                                }
                             }}>
                                 Use
                                 <code css={{
@@ -242,7 +250,13 @@ const GlobalFeed = ({totalPushUps, bestIndividualSetCount}) => {
                                 to challenge someone
                             </div>
                             {totalPages > 1 && (
-                                <div css={{marginLeft: 'auto'}}>
+                                <div css={{
+                                    marginLeft: 'auto',
+                                    '@media(max-width: 767px)': {
+                                        marginLeft: 'unset',
+                                        marginTop: 30
+                                    }
+                                }}>
                                     <FeedPagination
                                         activePage={activePage}
                                         disabled={setCountLoading || !setCountData}

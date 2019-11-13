@@ -16,7 +16,7 @@ const UserFeed = dynamic(() => import('../../components/UserFeed'));
 import { jsx } from '@emotion/core';
 
 const GET_USER_STATS = gql`
-    query getUserStats($id: ID!) {
+    query userStats($id: ID!) {
         userSlackProfile(id: $id) {
             real_name
             title
@@ -26,18 +26,9 @@ const GET_USER_STATS = gql`
             label
             value
         }
-         userFeed(id: $id) {
-            feed {
-                count
-                dayOfWeek
-                date
-                time
-                simplifiedDate
-            }
-             setsByDayMap
-        }
         userStats(id: $id) {
             totalPushUps
+            totalSets
             ranking
             dailyAvg
             avgSet
@@ -102,15 +93,26 @@ const UserCard = ({user: {real_name, title, image_512}, mostRecentSet}) => (
 function User() {
     const router = useRouter();
 
-    const { loading, error, data, fetchMore } = useQuery(GET_USER_STATS, {
-        variables: { id: router.query.id },
+    const id = router.query.id;
+    const { loading, error, data } = useQuery(GET_USER_STATS, {
+        variables: { id },
     });
 
     if (loading || !data) {
         return <LoadingUserView />
     }
 
-    const {userSlackProfile, userStats: {mostRecentSet, dailyAvg}, dailyPushUpsByUser, userFeed: {feed, setsByDayMap}} = data;
+    const {
+        userSlackProfile,
+        userStats: {
+            mostRecentSet,
+            dailyAvg,
+            totalPushUps,
+            totalSets,
+            bestSet,
+        },
+        dailyPushUpsByUser,
+    } = data;
 
     return (
         <Layout>
@@ -126,10 +128,11 @@ function User() {
             </Grid>
             <UserChart dailyAvg={dailyAvg} data={dailyPushUpsByUser} />
             <Header as='h2'>Your Feed</Header>
-            <UserFeed bestSetCount={data.userStats.bestSet.count}
-                feed={feed}
-                setsByDayMap={setsByDayMap}
-                totalPushUps={data.userStats.totalPushUps}
+            <UserFeed
+                bestSetCount={bestSet.count}
+                id={id}
+                totalPushUps={totalPushUps}
+                totalSets={totalSets}
             />
         </Layout>
     );
