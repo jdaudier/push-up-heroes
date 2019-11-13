@@ -22,7 +22,7 @@ const GET_USER_STATS = gql`
             title
             image_512
         }
-        dailySetsByUser(id: $id) {
+        dailyPushUpsByUser(id: $id) {
             label
             value
         }
@@ -110,7 +110,7 @@ function User() {
         return <LoadingUserView />
     }
 
-    const {userSlackProfile, userStats: {mostRecentSet, dailyAvg}, dailySetsByUser, userFeed: {feed, setsByDayMap}} = data;
+    const {userSlackProfile, userStats: {mostRecentSet, dailyAvg}, dailyPushUpsByUser, userFeed: {feed, setsByDayMap}} = data;
 
     return (
         <Layout>
@@ -124,7 +124,7 @@ function User() {
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            <UserChart dailyAvg={dailyAvg} data={dailySetsByUser} />
+            <UserChart dailyAvg={dailyAvg} data={dailyPushUpsByUser} />
             <Header as='h2'>Your Feed</Header>
             <UserFeed bestSetCount={data.userStats.bestSet.count}
                 feed={feed}

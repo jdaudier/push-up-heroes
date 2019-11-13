@@ -567,7 +567,7 @@ async function getUserSetsById(id) {
     }
 }
 
-export async function getDailySetsByUserId(id) {
+export async function getDailyPushUpsByUserId(id) {
     try {
         const {countsByDayMap, sortedList} = await getUserSetsById(id);
 
