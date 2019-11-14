@@ -98,7 +98,7 @@ function User() {
         variables: { id },
     });
 
-    if (loading || !data) {
+    if (!data) {
         return <LoadingUserView />
     }
 

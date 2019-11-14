@@ -3,7 +3,7 @@ import { Dimmer, Header, Loader, Segment } from 'semantic-ui-react';
 import { jsx } from '@emotion/core';
 /** @jsx jsx */
 
-const LoadingTableView = () => {
+const LoadingChartView = () => {
     return (
         <>
             <Header as='h2'
@@ -34,4 +34,4 @@ const LoadingTableView = () => {
     );
 };
 
-export default LoadingTableView;
+export default LoadingChartView;

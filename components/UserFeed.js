@@ -56,7 +56,7 @@ const UserFeed = ({id, totalSets, totalPushUps, bestSetCount}) => {
                 </Table.Row>
             </Table.Header>
 
-            {(loading || !data) ? <LoadingTableView colSpan={5} /> : (
+            {!data ? <LoadingTableView colSpan={5} /> : (
                 <Table.Body>
                     {data.userFeed.feed.map(({dayOfWeek, date, time, count, simplifiedDate}, i, arr) => {
                         const rowSpan = data.userFeed.setsByDayMap[simplifiedDate];
@@ -158,7 +158,7 @@ const UserFeed = ({id, totalSets, totalPushUps, bestSetCount}) => {
                                 }}>
                                     <FeedPagination
                                         activePage={activePage}
-                                        disabled={loading || !data}
+                                        disabled={!data}
                                         onPageChange={(e, {activePage}) => {
                                             setActivePage(activePage);
                                         }}

@@ -116,7 +116,7 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
                 </Table.Row>
             </Table.Header>
 
-            {(loading || !data) ? <LoadingTableView /> : (
+            {!data ? <LoadingTableView /> : (
                 <Table.Body>
                     {data.globalUsersFeed.feed.map(({slackId, dayOfWeek, date, time, count, simplifiedDate, profile}, i, arr) => {
                         const rowSpan = data.globalUsersFeed.setsByDayMap[simplifiedDate];

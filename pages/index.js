@@ -233,7 +233,8 @@ const Home = () => {
 
     const [activeTab, setActiveTab] = useState('leaderboard');
 
-    if (loading || !data) {
+    if (!data) {
+        // TODO: Update loading view to be smaller - just the stats section and use loading prop on Tab.Pane
         return <LoadingView />
     }
 
@@ -254,7 +255,7 @@ const Home = () => {
             </Menu.Item>
         ),
         render: () => (
-            <Tab.Pane loading={loading}><Leaderboard leaderboard={leaderboard} /></Tab.Pane>
+            <Tab.Pane><Leaderboard leaderboard={leaderboard} /></Tab.Pane>
         )}, {
         menuItem: (
             <Menu.Item key='feed'
@@ -270,7 +271,7 @@ const Home = () => {
             </Menu.Item>
         ),
         render: () => (
-            <Tab.Pane loading={loading}>
+            <Tab.Pane>
                 <GlobalFeed bestIndividualSetCount={leaderboard.bestIndividualSet.count}
                             totalPushUps={leaderboard.totalPushUps}
                             totalSets={leaderboard.totalSets}
@@ -292,9 +293,8 @@ const Home = () => {
             </Menu.Item>
         ),
         render: () => (
-            <Tab.Pane loading={loading}>
-                <GlobalChart dailyAvg={leaderboard.dailyAvg}
-                />
+            <Tab.Pane>
+                <GlobalChart dailyAvg={leaderboard.dailyAvg} />
             </Tab.Pane>
         )
     }];
