@@ -3,7 +3,6 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
 import Crown from '../components/Crown';
-import LoadingView from '../components/LoadingView';
 const GlobalFeed = dynamic(() => import('../components/GlobalFeed'));
 const GlobalChart = dynamic(() => import('../components/GlobalChart'));
 import Layout from '../components/Layout';
@@ -233,14 +232,7 @@ const Home = () => {
 
     const [activeTab, setActiveTab] = useState('leaderboard');
 
-    if (!data) {
-        // TODO: Update loading view to be smaller - just the stats section and use loading prop on Tab.Pane
-        return <LoadingView />
-    }
-
-    const {leaderboard} = data;
-
-    const panes = [{
+    const leaderboardPane = {
         menuItem: (
             <Menu.Item key='leaderboard'
                        active={activeTab === 'leaderboard'}
@@ -255,8 +247,13 @@ const Home = () => {
             </Menu.Item>
         ),
         render: () => (
-            <Tab.Pane><Leaderboard leaderboard={leaderboard} /></Tab.Pane>
-        )}, {
+            <Tab.Pane loading={!data}>
+                <Leaderboard leaderboard={data ? data.leaderboard : {rankings: []}} />
+            </Tab.Pane>
+        )
+    };
+
+    const feedPane = data ? {
         menuItem: (
             <Menu.Item key='feed'
                        active={activeTab === 'feed'}
@@ -272,13 +269,15 @@ const Home = () => {
         ),
         render: () => (
             <Tab.Pane>
-                <GlobalFeed bestIndividualSetCount={leaderboard.bestIndividualSet.count}
-                            totalPushUps={leaderboard.totalPushUps}
-                            totalSets={leaderboard.totalSets}
+                <GlobalFeed bestIndividualSetCount={data.leaderboard.bestIndividualSet.count}
+                            totalPushUps={data.leaderboard.totalPushUps}
+                            totalSets={data.leaderboard.totalSets}
                 />
             </Tab.Pane>
         )
-    }, {
+    } : null;
+
+    const chartPane = data ? {
         menuItem: (
             <Menu.Item key='chart'
                        active={activeTab === 'chart'}
@@ -294,10 +293,12 @@ const Home = () => {
         ),
         render: () => (
             <Tab.Pane>
-                <GlobalChart dailyAvg={leaderboard.dailyAvg} />
+                <GlobalChart dailyAvg={data.leaderboard.dailyAvg} />
             </Tab.Pane>
         )
-    }];
+    } : null;
+
+    const panes = [leaderboardPane, feedPane, chartPane];
 
     return (
         <Layout>

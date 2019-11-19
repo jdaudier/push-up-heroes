@@ -1,8 +1,9 @@
-import {Grid, Statistic, Popup, Image} from 'semantic-ui-react';
+import { Grid, Statistic, Popup, Image } from 'semantic-ui-react';
+import Link from 'next/link';
+import LoadingIcon from './LoadingIcon';
+import { BLUE, RED, YELLOW } from '../utils/constants';
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import Link from 'next/link';
-import { BLUE, RED, YELLOW } from '../utils/constants';
 
 const statsBoxBase = (hasPopup) => ({
     borderRadius: 4,
@@ -47,7 +48,31 @@ const Stat = ({color, hasPopup, children}) => {
     )
 };
 
+function LoadingStat({color, label}) {
+    return (
+        <Grid.Column>
+            <Stat color={color}>
+                <LoadingIcon />
+                <Statistic inverted label={label}  />
+            </Stat>
+        </Grid.Column>
+    )
+}
+
 const Stats = ({data}) => {
+    if (!data) {
+        return (
+            <Grid doubling columns={3} stackable style={{marginBottom: 40}}>
+                <LoadingStat color="blue" label="Total Athletes" />
+                <LoadingStat color="yellow" label="Total Push-Ups" />
+                <LoadingStat color="red" label="Daily Average" />
+                <LoadingStat color="yellow" label="Average Set" />
+                <LoadingStat color="red" label="Best Individual Set" />
+                <LoadingStat color="blue" label="Most Recent Set" />
+            </Grid>
+        )
+    }
+
     const {mostRecentSet, leaderboard} = data;
     const {totalAthletes, totalPushUps, dailyAvg, avgSet, bestIndividualSet} = leaderboard;
 

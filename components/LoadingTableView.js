@@ -8,7 +8,7 @@ const LoadingTableView = ({colSpan} = {colSpan: 6}) => {
         <Table.Body>
             <Table.Row>
                 <Table.Cell colSpan={colSpan}>
-                    <Dimmer active inverted >
+                    <Dimmer active inverted>
                         <Loader size='massive'>
                             Loading
                         </Loader>

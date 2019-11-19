@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Grid, Statistic, Popup, Image } from 'semantic-ui-react';
+import LoadingIcon from './LoadingIcon';
 import Crown from './Crown';
 import { cellLinkCss } from './Stats';
 import { BLUE, RED, YELLOW } from '../utils/constants';
@@ -48,8 +49,36 @@ function getDayorDays(count) {
     return count === 1 ? 'day' : 'days';
 }
 
+function LoadingStat({color, label}) {
+    return (
+        <Grid.Column>
+            <Stat color={color}>
+                <LoadingIcon />
+                <Statistic inverted label={label}  />
+            </Stat>
+        </Grid.Column>
+    )
+}
+
 const Stats = ({data}) => {
-    const {userStats,
+    if (!data) {
+        return (
+            <Grid doubling columns={3} stackable>
+                <LoadingStat color="blue" label="Your Rank" />
+                <LoadingStat color="yellow" label="Total Push-Ups" />
+                <LoadingStat color="red" label="Catch the Leader" />
+                <LoadingStat color="yellow" label="Daily Average" />
+                <LoadingStat color="red" label="Longest Streak" />
+                <LoadingStat color="blue" label="Current Streak" />
+                <LoadingStat color="red" label="Starting Set" />
+                <LoadingStat color="blue" label="Best Set" />
+                <LoadingStat color="yellow" label="Average Set" />
+            </Grid>
+        )
+    }
+
+    const {
+        userStats,
         streakData: {
             longestStreak,
             currentStreak,
@@ -164,15 +193,15 @@ const Stats = ({data}) => {
                                             }}>
                                                 {longestStreak.toLocaleString()}
                                             </span>
-                                                           <span css={{
-                                                               color: 'rgba(255,255,255,.7)',
-                                                               display: 'inline-block',
-                                                               fontSize: 14,
-                                                               fontWeight: 700,
-                                                               marginLeft: 5,
-                                                               textTransform: 'uppercase',
-                                                               verticalAlign: 'top',
-                                                           }}>
+                                           <span css={{
+                                               color: 'rgba(255,255,255,.7)',
+                                               display: 'inline-block',
+                                               fontSize: 14,
+                                               fontWeight: 700,
+                                               marginLeft: 5,
+                                               textTransform: 'uppercase',
+                                               verticalAlign: 'top',
+                                           }}>
                                                 {getDayorDays(longestStreak)}
                                             </span>
                                        </Statistic.Value>
@@ -187,12 +216,12 @@ const Stats = ({data}) => {
                     <Stat color="red">
                         <Statistic inverted>
                             <Statistic.Value>
-                            <span css={{
-                                verticalAlign: 'top',
-                                display: 'inline-block',
-                            }}>
-                                {longestStreak.toLocaleString()}
-                            </span>
+                                <span css={{
+                                    verticalAlign: 'top',
+                                    display: 'inline-block',
+                                }}>
+                                    {longestStreak.toLocaleString()}
+                                </span>
                                 <span css={{
                                     color: 'rgba(255,255,255,.7)',
                                     display: 'inline-block',
@@ -202,8 +231,8 @@ const Stats = ({data}) => {
                                     textTransform: 'uppercase',
                                     verticalAlign: 'top',
                                 }}>
-                                {getDayorDays(longestStreak)}
-                            </span>
+                                    {getDayorDays(longestStreak)}
+                                </span>
                             </Statistic.Value>
                             <Statistic.Label>Longest Streak</Statistic.Label>
                         </Statistic>
@@ -221,13 +250,13 @@ const Stats = ({data}) => {
                                <Stat color="blue" hasPopup>
                                    <Statistic inverted>
                                        <Statistic.Value>
-                            <span css={{
-                                verticalAlign: 'top',
-                                display: 'inline-block',
-                            }}>
-                                {currentStreak.toLocaleString()}
-                            </span>
-                                           <span css={{
+                                            <span css={{
+                                                verticalAlign: 'top',
+                                                display: 'inline-block',
+                                            }}>
+                                                {currentStreak.toLocaleString()}
+                                            </span>
+                                            <span css={{
                                                color: 'rgba(255,255,255,.7)',
                                                display: 'inline-block',
                                                fontSize: 14,
@@ -236,8 +265,8 @@ const Stats = ({data}) => {
                                                textTransform: 'uppercase',
                                                verticalAlign: 'top',
                                            }}>
-                                {getDayorDays(currentStreak)}
-                            </span>
+                                                {getDayorDays(currentStreak)}
+                                            </span>
                                        </Statistic.Value>
                                        <Statistic.Label>Current Streak</Statistic.Label>
                                    </Statistic>
@@ -250,23 +279,23 @@ const Stats = ({data}) => {
                     <Stat color="blue">
                         <Statistic inverted>
                             <Statistic.Value>
-                            <span css={{
-                                verticalAlign: 'top',
-                                display: 'inline-block',
-                            }}>
-                                {currentStreak.toLocaleString()}
-                            </span>
                                 <span css={{
-                                    color: 'rgba(255,255,255,.7)',
-                                    display: 'inline-block',
-                                    fontSize: 14,
-                                    fontWeight: 700,
-                                    marginLeft: 5,
-                                    textTransform: 'uppercase',
                                     verticalAlign: 'top',
+                                    display: 'inline-block',
                                 }}>
-                                {getDayorDays(currentStreak)}
-                            </span>
+                                    {currentStreak.toLocaleString()}
+                                </span>
+                                    <span css={{
+                                        color: 'rgba(255,255,255,.7)',
+                                        display: 'inline-block',
+                                        fontSize: 14,
+                                        fontWeight: 700,
+                                        marginLeft: 5,
+                                        textTransform: 'uppercase',
+                                        verticalAlign: 'top',
+                                    }}>
+                                    {getDayorDays(currentStreak)}
+                                </span>
                             </Statistic.Value>
                             <Statistic.Label>Current Streak</Statistic.Label>
                         </Statistic>

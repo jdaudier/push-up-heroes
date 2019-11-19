@@ -23,7 +23,7 @@ const LoadingChartView = () => {
                 <div css={{
                     height: 190,
                 }}>
-                    <Dimmer active inverted >
+                    <Dimmer active inverted>
                         <Loader size='massive'>
                             Loading
                         </Loader>
