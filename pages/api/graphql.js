@@ -319,6 +319,10 @@ const apolloServer = new ApolloServer({
     resolvers,
     introspection: true,
     playground: true,
+    engine: {
+        apiKey: process.env.graphManagerApiKey,
+        schemaTag: "production"
+    }
 });
 
 export const config = {

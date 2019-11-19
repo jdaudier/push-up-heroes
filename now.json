@@ -5,7 +5,8 @@
     "env": {
       "SUPREME_LEADERS_SLACK_TOKEN": "@supreme_leaders_slack_token",
       "ZAPIER_SLACK_TOKEN": "@zapier_slack_token",
-      "FIREBASE_API_KEY": "@firebase_api_key"
+      "FIREBASE_API_KEY": "@firebase_api_key",
+      "GRAPH_MANAGER_API_KEY": "@graph_manager_api_key"
     }
   }
 }
