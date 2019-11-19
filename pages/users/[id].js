@@ -3,10 +3,10 @@ import { useRouter } from 'next/router';
 import withData from '../../lib/apollo';
 import { useQuery } from '@apollo/react-hooks';
 import { gql } from 'apollo-boost';
-import { Grid, Card, Image, Icon, Header } from 'semantic-ui-react'
+import {Grid, Card, Image, Icon, Header, Loader, Dimmer} from 'semantic-ui-react'
 import Layout from '../../components/Layout';
 import UserStats from '../../components/UserStats';
-import LoadingUserView from '../../components/LoadingUserView';
+import StreaksCalendar from '../../components/StreaksCalendar';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
 const UserChart = dynamic(() => import('../../components/UserChart'));
@@ -56,6 +56,8 @@ const GET_USER_STATS = gql`
             }
         }
         streakData(id: $id) {
+            challengeStartDate
+            countsByDayMap
             longestStreak
             currentStreak
             longestStreakDates
@@ -90,6 +92,35 @@ const UserCard = ({user: {real_name, title, image_512}, mostRecentSet}) => (
     </div>
 );
 
+const mockUser = {
+    real_name: 'Dwayne Johnson',
+    title: 'Kicking Your Ass at Push-Ups',
+    image_512: '/images/the-rock.jpg'
+};
+
+function LoadingUserCard({user: {real_name, title, image_512}}) {
+    return (
+        <div css={cardWrapperCss}>
+            <Card color='blue'>
+                <Image src={image_512} wrapped ui={false} />
+                <Dimmer active inverted>
+                    <Loader size='massive' />
+                </Dimmer>
+                <Card.Content>
+                    <Card.Header>{real_name}</Card.Header>
+                    <Card.Description>
+                        {title}
+                    </Card.Description>
+                </Card.Content>
+                <Card.Content extra>
+                    <Icon name='feed' />
+                    55 push-ups about 2 min ago
+                </Card.Content>
+            </Card>
+        </div>
+    )
+}
+
 function User() {
     const router = useRouter();
 
@@ -98,42 +129,36 @@ function User() {
         variables: { id },
     });
 
-    if (!data) {
-        return <LoadingUserView />
-    }
-
-    const {
-        userSlackProfile,
-        userStats: {
-            mostRecentSet,
-            dailyAvg,
-            totalPushUps,
-            totalSets,
-            bestSet,
-        },
-        dailyPushUpsByUser,
-    } = data;
-
     return (
         <Layout>
             <Grid stackable>
                 <Grid.Row>
                     <Grid.Column width={5}>
-                        <UserCard mostRecentSet={mostRecentSet} user={userSlackProfile} />
+                        {data ?
+                            <UserCard mostRecentSet={data.userStats.mostRecentSet} user={data.userSlackProfile} />
+                            :
+                            <LoadingUserCard user={mockUser} />
+                        }
                     </Grid.Column>
                     <Grid.Column width={11}>
                         <UserStats data={data} />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
-            <UserChart dailyAvg={dailyAvg} data={dailyPushUpsByUser} />
-            <Header as='h2'>Your Feed</Header>
-            <UserFeed
-                bestSetCount={bestSet.count}
-                id={id}
-                totalPushUps={totalPushUps}
-                totalSets={totalSets}
+            <StreaksCalendar
+                challengeStartDate={data ? data.streakData.challengeStartDate : undefined}
+                countsByDayMap={data ? data.streakData.countsByDayMap : {}}
             />
+            {data && <UserChart dailyAvg={data.userStats.dailyAvg} data={data.dailyPushUpsByUser} />}
+            {data && <Header as='h2'>Your Feed</Header>}
+            {data &&
+                <UserFeed
+                    bestSetCount={data.userStats.bestSet.count}
+                    id={id}
+                    totalPushUps={data.userStats.totalPushUps}
+                    totalSets={data.userStats.totalSets}
+                />
+            }
         </Layout>
     );
 }

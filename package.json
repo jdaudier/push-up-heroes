@@ -14,7 +14,7 @@
     "@emotion/core": "^10.0.22",
     "apollo-boost": "^0.4.4",
     "apollo-server-micro": "^2.9.7",
-    "date-fns": "^2.6.0",
+    "date-fns": "^2.7.0",
     "date-fns-tz": "^1.0.8",
     "firebase": "^7.2.2",
     "graphql": "^14.5.8",

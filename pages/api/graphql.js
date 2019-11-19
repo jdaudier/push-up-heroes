@@ -83,6 +83,8 @@ const typeDefs = gql`
         simplifiedDate: Date!
     }
     type Streak {
+        challengeStartDate: Date!
+        countsByDayMap: GraphQLJSON!
         longestStreak: Int!
         currentStreak: Int!
         longestStreakDates: String!

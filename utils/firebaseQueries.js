@@ -677,6 +677,19 @@ export async function getUserStats(id) {
 
 export async function getStreakData(id) {
     try {
+        const firstSnapshot = await db.collection(CHALLENGE_ID)
+            .orderBy('created', 'asc')
+            .limit(1).get();
+
+        const challengeStartDate = firstSnapshot.docs.map(doc => {
+            const data = doc.data();
+            const rawCreated = data.created.toDate();
+            return format(utcToZonedTime(
+                rawCreated,
+                data.timeZone,
+            ), 'yyyy-MM-dd');
+        })[0];
+
         const {sortedList, countsByDayMap} = await getUserPushUpsById(id);
         const {length, 0: firstEntry, [length - 1]: lastEntry} = sortedList;
 
@@ -786,6 +799,8 @@ export async function getStreakData(id) {
                 `${currentStreakDatesShort[0]} - ${currentStreakDatesShort[currentStreakDatesShort.length - 1]}`;
 
         return {
+            challengeStartDate,
+            countsByDayMap,
             longestStreak,
             currentStreak,
             longestStreakDates: longestStreakDatesText,
