@@ -10,6 +10,7 @@ import StreaksCalendar from '../../components/StreaksCalendar';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
 const UserChart = dynamic(() => import('../../components/UserChart'));
+const UserChartSets = dynamic(() => import('../../components/UserChartSets'));
 const UserFeed = dynamic(() => import('../../components/UserFeed'));
 
 /** @jsx jsx */
@@ -22,9 +23,15 @@ const GET_USER_STATS = gql`
             title
             image_512
         }
-        dailyPushUpsByUser(id: $id) {
-            label
-            value
+        pushUpsByUser(id: $id) {
+            sorted {
+                count
+                humanReadableCreated
+            }
+            byDay {
+                label
+                value
+            }
         }
         userStats(id: $id) {
             totalPushUps
@@ -149,8 +156,9 @@ function User() {
                 challengeStartDate={data ? data.streakData.challengeStartDate : undefined}
                 countsByDayMap={data ? data.streakData.countsByDayMap : {}}
             />
-            {data && <UserChart dailyAvg={data.userStats.dailyAvg} data={data.dailyPushUpsByUser} />}
-            {data && <Header as='h2'>Your Feed</Header>}
+            {data && <UserChart dailyAvg={data.userStats.dailyAvg} data={data.pushUpsByUser.byDay} />}
+            {data && <UserChartSets avgSet={data.userStats.avgSet} data={data.pushUpsByUser.sorted} />}
+            {data && <Header as='h2'>Feed</Header>}
             {data &&
                 <UserFeed
                     bestSetCount={data.userStats.bestSet.count}

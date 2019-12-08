@@ -521,9 +521,15 @@ async function getUserPushUpsById(id) {
                 data.timeZone,
             ), 'yyyy-MM-dd');
 
+            const humanReadableCreated = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'EEE, MMM d');
+
             const currentSet = {
                 ...data,
                 created,
+                humanReadableCreated,
                 rawCreated: data.created.toDate(),
             };
             const prevCount = acc.countsByDayMap[created];
@@ -545,7 +551,7 @@ async function getUserPushUpsById(id) {
     }
 }
 
-export async function getDailyPushUpsByUserId(id) {
+export async function getPushUpsByUserId(id) {
     try {
         const {countsByDayMap, sortedList} = await getUserPushUpsById(id);
 
@@ -566,14 +572,17 @@ export async function getDailyPushUpsByUserId(id) {
             { start: parseISO(firstEntryDateLocalTime), end: parseISO(lastEntryDateLocalTime) }
         );
 
-        return datesArray.map(date => {
-            const key = format(date, 'yyyy-MM-dd');
+        return {
+            sorted: sortedList,
+            byDay: datesArray.map(date => {
+                const key = format(date, 'yyyy-MM-dd');
 
-            return {
-                label: format(date, 'EEE, MMM d'),
-                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
-            }
-        });
+                return {
+                    label: format(date, 'EEE, MMM d'),
+                    value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+                }
+            }),
+        }
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);

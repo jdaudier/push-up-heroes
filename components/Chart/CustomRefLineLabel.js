@@ -1,6 +1,6 @@
 import { YELLOW } from '../../utils/constants';
 
-const CustomRefLineLabel = ({viewBox, dailyAvg, fill = YELLOW}) => {
+const CustomRefLineLabel = ({viewBox, avg, fill = YELLOW}) => {
     const x = viewBox.width + viewBox.x + 35;
     const y = viewBox.y + 4;
 
@@ -10,11 +10,11 @@ const CustomRefLineLabel = ({viewBox, dailyAvg, fill = YELLOW}) => {
         3: x,
     };
 
-    const avgX = xMap[dailyAvg.toString().length];
+    const avgX = xMap[avg.toString().length];
 
     return (
         <g>
-            <text x={avgX} y={y - 16} textAnchor="end" fill={fill} fontWeight="bold">{dailyAvg}</text>
+            <text x={avgX} y={y - 16} textAnchor="end" fill={fill} fontWeight="bold">{avg}</text>
             <text x={x} y={y} textAnchor="end" fill={fill} fontWeight="bold">avg</text>
         </g>
     )

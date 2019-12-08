@@ -57,7 +57,7 @@ function GlobalChart({dailyAvg}) {
                         <Bar dataKey="value" fill={BLUE} maxBarSize={100} />
                         {shouldShowAvg && (
                             <ReferenceLine y={dailyAvg}
-                                           label={<CustomRefLineLabel dailyAvg={dailyAvg} />}
+                                           label={<CustomRefLineLabel avg={dailyAvg} />}
                                            stroke={YELLOW}
                                            strokeWidth={2}
                                            strokeDasharray="8"

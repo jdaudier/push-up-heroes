@@ -1,5 +1,5 @@
 import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
-import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getDailyPushUpsByUserId, getMostRecentSet, getUserStats, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
+import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getPushUpsByUserId, getMostRecentSet, getUserStats, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
 const typeDefs = gql`
@@ -13,7 +13,7 @@ const typeDefs = gql`
         globalUsersFeed(page: Int!): GlobalUsersFeedData!
         globalChartData: [CountByDay!]!
         
-        dailyPushUpsByUser(id: ID!): [CountByDay!]!
+        pushUpsByUser(id: ID!): PushUpsByUser!
         userSlackProfile(id: ID!): SlackProfile!
         userStats(id: ID!): UserStats!
         streakData(id: ID!): Streak!
@@ -40,6 +40,20 @@ const typeDefs = gql`
         date: Date!
         time: String!
         simplifiedDate: Date!
+    }
+    type Set {
+        id: ID!
+        name: String!
+        count: Int!
+        profile: SlimSlackProfile!
+        timeZone: String!
+        created: Date!
+        rawCreated: Date!
+        humanReadableCreated: Date!
+    }
+    type PushUpsByUser {
+        sorted: [Set!]!
+        byDay: [CountByDay!]!
     }
     type GlobalUsersFeedData {
         feed: [GlobalUserFeed!]!
@@ -288,9 +302,9 @@ const resolvers = {
             }
         },
 
-        async dailyPushUpsByUser (parent, {id}) {
+        async pushUpsByUser (parent, {id}) {
             try {
-                return await getDailyPushUpsByUserId(id);
+                return await getPushUpsByUserId(id);
             } catch (error) {
                 throw new ApolloError(`Error getting user ${id} data!`, 500, error);
             }
