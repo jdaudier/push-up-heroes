@@ -67,7 +67,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n>${smartResponse}\n${context}`,
+                            "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n${smartResponse}\n${context}`,
                         }
                     }];
 
