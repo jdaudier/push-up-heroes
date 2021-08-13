@@ -19,7 +19,7 @@
     "firebase": "^7.14.2",
     "graphql": "^14.5.8",
     "isomorphic-unfetch": "^3.0.0",
-    "next": "^9.3.5",
+    "next": "^11.1.0",
     "next-apollo": "^3.1.10",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
