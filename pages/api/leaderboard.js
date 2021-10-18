@@ -23,7 +23,7 @@ async function handler(req, res) {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
                         },
                         body: JSON.stringify({
                             channel: 'fun-push-up-challenge',

@@ -30,7 +30,7 @@ async function handler(req, res) {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
                         },
                         body: JSON.stringify(slackResponse)
                     });
@@ -131,7 +131,7 @@ async function handler(req, res) {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
                         },
                         body: JSON.stringify(updatedMessage)
                     });
@@ -140,7 +140,7 @@ async function handler(req, res) {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
                         },
                         body: JSON.stringify(slackResponse)
                     });
@@ -195,7 +195,7 @@ async function handler(req, res) {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
                         },
                         body: JSON.stringify(updatedMessage)
                     });
@@ -210,7 +210,7 @@ async function handler(req, res) {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
                         },
                         body: JSON.stringify(slackResponse)
                     });

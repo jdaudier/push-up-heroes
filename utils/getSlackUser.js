@@ -4,7 +4,7 @@ async function getSlackUser(userSlackId) {
     const user = await fetch(`https://slack.com/api/users.info?user=${userSlackId}`, {
         headers: {
             'Content-type': 'application/json',
-            Authorization: `Bearer ${process.env.supremeLeadersSlackToken}`,
+            Authorization: `Bearer ${process.env.zapierSlackToken}`,
         }
     });
 
