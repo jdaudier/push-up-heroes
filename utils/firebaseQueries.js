@@ -7,7 +7,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT } from '../utils/constants';
 
-export const CHALLENGE_ID = 'challenge-beta';
+export const CHALLENGE_ID = 'challenge-1';
 
 export async function getFullLeaderboardData() {
     try {
