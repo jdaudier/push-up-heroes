@@ -335,7 +335,7 @@ const apolloServer = new ApolloServer({
     playground: true,
     engine: {
         apiKey: process.env.graphManagerApiKey,
-        schemaTag: "production"
+        graphVariant: "production"
     }
 });
 
