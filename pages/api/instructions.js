@@ -38,7 +38,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "*/challenge* _user number_ \nTo challenge another user. If they click the *Accept* button, that number of push-ups will be logged for them."
+                            "text": "*/challenge* _@user number_ \nTo challenge another user. If they click the *Accept* button, that number of push-ups will be logged for them."
                         },
                         "accessory": {
                             "type": "image",
