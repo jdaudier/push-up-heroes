@@ -12,7 +12,7 @@ function Layout(props) {
             <Head>
                 <title>Push-Up Heroes</title>
                 <link rel='icon' href='/favicon.ico' />
-                <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />
+                <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2/dist/semantic.min.css" />
             </Head>
             <Nav />
             <Grid container stackable verticalAlign='middle' style={{ paddingTop: '9em', paddingBottom: '4em' }}>
