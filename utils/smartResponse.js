@@ -57,7 +57,7 @@ function getSmartResponse(rawStats) {
         facts.push(`This set is higher than your daily average of *${dailyAvg.toLocaleString()}*!`);
     }
 
-    if (count === bestSet.count) {
+    if (count === bestSet.count && count !== globalBestIndividualSet.count) {
         facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
     }
 
