@@ -636,6 +636,7 @@ export async function getUserStats(id) {
                 mostRecentSet: {
                     count,
                     created: rawCreated,
+                    createdShort,
                 },
                 totalPushUps: acc.totalPushUps + count,
             }
@@ -653,6 +654,7 @@ export async function getUserStats(id) {
             mostRecentSet: {
                 count: 0,
                 created: '',
+                createdShort: '',
             },
             totalPushUps: 0,
             totalSets: snapshot.size,

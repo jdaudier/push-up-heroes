@@ -61,7 +61,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 value: `${avgSet.toLocaleString()}`,
             }, {
                 label: 'Latest Set',
-                value: `${mostRecentSet.count.toLocaleString()} (${format(mostRecentSet.created, 'MMM dd')})`,
+                value: `${mostRecentSet.count.toLocaleString()} (${mostRecentSet.createdShort})`,
             }, {
                 label: 'Contribution',
                 value: `${contributionPercentage}%`,
