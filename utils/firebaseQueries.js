@@ -1,4 +1,5 @@
 import db from '../init-firebase';
+import { collection, getDocs, addDoc, orderBy, query, limit, startAfter, where } from "firebase/firestore";
 import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
@@ -8,10 +9,11 @@ import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT } from '../utils/constants';
 
 export const CHALLENGE_ID = 'challenge-1';
+const collectionRef = collection(db, CHALLENGE_ID);
 
 export async function getFullLeaderboardData() {
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).get();
+        const snapshot = await getDocs(collectionRef);
         const data = snapshot.docs.reduce((acc, doc) => {
             /*
             id: "myID",
@@ -108,31 +110,27 @@ export async function getFullLeaderboardData() {
 }
 
 export async function getAllUsersFeeds({page}) {
-    const firstPageQuery = db.collection(CHALLENGE_ID)
-        .orderBy('created', 'desc')
-        .limit(FEED_LIMIT);
+    const firstPageQuery = query(collectionRef, orderBy('created', 'desc'), limit(FEED_LIMIT));
+
     let currentPage = 1;
 
-    async function getPaginatedPage(query) {
+    async function getPaginatedPageQuery(q) {
         if (currentPage < page) {
-            const snapshot = await query.get();
+            const snapshot = await getDocs(q);
             const { length, [length - 1]: last } = snapshot.docs;
 
-            const next = db.collection(CHALLENGE_ID)
-                .orderBy('created', 'desc')
-                .startAfter(last)
-                .limit(FEED_LIMIT);
+            const next = query(collectionRef, orderBy('created', 'desc'), startAfter(last), limit(FEED_LIMIT));
 
             currentPage++;
-            return await getPaginatedPage(next);
+            return getPaginatedPageQuery(next);
         }
 
-        return query;
+        return q;
     }
 
     try {
-        const query = await getPaginatedPage(firstPageQuery);
-        const snapshot = await query.get();
+        const pageQuery = await getPaginatedPageQuery(firstPageQuery);
+        const snapshot = await getDocs(pageQuery);
 
         return snapshot.docs.reduce(async (acc, doc) => {
             const prevAcc = await acc;
@@ -184,7 +182,7 @@ export async function getAllUsersFeeds({page}) {
 
 export async function getLeaderboardText(userId) {
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).get();
+        const snapshot = await getDocs(collectionRef);
         const data = snapshot.docs.reduce((acc, doc) => {
             /*
              id: "myID",
@@ -291,7 +289,7 @@ export async function getLeaderboardText(userId) {
 
 async function getLeaderboardData() {
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).get();
+        const snapshot = await getDocs(collectionRef);
         const data = snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
 
@@ -389,7 +387,7 @@ export async function addUserData({
                                       timeZone,
                                       profile,
                                   }) {
-    return db.collection(CHALLENGE_ID).add({
+    return await addDoc(collectionRef, {
         name,
         id,
         count: count,
@@ -402,13 +400,8 @@ export async function addUserData({
 export async function getTotalChallengeDays() {
     try {
         const [firstSnapshot, lastSnapshot] = await Promise.all([
-            db.collection(CHALLENGE_ID)
-                .orderBy('created', 'asc')
-                .limit(1).get(),
-
-            db.collection(CHALLENGE_ID)
-                .orderBy('created', 'desc')
-                .limit(1).get()
+            getDocs(query(collectionRef, orderBy('created', 'asc'), limit(1))),
+            getDocs(query(collectionRef, orderBy('created', 'desc'), limit(1))),
         ]);
 
         const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
@@ -423,9 +416,8 @@ export async function getTotalChallengeDays() {
 
 export async function getMostRecentSet() {
     try {
-        const snapshot = await db.collection(CHALLENGE_ID)
-            .orderBy('created', 'desc')
-            .limit(1).get();
+        const q = query(collectionRef, orderBy('created', 'desc'), limit(1));
+        const snapshot = await getDocs(q);
 
         return snapshot.docs.map((doc) => {
             const data = doc.data();
@@ -447,7 +439,8 @@ export async function getMostRecentSet() {
 
 export async function getGlobalChartData() {
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).orderBy('created').get();
+        const q = query(collectionRef, orderBy('created'));
+        const snapshot = await getDocs(q);
 
         const {
             firstEntry,
@@ -512,7 +505,8 @@ export async function getGlobalChartData() {
 /* INDIVIDUAL QUERIES */
 async function getUserPushUpsById(id) {
     try {
-        const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
+        const q = query(collectionRef, where('id', '==', id), orderBy('created'));
+        const snapshot = await getDocs(q);
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();
@@ -596,7 +590,8 @@ export async function getUserStats(id) {
             getTotalChallengeDays(),
         ]);
 
-        const snapshot = await db.collection(CHALLENGE_ID).where('id', '==', id).orderBy('created').get();
+        const q = query(collectionRef, where('id', '==', id), orderBy('created'));
+        const snapshot = await getDocs(q);
 
         const {rankings, totalPushUps: totalPushUpsGlobally, bestIndividualSet, totalSets} = leaderboardData;
 
@@ -688,9 +683,8 @@ export async function getUserStats(id) {
 
 export async function getStreakData(id) {
     try {
-        const firstSnapshot = await db.collection(CHALLENGE_ID)
-            .orderBy('created', 'asc')
-            .limit(1).get();
+        const q = query(collectionRef, orderBy('created', 'asc'), limit(1));
+        const firstSnapshot = await getDocs(q);
 
         const challengeStartDate = firstSnapshot.docs.map(doc => {
             const data = doc.data();
@@ -826,33 +820,27 @@ export async function getStreakData(id) {
 }
 
 export async function getUserFeed({id, page}) {
-    const firstPageQuery = db.collection(CHALLENGE_ID)
-        .where('id', '==', id)
-        .orderBy('created', 'desc')
-        .limit(FEED_LIMIT);
+    const firstPageQuery = query(collectionRef, where('id', '==', id), orderBy('created', 'desc'), limit(FEED_LIMIT));
+
     let currentPage = 1;
 
-    async function getPaginatedPage(query) {
+    async function getPaginatedPageQuery(q) {
         if (currentPage < page) {
-            const snapshot = await query.get();
+            const snapshot = await getDocs(q);
             const { length, [length - 1]: last } = snapshot.docs;
 
-            const next = db.collection(CHALLENGE_ID)
-                .where('id', '==', id)
-                .orderBy('created', 'desc')
-                .startAfter(last)
-                .limit(FEED_LIMIT);
+            const nextQuery = query(collectionRef, where('id', '==', id), orderBy('created', 'desc'), startAfter(last), limit(FEED_LIMIT));
 
             currentPage++;
-            return await getPaginatedPage(next);
+            return getPaginatedPageQuery(nextQuery);
         }
 
-        return query;
+        return q;
     }
 
     try {
-        const query = await getPaginatedPage(firstPageQuery);
-        const snapshot = await query.get();
+        const pageQuery = await getPaginatedPageQuery(firstPageQuery);
+        const snapshot = await getDocs(pageQuery);
 
         return snapshot.docs.reduce((acc, doc) => {
             const data = doc.data();

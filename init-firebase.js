@@ -1,7 +1,7 @@
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { getFirestore } from "firebase/firestore";
 
-const config = {
+const firebaseConfig = {
   "apiKey": process.env.firebaseApiKey,
   "authDomain": "push-up-heroes-6a002.firebaseapp.com",
   "databaseURL": "https://push-up-heroes-6a002.firebaseio.com",
@@ -12,7 +12,7 @@ const config = {
   "measurementId": "G-7QFX10Q1KM"
 };
 
-// Initialize Firebase
-export default !firebase.apps.length
-    ? firebase.initializeApp(config).firestore()
-    : firebase.app().firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+export default db;
