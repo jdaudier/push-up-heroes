@@ -665,7 +665,7 @@ export async function getUserStats(id) {
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
             globalDailyAvg: Math.round(totalPushUpsGlobally / totalChallengeDays),
             avgSet: Math.round(totalPushUps / snapshot.docs.length),
-            globalAvgSet: Math.round(totalPushUps / totalSets),
+            globalAvgSet: Math.round(totalPushUpsGlobally / totalSets),
             contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
             catchTheLeader: rankings[0].count - totalPushUps,
             firstPlaceAthlete: {
