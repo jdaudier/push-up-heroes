@@ -118,8 +118,8 @@ const Stats = ({data}) => {
             <Popup flowing
                    hoverable={catchTheLeader !== 0}
                    position='top center'
+                   offset={[0, -10]}
                    size='huge'
-                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="red" hasPopup>
@@ -179,9 +179,9 @@ const Stats = ({data}) => {
             {longestStreak > 0 ? (
                 <Popup content={longestStreakDates}
                        flowing
+                       offset={[0, -10]}
                        position='top center'
                        size='huge'
-                       style={{top: 12}}
                        trigger={
                            <Grid.Column>
                                <Stat color="red" hasPopup>
@@ -242,9 +242,9 @@ const Stats = ({data}) => {
             {currentStreak > 0 ? (
                 <Popup content={currentStreakDates}
                        flowing
+                       offset={[0, -10]}
                        position='top center'
                        size='huge'
-                       style={{top: 12}}
                        trigger={
                            <Grid.Column>
                                <Stat color="blue" hasPopup>
@@ -303,9 +303,9 @@ const Stats = ({data}) => {
                 </Grid.Column>
             )}
             <Popup content={firstSet.created}
+                   offset={[0, -10]}
                    position='top center'
                    size='huge'
-                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="red" hasPopup>
@@ -314,9 +314,9 @@ const Stats = ({data}) => {
                        </Grid.Column>
                    }
             />
-            <Popup position='top center'
+            <Popup offset={[0, -10]}
+                   position='top center'
                    size='huge'
-                   style={{top: 12}}
                    trigger={
                        <Grid.Column>
                            <Stat color="blue" hasPopup>
@@ -334,9 +334,10 @@ const Stats = ({data}) => {
                 )}
             </Popup>
             <Popup content="Average push-ups per set"
+                   offset={[0, -10]}
                    position='top center'
                    size='huge'
-                   style={{top: 12, textAlign: 'center'}}
+                   style={{textAlign: 'center'}}
                    trigger={
                        <Grid.Column>
                            <Stat color="yellow">
