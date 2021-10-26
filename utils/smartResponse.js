@@ -69,11 +69,13 @@ function getSmartResponse(rawStats) {
         facts.push(`This set is higher than the *global* average set of *${globalAvgSet.toLocaleString()}* push-ups. Nicely done!`)
     }
 
-    if (count > firstPlaceAthlete.dailyAvg) {
+    const isNotInFirstPlace = id !== firstPlaceAthlete.id;
+
+    if (count > firstPlaceAthlete.dailyAvg && isNotInFirstPlace) {
         facts.push(`This set is higher than the daily average of *${firstPlaceAthlete.dailyAvg.toLocaleString()}* from our current champ <@${firstPlaceAthlete.id}>!`);
     }
 
-    if (count > firstPlaceAthlete.avgSet) {
+    if (count > firstPlaceAthlete.avgSet && isNotInFirstPlace) {
         facts.push(`This set is higher than the average push-ups per set of *${firstPlaceAthlete.avgSet.toLocaleString()}* from our current champ <@${firstPlaceAthlete.id}>!`);
     }
 
