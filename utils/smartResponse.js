@@ -28,11 +28,11 @@ function getSmartResponse(rawStats) {
         facts.push(`Congrats! You're tied with <@${firstPlaceAthlete.id}> for *first place*! :dancingmonkey:`);
     }
 
-    if (ranking === 2) {
+    if (ranking === 2 && catchTheLeader <= 40) {
         facts.push(`<@${firstPlaceAthlete.id}> should be scared. You're in *second place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
-    if (ranking === 3) {
+    if (ranking === 3 && catchTheLeader <= 50) {
         facts.push( `<@${firstPlaceAthlete.id}> should be shaking. You're in *third place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
