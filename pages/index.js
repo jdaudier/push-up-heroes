@@ -231,6 +231,7 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
 export async function getServerSideProps() {
     const { data } = await client.query({
         query: GET_LEADERBOARD,
+        fetchPolicy: 'network-only',
     });
 
     return {
