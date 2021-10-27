@@ -16,6 +16,7 @@ function getSmartResponse(rawStats) {
         contributionPercentage,
         firstPlaceAthlete,
         globalBestIndividualSet,
+        totalSets,
     } = rawStats;
 
     const facts = [];
@@ -28,11 +29,13 @@ function getSmartResponse(rawStats) {
         facts.push(`Congrats! You're tied with <@${firstPlaceAthlete.id}> for *first place*! :dancingmonkey:`);
     }
 
-    if (ranking === 2 && catchTheLeader <= 40) {
+    const shouldShowSecondPlaceMsg = ranking === 2 && catchTheLeader <= 40;
+    if (shouldShowSecondPlaceMsg) {
         facts.push(`<@${firstPlaceAthlete.id}> should be scared. You're in *second place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
-    if (ranking === 3 && catchTheLeader <= 50) {
+    const shouldShowThirdPlaceMsg = ranking === 3 && catchTheLeader <= 50;
+    if (shouldShowThirdPlaceMsg) {
         facts.push( `<@${firstPlaceAthlete.id}> should be shaking. You're in *third place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
@@ -57,7 +60,7 @@ function getSmartResponse(rawStats) {
         facts.push(`This set is higher than your daily average of *${dailyAvg.toLocaleString()}*!`);
     }
 
-    if (count === bestSet.count && count !== globalBestIndividualSet.count) {
+    if (totalSets > 1 && count === bestSet.count && count !== globalBestIndividualSet.count) {
         facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
     }
 
@@ -93,7 +96,8 @@ function getSmartResponse(rawStats) {
         facts.push(`Your current set is *${diffFromFirstSet.toLocaleString()}* more than your first set of *${firstSetCount.toLocaleString()}* on ${firstSet.created}.`);
     }
 
-    if (ranking > 1 && totalPushUps !== firstPlaceAthlete.count) {
+    const alreadyHasCatchUpMessage = shouldShowSecondPlaceMsg || shouldShowThirdPlaceMsg;
+    if (ranking > 1 && totalPushUps !== firstPlaceAthlete.count && !alreadyHasCatchUpMessage) {
         facts.push(`Just *${catchTheLeader.toLocaleString()} more* till you catch up to *${firstPlaceAthlete.profile.real_name}*, our current champ!`);
     }
 

@@ -94,12 +94,14 @@ export async function getFullLeaderboardData() {
             return bCount - aCount;
         });
 
+        const totalSets = snapshot.size;
+
         return {
             rankings: sortedLeaderboard,
             totalPushUps,
-            totalSets: snapshot.size,
+            totalSets,
             totalAthletes: sortedLeaderboard.length,
-            avgSet: Math.round(totalPushUps / snapshot.docs.length),
+            avgSet: Math.round(totalPushUps / totalSets),
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
             bestIndividualSet
         }
@@ -664,7 +666,7 @@ export async function getUserStats(id) {
             ranking,
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
             globalDailyAvg: Math.round(totalPushUpsGlobally / totalChallengeDays),
-            avgSet: Math.round(totalPushUps / snapshot.docs.length),
+            avgSet: Math.round(totalPushUps / snapshot.size),
             globalAvgSet: Math.round(totalPushUpsGlobally / totalSets),
             contributionPercentage: Math.round((totalPushUps / totalPushUpsGlobally) * 100),
             catchTheLeader: rankings[0].count - totalPushUps,
