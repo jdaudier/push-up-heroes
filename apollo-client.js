@@ -5,8 +5,11 @@ const client = new ApolloClient({
     uri: "https://pushupheroes.com/api/graphql",
     cache: new InMemoryCache(),
     defaultOptions: {
+        query: {
+            fetchPolicy: 'network-only'
+        },
         watchQuery: {
-            fetchPolicy: 'cache-and-network',
+            fetchPolicy: 'no-cache',
         },
     },
 });
