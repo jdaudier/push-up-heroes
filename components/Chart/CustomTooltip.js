@@ -1,6 +1,7 @@
 import { BLUE } from '../../utils/constants';
-import { jsx, keyframes } from '@emotion/core';
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const CustomTooltip = ({active, payload, label}) => {
     if (active) {

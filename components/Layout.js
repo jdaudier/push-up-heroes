@@ -3,8 +3,8 @@ import Head from 'next/head';
 import Nav from './nav';
 import {Grid} from 'semantic-ui-react';
 
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 function Layout(props) {
     return (
@@ -12,7 +12,6 @@ function Layout(props) {
             <Head>
                 <title>Push-Up Heroes</title>
                 <link rel='icon' href='/favicon.ico' />
-                <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2/dist/semantic.min.css" />
             </Head>
             <Nav />
             <Grid container stackable verticalAlign='middle' style={{ paddingTop: '9em', paddingBottom: '4em' }}>

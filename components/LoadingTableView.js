@@ -1,7 +1,8 @@
 import React from 'react';
 import { Dimmer, Loader, Table } from 'semantic-ui-react';
-import { jsx } from '@emotion/core';
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const LoadingTableView = ({colSpan} = {colSpan: 6}) => {
     return (

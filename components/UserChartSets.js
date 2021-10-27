@@ -4,10 +4,10 @@ import { BLUE, YELLOW } from '../utils/constants';
 import CustomYAxisTick from './Chart/CustomYAxisTick';
 import CustomTooltip from './Chart/CustomTooltip';
 import CustomRefLineLabel from './Chart/CustomRefLineLabel';
-
-import { jsx, keyframes } from '@emotion/core';
 import CustomXAxisTick from "./Chart/CustomXAxisTick";
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const UserChart = ({data, avgSet}) => {
     const shouldShowAvg = data.length > 3;

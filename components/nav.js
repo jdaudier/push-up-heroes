@@ -4,8 +4,8 @@ import {Header, Menu, Container} from 'semantic-ui-react';
 import SuperGirl from './SuperGirl';
 import {useRouter} from "next/router";
 
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const Nav = () => {
     const router = useRouter();

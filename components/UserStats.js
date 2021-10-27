@@ -4,8 +4,9 @@ import LoadingIcon from './LoadingIcon';
 import Crown from './Crown';
 import { cellLinkCss } from './Stats';
 import { BLUE, RED, YELLOW } from '../utils/constants';
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const statsBoxBase = (hasPopup) => ({
     borderRadius: 4,
@@ -60,7 +61,7 @@ function LoadingStat({color, label}) {
     )
 }
 
-const Stats = ({data}) => {
+const UserStats = ({data}) => {
     if (!data) {
         return (
             <Grid doubling columns={3} stackable>
@@ -350,4 +351,4 @@ const Stats = ({data}) => {
     )
 };
 
-export default Stats;
+export default UserStats;

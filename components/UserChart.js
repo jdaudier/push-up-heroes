@@ -6,8 +6,8 @@ import CustomYAxisTick from './Chart/CustomYAxisTick';
 import CustomTooltip from './Chart/CustomTooltip';
 import CustomRefLineLabel from './Chart/CustomRefLineLabel';
 
-import { jsx, keyframes } from '@emotion/core';
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const UserChart = ({data, dailyAvg}) => {
     const shouldShowAvg = data.length > 3;

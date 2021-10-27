@@ -1,6 +1,7 @@
 import { Loader } from 'semantic-ui-react';
-import { jsx } from '@emotion/core';
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 function LoadingIcon() {
     return (

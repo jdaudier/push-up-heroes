@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { gql } from 'apollo-boost';
-import withData from '../lib/apollo';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, gql } from '@apollo/client';
 import { Table, Image, Icon } from 'semantic-ui-react';
 import { BLUE, FEED_LIMIT } from '../utils/constants';
 import LoadingTableView from './LoadingTableView';
 import FeedPagination from './FeedPagination';
 
-import { jsx } from '@emotion/core';
-/** @jsx jsx */
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const GET_GLOBAL_USERS_FEED = gql`
     query globalUsersFeed($page: Int!) {
@@ -264,4 +262,4 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
     )
 };
 
-export default withData(props => <GlobalFeed {...props} />);
+export default GlobalFeed;

@@ -14,8 +14,9 @@ import isAfter from 'date-fns/isAfter';
 import parseISO from 'date-fns/parseISO';
 import {Icon, Header, Segment} from 'semantic-ui-react';
 import { BLUE, RED } from '../utils/constants';
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const iconCss = {
     color: '#777',

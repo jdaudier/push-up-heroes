@@ -1,7 +1,8 @@
 import React from 'react';
 import { Dimmer, Header, Loader, Segment } from 'semantic-ui-react';
-import { jsx } from '@emotion/core';
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const LoadingChartView = () => {
     return (

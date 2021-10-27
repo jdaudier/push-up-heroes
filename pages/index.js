@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
+import { gql } from "@apollo/client";
+import client from "../apollo-client";
+import ClientOnly from '../components/ClientOnly';
 import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
 import Crown from '../components/Crown';
 const GlobalFeed = dynamic(() => import('../components/GlobalFeed'));
 const GlobalChart = dynamic(() => import('../components/GlobalChart'));
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
-import withData from '../lib/apollo';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
 import { BLUE, RED, YELLOW } from '../utils/constants';
-import { jsx } from '@emotion/core';
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const MaybeRibbon = ({place}) => {
     switch (place) {
@@ -227,9 +228,17 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
     )
 };
 
-const Home = () => {
-    const { loading, error, data, fetchMore } = useQuery(GET_LEADERBOARD);
+export async function getServerSideProps() {
+    const { data } = await client.query({
+        query: GET_LEADERBOARD,
+    });
 
+    return {
+        props: { data },
+    };
+}
+
+const Home = ({ data }) => {
     const [activeTab, setActiveTab] = useState('leaderboard');
 
     const leaderboardPane = {
@@ -268,12 +277,14 @@ const Home = () => {
             </Menu.Item>
         ),
         render: () => (
-            <Tab.Pane>
-                <GlobalFeed bestIndividualSetCount={data.leaderboard.bestIndividualSet.count}
-                            totalPushUps={data.leaderboard.totalPushUps}
-                            totalSets={data.leaderboard.totalSets}
-                />
-            </Tab.Pane>
+            <ClientOnly>
+                <Tab.Pane>
+                    <GlobalFeed bestIndividualSetCount={data.leaderboard.bestIndividualSet.count}
+                                totalPushUps={data.leaderboard.totalPushUps}
+                                totalSets={data.leaderboard.totalSets}
+                    />
+                </Tab.Pane>
+            </ClientOnly>
         )
     } : null;
 
@@ -292,9 +303,11 @@ const Home = () => {
             </Menu.Item>
         ),
         render: () => (
-            <Tab.Pane>
-                <GlobalChart dailyAvg={data.leaderboard.dailyAvg} />
-            </Tab.Pane>
+            <ClientOnly>
+                <Tab.Pane>
+                    <GlobalChart dailyAvg={data.leaderboard.dailyAvg} />
+                </Tab.Pane>
+            </ClientOnly>
         )
     } : null;
 
@@ -308,4 +321,4 @@ const Home = () => {
     )
 };
 
-export default withData(props => <Home />);
+export default Home;

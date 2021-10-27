@@ -2,8 +2,9 @@ import { Grid, Statistic, Popup, Image } from 'semantic-ui-react';
 import Link from 'next/link';
 import LoadingIcon from './LoadingIcon';
 import { BLUE, RED, YELLOW } from '../utils/constants';
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const statsBoxBase = (hasPopup) => ({
     borderRadius: 4,

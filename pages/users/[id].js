@@ -1,20 +1,20 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import withData from '../../lib/apollo';
-import { useQuery } from '@apollo/react-hooks';
-import { gql } from 'apollo-boost';
+import client from "../../apollo-client";
+import { gql } from "@apollo/client";
 import {Grid, Card, Image, Icon, Header, Loader, Dimmer} from 'semantic-ui-react'
 import Layout from '../../components/Layout';
 import UserStats from '../../components/UserStats';
 import StreaksCalendar from '../../components/StreaksCalendar';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import parseISO from 'date-fns/parseISO';
+import ClientOnly from '../../components/ClientOnly';
 const UserChart = dynamic(() => import('../../components/UserChart'));
 const UserChartSets = dynamic(() => import('../../components/UserChartSets'));
 const UserFeed = dynamic(() => import('../../components/UserFeed'));
 
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const GET_USER_STATS = gql`
     query userStats($id: ID!) {
@@ -128,13 +128,22 @@ function LoadingUserCard({user: {real_name, title, image_512}}) {
     )
 }
 
-function User() {
-    const router = useRouter();
+export async function getServerSideProps(context) {
+    const { id } = context.query;
 
-    const id = router.query.id;
-    const { loading, error, data } = useQuery(GET_USER_STATS, {
-        variables: { id },
+    const { data } = await client.query({
+        query: GET_USER_STATS,
+        variables: { id }
     });
+
+    return {
+        props: { data },
+    };
+}
+
+export default function User({ data }) {
+    const router = useRouter();
+    const id = router.query.id;
 
     return (
         <Layout>
@@ -160,15 +169,15 @@ function User() {
             {data && <UserChartSets avgSet={data.userStats.avgSet} data={data.pushUpsByUser.sorted} />}
             {data && <Header as='h2'>Feed</Header>}
             {data &&
+            <ClientOnly>
                 <UserFeed
                     bestSetCount={data.userStats.bestSet.count}
                     id={id}
                     totalPushUps={data.userStats.totalPushUps}
                     totalSets={data.userStats.totalSets}
                 />
+            </ClientOnly>
             }
         </Layout>
     );
 }
-
-export default withData(props => <User />);

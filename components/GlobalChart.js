@@ -1,6 +1,4 @@
-import withData from '../lib/apollo';
-import { gql } from 'apollo-boost';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, gql } from '@apollo/client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { Segment, Header } from 'semantic-ui-react';
 import { BLUE, YELLOW } from '../utils/constants';
@@ -9,8 +7,9 @@ import CustomYAxisTick from './Chart/CustomYAxisTick';
 import CustomTooltip from './Chart/CustomTooltip';
 import CustomRefLineLabel from './Chart/CustomRefLineLabel';
 import LoadingChartView from './LoadingChartView';
-import { jsx, keyframes } from '@emotion/core';
-/** @jsx jsx */
+
+/** @jsxImportSource @emotion/react */
+import { jsx } from '@emotion/react';
 
 const GET_GLOBAL_CHART_DATA = gql`
     query globalChartData {
@@ -70,4 +69,4 @@ function GlobalChart({dailyAvg}) {
     );
 }
 
-export default withData(props => <GlobalChart {...props} />);
+export default GlobalChart;
