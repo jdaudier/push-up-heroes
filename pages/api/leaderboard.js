@@ -18,19 +18,19 @@ async function handler(req, res) {
                         }
                     }];
 
-                if (channel_name !== 'fun-push-up-challenge') {
-                    await fetch('https://slack.com/api/chat.postMessage', {
-                        method: 'POST',
-                        headers: {
-                            'Content-type': 'application/json',
-                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
-                        },
-                        body: JSON.stringify({
-                            channel: 'fun-push-up-challenge',
-                            blocks,
-                        })
-                    });
+                await fetch('https://slack.com/api/chat.postMessage', {
+                    method: 'POST',
+                    headers: {
+                        'Content-type': 'application/json',
+                        Authorization: `Bearer ${process.env.zapierSlackToken}`,
+                    },
+                    body: JSON.stringify({
+                        channel: 'fun-push-up-challenge',
+                        blocks,
+                    })
+                });
 
+                if (channel_name !== 'fun-push-up-challenge') {
                     const slackWarningMessage = {
                         response_type: 'ephemeral',
                         text: ':warning:️ Check the <#CNTT52KV0|fun-push-up-challenge> channel for leaderboard results.',
@@ -43,10 +43,7 @@ async function handler(req, res) {
 
                 res.setHeader('Content-Type', 'application/json');
                 res.statusCode = 200;
-                return res.json({
-                    response_type: "in_channel",
-                    blocks,
-                });
+                return res.json(null);
             }
 
             const slackEmptyLeaderboardMessage = {
