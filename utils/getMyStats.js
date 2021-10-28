@@ -16,6 +16,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 dailyAvg,
                 avgSet,
                 contributionPercentage,
+                bestDailyTotal,
             } = stats;
 
             const {
@@ -45,20 +46,23 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 label: 'Daily Average',
                 value: `${dailyAvg.toLocaleString()}`,
             }, {
+                label: 'Best Daily Total',
+                value: `${bestDailyTotal.count.toLocaleString()} (${bestDailyTotal.created.join(', ')})`,
+            }, {
                 label: 'Longest Streak',
                 value: `${longestStreak.toLocaleString()} ${dayOrDays(longestStreak)}`,
             }, {
                 label: 'Current Streak',
                 value: `${currentStreak.toLocaleString()} ${dayOrDays(currentStreak)}`,
             }, {
-                label: 'Starting Set',
-                value: `${firstSet.count.toLocaleString()} (${firstSet.createdShort})`,
-            }, {
                 label: 'Best Set',
                 value: `${bestSet.count.toLocaleString()}`,
             }, {
                 label: 'Average Set',
                 value: `${avgSet.toLocaleString()}`,
+            }, {
+                label: 'Starting Set',
+                value: `${firstSet.count.toLocaleString()} (${firstSet.createdShort})`,
             }, {
                 label: 'Latest Set',
                 value: `${mostRecentSet.count.toLocaleString()} (${mostRecentSet.createdShort})`,
@@ -67,9 +71,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 value: `${contributionPercentage}%`,
             }];
 
-            const firstTwo = fullList.slice(0, 2);
-            const lastPortion = fullList.slice(3);
-            const trimmedList = [...firstTwo, ...lastPortion];
+            const trimmedList = fullList.filter(item => item.label !== 'Catch the Leader');
             const textList = ranking === 1 ? trimmedList : fullList;
 
             const formattedText = textList.reduce((acc, curr) => {

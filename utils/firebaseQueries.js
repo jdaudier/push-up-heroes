@@ -614,12 +614,7 @@ export async function getUserStats(id) {
 
             const {count} = data;
 
-            const humanReadableCreated = format(utcToZonedTime(
-                data.created.toDate(),
-                data.timeZone,
-            ), 'EEE, MMM d');
-
-            const prevCount = acc.countsByDayMap[humanReadableCreated];
+            const prevCount = acc.countsByDayMap[createdShort];
 
             return {
                 ...acc,
@@ -644,7 +639,7 @@ export async function getUserStats(id) {
                 },
                 countsByDayMap: {
                     ...acc.countsByDayMap,
-                    [humanReadableCreated]: prevCount ? prevCount + count : count,
+                    [createdShort]: prevCount ? prevCount + count : count,
                 },
                 totalPushUps: acc.totalPushUps + count,
             }
