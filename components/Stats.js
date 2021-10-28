@@ -69,13 +69,13 @@ const Stats = ({data}) => {
                 <LoadingStat color="red" label="Daily Average" />
                 <LoadingStat color="yellow" label="Average Set" />
                 <LoadingStat color="red" label="Best Individual Set" />
-                <LoadingStat color="blue" label="Most Recent Set" />
+                <LoadingStat color="blue" label="Best Daily Total" />
             </Grid>
         )
     }
 
-    const {mostRecentSet, leaderboard} = data;
-    const {totalAthletes, totalPushUps, dailyAvg, avgSet, bestIndividualSet} = leaderboard;
+    const {leaderboard} = data;
+    const {totalAthletes, totalPushUps, dailyAvg, avgSet, bestIndividualSet, bestDailyTotalOverall} = leaderboard;
 
     const MAX_BEST_SET_ATHLETES = 8;
     const trimmedBestSetAthletes = bestIndividualSet.athletes.slice(0, MAX_BEST_SET_ATHLETES);
@@ -153,22 +153,24 @@ const Stats = ({data}) => {
                    trigger={
                 <Grid.Column>
                     <Stat color="blue" hasPopup>
-                        <Statistic inverted label='Most Recent Set' value={mostRecentSet.count.toLocaleString()} />
+                        <Statistic inverted label='Best Daily Total' value={bestDailyTotalOverall.count.toLocaleString()} />
                     </Stat>
                 </Grid.Column>}
             >
-                <Link href='/users/[id]' as={`/users/${mostRecentSet.id}`}>
-                    <a title={`${mostRecentSet.profile.real_name}'s page`} css={cellLinkCss}>
-                        <Image src={mostRecentSet.profile.image_48} avatar />
-                        <span css={{
-                            display: 'inline-block',
-                            verticalAlign: 'middle',
-                            marginLeft: 5,
-                        }}>
-                            {mostRecentSet.profile.real_name} on {mostRecentSet.created}
+                {bestDailyTotalOverall.profiles.map(profile => (
+                    <Link href='/users/[id]' as={`/users/${profile.id}`} key={profile.id}>
+                        <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
+                            <Image src={profile.image_48} avatar />
+                            <span css={{
+                                display: 'inline-block',
+                                verticalAlign: 'middle',
+                                marginLeft: 5,
+                            }}>
+                            {profile.real_name} on {profile.date}
                         </span>
-                    </a>
-                </Link>
+                        </a>
+                    </Link>
+                ))}
             </Popup>
         </Grid>
     )

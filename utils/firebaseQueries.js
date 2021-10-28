@@ -11,6 +11,64 @@ import { FEED_LIMIT } from '../utils/constants';
 export const CHALLENGE_ID = 'challenge-1';
 const collectionRef = collection(db, CHALLENGE_ID);
 
+function getBestDailyTotalOverall(countsByDayByUser) {
+    return Object.entries(countsByDayByUser).reduce((acc, curr) => {
+        const [date, userMap] = curr;
+
+        const highestByDay = Object.entries(userMap).reduce((a, c) => {
+            const [id, profile] = c;
+            const {count} = profile;
+            const fullProfile = {
+                id,
+                ...profile.profile,
+                date,
+            };
+
+            const isCurrentCountHigher = count > a.count;
+            if (isCurrentCountHigher) {
+                return {
+                    profiles: [fullProfile],
+                    count,
+                }
+            }
+
+            const isCurrentCountSameAsHighest = count === a.count;
+            if (isCurrentCountSameAsHighest) {
+                return {
+                    profiles: [...a.profiles, fullProfile],
+                    count,
+                }
+            }
+
+            return a;
+        }, {
+            profiles: [],
+            count: 0,
+        });
+
+        const isCurrentCountHigher = highestByDay.count > acc.count;
+        if (isCurrentCountHigher) {
+            return {
+                profiles: highestByDay.profiles,
+                count: highestByDay.count,
+            }
+        }
+
+        const isCurrentCountSameAsHighest = highestByDay.count === acc.count;
+        if (isCurrentCountSameAsHighest) {
+            return {
+                profiles: [...acc.profiles, ...highestByDay.profiles],
+                count: highestByDay.count,
+            }
+        }
+
+        return acc;
+    }, {
+        profiles: [],
+        count: 0,
+    });
+}
+
 export async function getFullLeaderboardData() {
     try {
         const snapshot = await getDocs(collectionRef);
@@ -23,10 +81,17 @@ export async function getFullLeaderboardData() {
             timeZone: "America/New_York"
             */
             const data = doc.data();
+            const rawCreated = data.created.toDate();
+
             const created = format(utcToZonedTime(
-                data.created.toDate(),
+                rawCreated,
                 data.timeZone,
             ), 'EEE, MMM d');
+
+            const createdShort = format(utcToZonedTime(
+                rawCreated,
+                data.timeZone,
+            ), 'MMM d');
 
             const {id, count, name, profile} = data;
             const currentAthlete = {
@@ -36,6 +101,9 @@ export async function getFullLeaderboardData() {
                 created,
                 profile,
             };
+
+            const usersMap = acc.countsByDayByUser[createdShort];
+            const prevCount = usersMap && usersMap[id] ? usersMap[id].count : 0;
 
             return {
                 ...acc,
@@ -58,7 +126,17 @@ export async function getFullLeaderboardData() {
                         count === acc.bestIndividualSet.count && !acc.bestIndividualSet.athletes.find(a => a.id === id) ?
                             [...acc.bestIndividualSet.athletes, currentAthlete] :
                             acc.bestIndividualSet.athletes,
-                }
+                },
+                countsByDayByUser: {
+                    ...acc.countsByDayByUser,
+                    [createdShort]: {
+                        ...acc.countsByDayByUser[createdShort],
+                        [id]: {
+                            profile,
+                            count: prevCount ? prevCount + count : count,
+                        },
+                    }
+                },
             }
         }, {
             slackIdMap: {},
@@ -69,10 +147,12 @@ export async function getFullLeaderboardData() {
                 count: 0,
                 athletes: [],
             },
+            countsByDayByUser: {},
         });
 
-        const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap, slackProfileMap} = data;
+        const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap, slackProfileMap, countsByDayByUser} = data;
         const totalChallengeDays = await getTotalChallengeDays();
+        const bestDailyTotalOverall = getBestDailyTotalOverall(countsByDayByUser)
 
         const leaderArr = Object.keys(leaderboard).map((id) => {
             const name = slackIdMap[id];
@@ -103,7 +183,8 @@ export async function getFullLeaderboardData() {
             totalAthletes: sortedLeaderboard.length,
             avgSet: Math.round(totalPushUps / totalSets),
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
-            bestIndividualSet
+            bestIndividualSet,
+            bestDailyTotalOverall,
         }
     } catch (err) {
         console.error('Error:', err);

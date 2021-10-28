@@ -60,15 +60,14 @@ const GET_LEADERBOARD = gql`
                     }
                 }
             }
-        }
-        mostRecentSet {
-            id
-            name
-            count
-            created
-            profile {
-                image_48
-                real_name
+            bestDailyTotalOverall {
+                profiles {
+                    id
+                    image_48
+                    real_name
+                    date
+                }
+                count
             }
         }
     }

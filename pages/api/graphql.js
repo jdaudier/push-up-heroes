@@ -136,6 +136,22 @@ const typeDefs = gql`
         count: Int!
         athletes: [BestIndividualSetAthlete!]!
     }
+    type ProfileWithId {
+        id: String!
+        date: Date!
+        real_name: String!
+        image_original: String!
+        image_24: String!
+        image_32: String!
+        image_48: String!
+        image_72: String!
+        image_192: String!
+        image_512: String!
+    }
+    type BestDailyTotalOverall {
+        profiles: [ProfileWithId]!
+        count: Int!
+    }
     type BestIndividualDailyTotal {
         created: [String]!
         count: Int!
@@ -172,6 +188,7 @@ const typeDefs = gql`
         avgSet: Int!
         bestIndividualSet: BestIndividualSet!
         dailyAvg: Int!
+        bestDailyTotalOverall: BestDailyTotalOverall!
     }
     interface Profile {
         real_name: String!
@@ -231,7 +248,7 @@ const resolvers = {
         },
     },
     Feed: {
-        __resolveType(feed, context, info){
+        __resolveType(feed, context, info) {
             if (feed.name || feed.profile) {
                 return 'GlobalUserFeed';
             }
@@ -240,7 +257,7 @@ const resolvers = {
         },
     },
     Profile: {
-        __resolveType(profile, context, info){
+        __resolveType(profile, context, info) {
             if (profile.real_name_normalized || profile.title) {
                 return 'SlackProfile';
             }
