@@ -167,7 +167,7 @@ const UserStats = ({data}) => {
                                 verticalAlign: 'middle',
                                 marginLeft: 5,
                             }}>
-                                {firstPlaceAthlete.profile.real_name} leading with {firstPlaceAthlete.count.toLocaleString()}
+                                {firstPlaceAthlete.profile.real_name} is leading with {firstPlaceAthlete.count.toLocaleString()}
                             </span>
                         </a>
                     </Link>
