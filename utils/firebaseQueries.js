@@ -98,7 +98,7 @@ export async function getFullLeaderboardData() {
                 id,
                 name,
                 count,
-                created,
+                created: createdShort,
                 profile,
             };
 
