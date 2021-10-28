@@ -275,7 +275,7 @@ export async function getLeaderboardText(userId) {
              timeZone: "America/New_York"
             */
             const data = doc.data();
-            const {id, count, name} = data;
+            const {id, count, profile: {real_name: name}} = data;
 
             const countLength = (count).toString().length;
 
