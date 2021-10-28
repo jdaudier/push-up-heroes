@@ -29,7 +29,10 @@ const Nav = () => {
                         alignSelf: 'center',
                         color: 'rgba(0,0,0,.6)',
                         fontSize: '.9em',
-                        marginLeft: 'auto'
+                        marginLeft: 'auto',
+                        ['@media only screen and (max-width: 768px)']: {
+                            display: 'none'
+                        }
                     }}>
                         Type
                         <code css={{
