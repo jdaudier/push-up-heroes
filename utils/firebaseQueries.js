@@ -674,6 +674,14 @@ export async function getUserStats(id) {
             const isCurrentCountHigher = count > acc.count;
             if (isCurrentCountHigher) {
                 return {
+                    created: [date],
+                    count,
+                }
+            }
+
+            const isCurrentCountSameAsHighest = count === acc.count;
+            if (isCurrentCountSameAsHighest) {
+                return {
                     created: [...acc.created, date],
                     count,
                 }
