@@ -4,6 +4,7 @@ import getSlackUser from '../../utils/getSlackUser';
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
 const slackUpdateMessageUrl = 'https://slack.com/api/chat.update';
+const slackSendEphemeralMessageUrl = 'https://slack.com/api/chat.postEphemeral'
 
 async function handler(req, res) {
     const {user, actions: [action], team, message, channel} = JSON.parse(req.body.payload);
@@ -21,13 +22,13 @@ async function handler(req, res) {
             if (!isMatchingChallenger) {
                 try {
                     const slackResponse = {
-                        response_type: 'ephemeral',
                         channel: channel.id,
                         thread_ts: message.ts,
+                        user: user.id,
                         text: `<@${user.id}> This challenge wasn't meant for you, but that doesn't mean you can't get down and do some push-ups! :flex2:`,
                     };
 
-                    await fetch(slackPostMessageUrl, {
+                    await fetch(slackSendEphemeralMessageUrl, {
                         method: 'POST',
                         headers: {
                             'Content-type': 'application/json',
