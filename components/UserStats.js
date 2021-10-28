@@ -97,6 +97,7 @@ const UserStats = ({data}) => {
         firstSet,
         bestSet,
         firstPlaceAthlete,
+        bestDailyTotal,
     } = userStats;
 
     const MAX_BEST_SET_DATES = 6;
@@ -303,14 +304,15 @@ const UserStats = ({data}) => {
                     </Stat>
                 </Grid.Column>
             )}
-            <Popup content={firstSet.created}
+            <Popup content={`The most push-ups you did in a single day was on ${bestDailyTotal.created.join(' and ')}`}
                    offset={[0, -10]}
                    position='top center'
                    size='huge'
+                   style={{textAlign: 'center'}}
                    trigger={
                        <Grid.Column>
                            <Stat color="red" hasPopup>
-                               <Statistic inverted label='Starting Set' value={firstSet.count.toLocaleString()} />
+                               <Statistic inverted label='Best Daily Total' value={bestDailyTotal.count.toLocaleString()} />
                            </Stat>
                        </Grid.Column>
                    }

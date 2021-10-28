@@ -78,6 +78,7 @@ const typeDefs = gql`
         mostRecentSet: IndividualSet!
         firstPlaceAthlete: BasicRanking!
         globalBestIndividualSet: BestIndividualSet!
+        bestDailyTotal: BestIndividualDailyTotal!
     }
     type GlobalUserFeed implements Feed {
         name: String!
@@ -134,6 +135,10 @@ const typeDefs = gql`
     type BestIndividualSet {
         count: Int!
         athletes: [BestIndividualSetAthlete!]!
+    }
+    type BestIndividualDailyTotal {
+        created: [String]!
+        count: Int!
     }
     type BestIndividualSetAthlete {
         id: ID!

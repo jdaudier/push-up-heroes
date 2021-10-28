@@ -61,6 +61,10 @@ const GET_USER_STATS = gql`
                     real_name
                 }
             }
+            bestDailyTotal {
+                created
+                count
+            }
         }
         streakData(id: $id) {
             challengeStartDate

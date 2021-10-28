@@ -614,6 +614,13 @@ export async function getUserStats(id) {
 
             const {count} = data;
 
+            const humanReadableCreated = format(utcToZonedTime(
+                data.created.toDate(),
+                data.timeZone,
+            ), 'EEE, MMM d');
+
+            const prevCount = acc.countsByDayMap[humanReadableCreated];
+
             return {
                 ...acc,
                 bestSet: {
@@ -635,6 +642,10 @@ export async function getUserStats(id) {
                     created: rawCreated,
                     createdShort,
                 },
+                countsByDayMap: {
+                    ...acc.countsByDayMap,
+                    [humanReadableCreated]: prevCount ? prevCount + count : count,
+                },
                 totalPushUps: acc.totalPushUps + count,
             }
         }, {
@@ -653,16 +664,35 @@ export async function getUserStats(id) {
                 created: '',
                 createdShort: '',
             },
+            countsByDayMap: {},
             totalPushUps: 0,
             totalSets: snapshot.size,
         });
 
-        const {totalPushUps} = results;
+        const {totalPushUps, countsByDayMap} = results;
 
         const firstPlaceAthlete = rankings[0];
 
+        const bestDailyTotal = Object.entries(countsByDayMap).reduce((acc, curr) => {
+            const [date, count] = curr;
+
+            const isCurrentCountHigher = count > acc.count;
+            if (isCurrentCountHigher) {
+                return {
+                    created: [...acc.created, date],
+                    count,
+                }
+            }
+
+            return acc;
+        }, {
+            created: [],
+            count: 0,
+        });
+
         return {
             ...results,
+            bestDailyTotal,
             ranking,
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),
             globalDailyAvg: Math.round(totalPushUpsGlobally / totalChallengeDays),
