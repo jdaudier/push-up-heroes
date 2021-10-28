@@ -363,7 +363,7 @@ export async function getLeaderboardText(userId) {
         const fallbackDate = format(new Date(), 'EEE, MMM dd');
         const date = `<!date^${Math.floor(new Date() / 1000)}^{date_short_pretty} at {time}|${fallbackDate}>`;
 
-        return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${context}\n${webLink}` : '';
+        return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary} ${leaderboardText}\n${context}\n${webLink}` : '';
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);
