@@ -21,9 +21,10 @@ async function handler(req, res) {
             if (!isMatchingChallenger) {
                 try {
                     const slackResponse = {
-                        "channel": channel.id,
-                        "thread_ts": message.ts,
-                        "text": `<@${user.id}> This challenge wasn't meant for you, but that doesn't mean you can't get down and do some push-ups! :flex2:`,
+                        response_type: 'ephemeral',
+                        channel: channel.id,
+                        thread_ts: message.ts,
+                        text: `<@${user.id}> This challenge wasn't meant for you, but that doesn't mean you can't get down and do some push-ups! :flex2:`,
                     };
 
                     await fetch(slackPostMessageUrl, {
