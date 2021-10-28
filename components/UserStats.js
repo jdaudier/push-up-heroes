@@ -71,7 +71,7 @@ const UserStats = ({data}) => {
                 <LoadingStat color="yellow" label="Daily Average" />
                 <LoadingStat color="red" label="Longest Streak" />
                 <LoadingStat color="blue" label="Current Streak" />
-                <LoadingStat color="red" label="Starting Set" />
+                <LoadingStat color="red" label="Best Daily Total" />
                 <LoadingStat color="blue" label="Best Set" />
                 <LoadingStat color="yellow" label="Average Set" />
             </Grid>
