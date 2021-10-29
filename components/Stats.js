@@ -159,7 +159,13 @@ const Stats = ({data}) => {
             >
                 {bestDailyTotalOverall.profiles.map(profile => (
                     <Link href='/users/[id]' as={`/users/${profile.id}`} key={profile.id}>
-                        <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
+                        <a title={`${profile.real_name}'s page`} css={{
+                            ...cellLinkCss,
+                            marginBottom: 10,
+                            '&:last-child': {
+                                marginBottom: 0,
+                            }
+                        }}>
                             <Image src={profile.image_48} avatar />
                             <span css={{
                                 display: 'inline-block',
