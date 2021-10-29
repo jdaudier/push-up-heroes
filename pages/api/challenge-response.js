@@ -23,7 +23,6 @@ async function handler(req, res) {
                 try {
                     const slackResponse = {
                         channel: channel.id,
-                        thread_ts: message.ts,
                         user: user.id,
                         text: `<@${user.id}> This challenge wasn't meant for you, but that doesn't mean you can't get down and do some push-ups! :flex2:`,
                     };
