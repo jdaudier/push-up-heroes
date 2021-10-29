@@ -61,7 +61,7 @@ async function handler(req, res) {
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": `<@${user_id}> just challenged ${recipientName} to *${count}* ${pushUps}!\n*Do you accept this challenge ${recipientName}?*\n\n_If you accept, *${count}* more ${pushUps} will be logged for you_.`
+                                "text": `<@${user_id}> just challenged ${recipientName} to *${count}* ${pushUps}!\n*Do you accept this challenge ${recipientName}?*\n\n_If you accept, *${count}* ${pushUps} will be logged for you_.`
                             },
                             "accessory": {
                                 "type": "image",
