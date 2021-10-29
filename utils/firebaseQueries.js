@@ -12,7 +12,7 @@ export const CHALLENGE_ID = 'challenge-1';
 const collectionRef = collection(db, CHALLENGE_ID);
 
 function getBestDailyTotalOverall(countsByDayByUser) {
-    return Object.entries(countsByDayByUser).reduce((acc, curr) => {
+    const bestDailyTotal = Object.entries(countsByDayByUser).reduce((acc, curr) => {
         const [date, userMap] = curr;
 
         const highestByDay = Object.entries(userMap).reduce((a, c) => {
@@ -67,6 +67,28 @@ function getBestDailyTotalOverall(countsByDayByUser) {
         profiles: [],
         count: 0,
     });
+
+    const dedupedProfiles = bestDailyTotal.profiles.reduce((acc, curr) => {
+        const index = acc.findIndex(profile => profile.id === curr.id);
+        const alreadyExists = index >= 0;
+
+        if (alreadyExists) {
+            const existingProfile = acc[index];
+
+            acc[index] = {
+                ...existingProfile,
+                date: `${existingProfile.date}, ${curr.date}`
+            };
+            return acc;
+        }
+
+        return [...acc, curr];
+    }, []);
+
+    return {
+        profiles: dedupedProfiles,
+        count: bestDailyTotal.count
+    }
 }
 
 export async function getFullLeaderboardData() {
