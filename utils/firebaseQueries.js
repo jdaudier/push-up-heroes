@@ -307,9 +307,9 @@ export async function getLeaderboardText(userId) {
             count: leaderboard[id],
         }));
 
-        const maxAmountForSummary = 20;
+        const MAX_NUM_FOR_SUMMARY = 20;
         const hasMoreData = leaderArr.length > 20;
-        const clippedLeaderboard = hasMoreData ? [...leaderArr.slice(0, maxAmountForSummary)] : [...leaderArr];
+        const clippedLeaderboard = hasMoreData ? [...leaderArr.slice(0, MAX_NUM_FOR_SUMMARY)] : leaderArr;
 
         const sortedLeaderboard = clippedLeaderboard.sort((aPerson, bPerson) => {
             const aCount = aPerson.count;
@@ -321,7 +321,7 @@ export async function getLeaderboardText(userId) {
             const isFirst = i === 0;
             const rank = i + 1;
             const {longestNameLength, longestCountLength} = data;
-            const padding = 8;
+            const padding = 4;
             const nameColLength = longestNameLength + padding;
             const headingText = 'Athlete';
             const nameHeadingLength = headingText.length;
@@ -352,7 +352,8 @@ export async function getLeaderboardText(userId) {
         const context = userId ? `_<@${userId}>` + " triggered this from the `/leaderboard` command._" : '_Use the `/leaderboard` command to see the latest data._';
         const webLink = ':linechart: _More fun data at <https://pushupheroes.com|pushupheroes.com>._';
 
-        const summary = sortedLeaderboard.map((person, i) => {
+        const top3 = sortedLeaderboard.slice(0, 3);
+        const summary = top3.map((person, i) => {
             switch (i) {
                 case (0): return `<@${person.id}> is in first place! :first_place_medal:`;
                 case (1): return `<@${person.id}> is in second place! :second_place_medal:`;
@@ -363,7 +364,7 @@ export async function getLeaderboardText(userId) {
         const fallbackDate = format(new Date(), 'EEE, MMM dd');
         const date = `<!date^${Math.floor(new Date() / 1000)}^{date_short_pretty} at {time}|${fallbackDate}>`;
 
-        return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary} ${leaderboardText}\n${context}\n${webLink}` : '';
+        return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${context}\n${webLink}` : '';
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);
