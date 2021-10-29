@@ -105,11 +105,6 @@ export async function getFullLeaderboardData() {
             const data = doc.data();
             const rawCreated = data.created.toDate();
 
-            const created = format(utcToZonedTime(
-                rawCreated,
-                data.timeZone,
-            ), 'EEE, MMM d');
-
             const createdShort = format(utcToZonedTime(
                 rawCreated,
                 data.timeZone,
