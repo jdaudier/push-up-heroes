@@ -104,7 +104,7 @@ async function handler(req, res) {
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": `<@${challengerId}> just challenged <@${user.id}> to *${count}* ${pushUps}!\n*Do you accept this challenge <@${user.id}>?*\n\n_If you accept, *${count}* more ${pushUps} will be logged for you_.`
+                                    "text": `<@${challengerId}> just challenged <@${user.id}> to *${count}* ${pushUps}!\n*Do you accept this challenge <@${user.id}>?*\n\n_If you accept, *${count}* ${pushUps} will be logged for you_.`
                                 },
                                 "accessory": {
                                     "type": "image",
@@ -168,7 +168,7 @@ async function handler(req, res) {
                                 "type": "section",
                                 "text": {
                                     "type": "mrkdwn",
-                                    "text": `<@${challengerId}> just challenged <@${user.id}> to *${count}* ${pushUps}!\n*Do you accept this challenge <@${user.id}>?*\n\n_If you accept, *${count}* more ${pushUps} will be logged for you_.`
+                                    "text": `<@${challengerId}> just challenged <@${user.id}> to *${count}* ${pushUps}!\n*Do you accept this challenge <@${user.id}>?*\n\n_If you accept, *${count}* ${pushUps} will be logged for you_.`
                                 },
                                 "accessory": {
                                     "type": "image",
