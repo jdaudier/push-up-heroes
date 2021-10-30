@@ -94,6 +94,13 @@ function getBestDailyTotalOverall(countsByDayByUser) {
 export async function getFullLeaderboardData() {
     try {
         const snapshot = await getDocs(collectionRef);
+
+        if (snapshot.docs.length === 0) {
+            return {
+                totalPushUps: 0
+            }
+        }
+
         const data = snapshot.docs.reduce((acc, doc) => {
             /*
             id: "myID",

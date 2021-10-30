@@ -11,6 +11,7 @@ const GlobalChart = dynamic(() => import('../components/GlobalChart'));
 import Layout from '../components/Layout';
 import Stats from '../components/Stats';
 import { BLUE, RED, YELLOW } from '../utils/constants';
+import EmptyView from "../components/EmptyView";
 
 /** @jsxImportSource @emotion/react */
 import { jsx } from '@emotion/react';
@@ -238,6 +239,12 @@ export async function getServerSideProps() {
 }
 
 const Home = ({ data }) => {
+    const totalPushUps = data.leaderboard.totalPushUps;
+
+    if (totalPushUps === 0) {
+        return <EmptyView />
+    }
+
     const [activeTab, setActiveTab] = useState('leaderboard');
 
     const leaderboardPane = {

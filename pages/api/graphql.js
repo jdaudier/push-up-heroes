@@ -181,14 +181,14 @@ const typeDefs = gql`
         contributionPercentage: Int!
     }
     type Leaderboard {
-        rankings: [Ranking]!
+        rankings: [Ranking]
         totalPushUps: Int!
-        totalSets: Int!
-        totalAthletes: Int!
-        avgSet: Int!
-        bestIndividualSet: BestIndividualSet!
-        dailyAvg: Int!
-        bestDailyTotalOverall: BestDailyTotalOverall!
+        totalSets: Int
+        totalAthletes: Int
+        avgSet: Int
+        bestIndividualSet: BestIndividualSet
+        dailyAvg: Int
+        bestDailyTotalOverall: BestDailyTotalOverall
     }
     interface Profile {
         real_name: String!

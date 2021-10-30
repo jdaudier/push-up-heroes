@@ -42,10 +42,4 @@ const quotes = [{
     author: 'Dwayne “The Rock” Johnson',
 }];
 
-function getRandomInt(max) {
-    return Math.floor(Math.random() * Math.floor(max));
-}
-
-const randomIndex = getRandomInt(quotes.length);
-
-export default quotes[randomIndex];
+export default quotes;
