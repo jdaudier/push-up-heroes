@@ -11,6 +11,8 @@ import { FEED_LIMIT } from '../utils/constants';
 export const CHALLENGE_ID = 'challenge-1';
 const collectionRef = collection(db, CHALLENGE_ID);
 
+export const MAX_NUM_FOR_SUMMARY = 20;
+
 function getBestDailyTotalOverall(countsByDayByUser) {
     const bestDailyTotal = Object.entries(countsByDayByUser).reduce((acc, curr) => {
         const [date, userMap] = curr;
@@ -324,7 +326,6 @@ export async function getLeaderboardText(userId) {
             count: leaderboard[id],
         }));
 
-        const MAX_NUM_FOR_SUMMARY = 20;
         const hasMoreData = leaderArr.length > 20;
         const clippedLeaderboard = hasMoreData ? [...leaderArr.slice(0, MAX_NUM_FOR_SUMMARY)] : leaderArr;
 

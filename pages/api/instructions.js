@@ -1,3 +1,5 @@
+import {MAX_NUM_FOR_SUMMARY} from '../../utils/firebaseQueries;
+
 async function handler(req, res) {
     const {user_id} = req.body;
 
@@ -8,7 +10,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `Hi <@${user_id}>! The Rock here. Welcome to Push-Up Heroes!\n\n *Here are all the commands you can use:*`
+                            "text": `Hi <@${user_id}>! The Rock here. Welcome to <https://pushupheroes.com|Push-Up Heroes>!\n\n\n\n*Here are all the commands you can use:*`
                         },
                         "accessory": {
                             "type": "image",
@@ -68,7 +70,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "*/leaderboard*\nTo see the top 20 athletes currently at the top of the leaderboard _(visible to everyone)_."
+                            "text": `*/leaderboard*\nTo see the top ${MAX_NUM_FOR_SUMMARY} athletes currently at the top of the leaderboard _(visible to everyone)_.`
                         },
                         "accessory": {
                             "type": "image",
@@ -78,6 +80,13 @@ async function handler(req, res) {
                     },
                     {
                         "type": "divider"
+                    },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": ":linechart: _Visit <https://pushupheroes.com|pushupheroes.com> for more fun stats and data visualization!_"
+                        }
                     }
                 ];
 
