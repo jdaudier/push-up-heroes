@@ -1,3 +1,9 @@
+import {NUM_HOURS_AWAKE} from './constants';
+
+function maybePluralizePushUps(count) {
+    return  count === 1 ? 'push-up' : 'push-ups';
+}
+
 function getSmartResponse(rawStats) {
     const {
         id,
@@ -101,8 +107,12 @@ function getSmartResponse(rawStats) {
     }
 
     const alreadyHasCatchUpMessage = shouldShowSecondPlaceMsg || shouldShowThirdPlaceMsg;
+
     if (ranking > 1 && totalPushUps !== firstPlaceAthlete.count && !alreadyHasCatchUpMessage) {
-        facts.push(`Just *${catchTheLeader.toLocaleString()} more* till you catch up to *${firstPlaceAthlete.profile.real_name}*, our current champ!`);
+        const perHourCount = Math.round(catchTheLeader / NUM_HOURS_AWAKE);
+        const perHourMessage = catchTheLeader >= 50 ? ` No big deal! That's just ${perHourCount} ${maybePluralizePushUps(perHourCount)} per hour for the next ${NUM_HOURS_AWAKE} hours.` : '';
+
+        facts.push(`Just *${catchTheLeader.toLocaleString()} more* till you catch up to *${firstPlaceAthlete.profile.real_name}*, our current champ!${perHourMessage}`);
     }
 
     const numberOfFacts = facts.length;
