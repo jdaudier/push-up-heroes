@@ -1,4 +1,4 @@
-import {MAX_NUM_FOR_SUMMARY} from '../../utils/firebaseQueries;
+import {MAX_NUM_FOR_SUMMARY} from '../../utils/constants';
 
 async function handler(req, res) {
     const {user_id} = req.body;

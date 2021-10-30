@@ -6,12 +6,10 @@ import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
-import { FEED_LIMIT } from '../utils/constants';
+import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
 
 export const CHALLENGE_ID = 'challenge-1';
 const collectionRef = collection(db, CHALLENGE_ID);
-
-export const MAX_NUM_FOR_SUMMARY = 20;
 
 function getBestDailyTotalOverall(countsByDayByUser) {
     const bestDailyTotal = Object.entries(countsByDayByUser).reduce((acc, curr) => {
