@@ -17,7 +17,11 @@ function getSmartResponse(rawStats) {
         firstPlaceAthlete,
         globalBestIndividualSet,
         totalSets,
+        numOfDaysWithEntries,
     } = rawStats;
+
+    const hasMoreThan1Set = totalSets > 1;
+    const hasMoreThan1DayOfEntries = numOfDaysWithEntries > 1;
 
     const facts = [];
 
@@ -56,11 +60,11 @@ function getSmartResponse(rawStats) {
         facts.push(`You're currently on a *${currentStreak.toLocaleString()} day streak* (${currentStreakDates})! Keep it up!`);
     }
 
-    if (count > dailyAvg) {
+    if (hasMoreThan1DayOfEntries && count > dailyAvg) {
         facts.push(`This set is higher than your daily average of *${dailyAvg.toLocaleString()}*!`);
     }
 
-    if (totalSets > 1 && count === bestSet.count && count !== globalBestIndividualSet.count) {
+    if (hasMoreThan1Set && count === bestSet.count && count !== globalBestIndividualSet.count) {
         facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
     }
 

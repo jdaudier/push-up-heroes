@@ -714,6 +714,11 @@ export async function getUserStats(id) {
 
             const prevCount = acc.countsByDayMap[createdShort];
 
+            const countsByDayMap = {
+                ...acc.countsByDayMap,
+                [createdShort]: prevCount ? prevCount + count : count,
+            }
+
             return {
                 ...acc,
                 bestSet: {
@@ -735,11 +740,9 @@ export async function getUserStats(id) {
                     created: rawCreated,
                     createdShort,
                 },
-                countsByDayMap: {
-                    ...acc.countsByDayMap,
-                    [createdShort]: prevCount ? prevCount + count : count,
-                },
+                countsByDayMap,
                 totalPushUps: acc.totalPushUps + count,
+                numOfDaysWithEntries: Object.keys(countsByDayMap).length
             }
         }, {
             bestSet: {
@@ -760,6 +763,7 @@ export async function getUserStats(id) {
             countsByDayMap: {},
             totalPushUps: 0,
             totalSets: snapshot.size,
+            numOfDaysWithEntries: 0,
         });
 
         const {totalPushUps, countsByDayMap} = results;
