@@ -45,7 +45,6 @@ const signatureCss = css`
   }
 `;
 
-
 // Inspired from https://css-tricks.com/snippets/css/simple-and-nice-blockquote-styling
 const quoteCss = css`
   background: #f9f9f9;

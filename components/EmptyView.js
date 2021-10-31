@@ -47,6 +47,8 @@ const footerCss = css`
 `;
 
 const newQuoteButtonCss = css`
+  position: relative;
+  top: -4px;
   margin-left: auto;
   .ui.button {
     padding-top: 0.4em;
@@ -56,6 +58,12 @@ const newQuoteButtonCss = css`
 
 const imageWrapperCss = css`
   margin-top: 1em;
+`;
+
+const wavierCss = css`
+  font-size: .8em;
+  font-style: italic;
+  line-height: 1.3;
 `;
 
 const EmptyView = () => {
@@ -118,6 +126,9 @@ const EmptyView = () => {
                                         </div>
                                     </div>
                                 )}
+                                <p css={wavierCss}>
+                                    ⚠️ Push-Up Heroes and The Rock are not responsible for any injuries caused by this challenge. Any damage to the body or furniture are the sole responsibility of the participant.
+                                </p>
                             </Message>
                         </div>
                     </Grid.Column>
