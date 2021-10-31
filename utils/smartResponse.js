@@ -66,12 +66,12 @@ function getSmartResponse(rawStats) {
         facts.push(`You're currently on a *${currentStreak.toLocaleString()} day streak* (${currentStreakDates})! Keep it up!`);
     }
 
-    if (hasMoreThan1DayOfEntries && count > dailyAvg) {
-        facts.push(`This set is higher than your daily average of *${dailyAvg.toLocaleString()}*!`);
-    }
-
     if (hasMoreThan1Set && count === bestSet.count && count !== globalBestIndividualSet.count) {
         facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
+    }
+
+    if (hasMoreThan1DayOfEntries && count > dailyAvg) {
+        facts.push(`This set is higher than your daily average of *${dailyAvg.toLocaleString()}*!`);
     }
 
     if (count > avgSet) {
@@ -96,7 +96,7 @@ function getSmartResponse(rawStats) {
         facts.push(`This set is higher than our *global* group daily average of *${globalDailyAvg.toLocaleString()}*!`);
     }
 
-    if (contributionPercentage > 60) {
+    if (contributionPercentage > 50) {
         facts.push(`You're contributing more than most other athletes. *${contributionPercentage}%* of the push-ups have been put away by you!`);
     }
 
