@@ -26,6 +26,7 @@ async function handler(req, res) {
                     },
                     body: JSON.stringify({
                         channel: 'fun-push-up-challenge',
+                        text: leaderboardText,
                         blocks,
                     })
                 });
