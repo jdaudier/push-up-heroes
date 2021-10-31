@@ -87,6 +87,13 @@ async function handler(req, res) {
                             "type": "mrkdwn",
                             "text": ":linechart: _Visit <https://pushupheroes.com|pushupheroes.com> for more fun stats and data visualization!_"
                         }
+                    }, {
+                        "type": "context",
+                        "elements": [{
+                            "type": "plain_text",
+                            "text": "⚠️ Push-Up Heroes and The Rock are not responsible for any injuries caused by this challenge. Any damage to the body or furniture are the sole responsibility of the participant.",
+                            "emoji": true
+                        }]
                     }
                 ];
 
