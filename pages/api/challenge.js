@@ -39,6 +39,7 @@ async function handler(req, res) {
         const count = Number(stringCount);
         const pushUps = count === 1 ? 'push-up' : 'push-ups';
         const context = "_You too can challenge someone with the `/challenge` command._";
+        const text =  `<@${user_id}> just challenged ${recipientName} to *${count}* ${pushUps}!\n*Do you accept this challenge ${recipientName}?*\n\n_If you accept, *${count}* ${pushUps} will be logged for you_.`;
 
         try {
             await fetch(slackPostMessageUrl, {
@@ -49,6 +50,7 @@ async function handler(req, res) {
                 },
                 body: JSON.stringify({
                     channel: 'fun-push-up-challenge',
+                    text,
                     blocks: [
                         {
                             "type": "section",
@@ -61,7 +63,7 @@ async function handler(req, res) {
                             "type": "section",
                             "text": {
                                 "type": "mrkdwn",
-                                "text": `<@${user_id}> just challenged ${recipientName} to *${count}* ${pushUps}!\n*Do you accept this challenge ${recipientName}?*\n\n_If you accept, *${count}* ${pushUps} will be logged for you_.`
+                                text
                             },
                             "accessory": {
                                 "type": "image",
