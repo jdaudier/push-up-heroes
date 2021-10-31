@@ -65,13 +65,14 @@ async function handler(req, res) {
             async function postToChannelForFirstEntry() {
                 const pushUps = count === 1 ? 'push-up' : 'push-ups';
                 const context = "_Use the `/pushups` command to log your set._";
+                const reply = `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n:party: This is the first set to be logged! You're a pioneer!\n\n${context}`;
 
                 try {
                     const blocks = [{
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n:party: This is the first set to be logged! You're a pioneer!\n\n${context}`
+                            text: reply,
                         }
                     }];
 
@@ -83,6 +84,7 @@ async function handler(req, res) {
                         },
                         body: JSON.stringify({
                             channel: 'fun-push-up-challenge',
+                            text: reply,
                             blocks,
                         })
                     });
@@ -125,12 +127,13 @@ async function handler(req, res) {
                 try {
                     const {blocks: myStatsBlocks, rawStats} = await getMyStats(user_id, {tagUser: true});
                     const smartResponse = getSmartResponse({id: user_id, count, ...rawStats});
+                    const smartResponseText = `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n${smartResponse}\n${context}`;
 
                     const blocks = [{
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n${smartResponse}\n${context}`,
+                            text: smartResponseText,
                         }
                     }];
 
@@ -142,15 +145,19 @@ async function handler(req, res) {
                         },
                         body: JSON.stringify({
                             channel: 'fun-push-up-challenge',
+                            text: smartResponseText,
                             blocks,
                         })
                     });
 
                     const {channel, ts} = await response.json();
 
+                    const fallbackText = `${myStatsBlocks[0].text.text}\n${myStatsBlocks[1].text.text}`;
+
                     const myStatsResponse = {
                         channel,
                         thread_ts: ts,
+                        text: fallbackText,
                         blocks: myStatsBlocks,
                     };
 
