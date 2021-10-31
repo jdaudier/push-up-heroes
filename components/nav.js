@@ -2,15 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import {Header, Menu, Container} from 'semantic-ui-react';
 import SuperGirl from './SuperGirl';
-import {useRouter} from "next/router";
+import InstructionsModal from './InstructionsModal';
+import Code from './Code';
 
 /** @jsxImportSource @emotion/react */
 import { jsx } from '@emotion/react';
 
-const Nav = () => {
-    const router = useRouter();
-    const id = router.query.id;
-
+const Nav = ({showInfoModal = true}) => {
     return (
         <Menu fixed='top' className="top-nav" size="huge">
             <Container>
@@ -24,28 +22,24 @@ const Nav = () => {
                         </Header>
                     </Menu.Item>
                 </Link>
-                {!id && (
-                    <div css={{
-                        alignSelf: 'center',
+                <div css={{
+                    alignSelf: 'center',
+                    marginLeft: 'auto',
+                    ['@media only screen and (max-width: 768px)']: {
+                        paddingRight: '.7rem'
+                    }
+                }}>
+                    <span css={{
                         color: 'rgba(0,0,0,.6)',
                         fontSize: '.9em',
-                        marginLeft: 'auto',
                         ['@media only screen and (max-width: 768px)']: {
                             display: 'none'
                         }
                     }}>
-                        Type
-                        <code css={{
-                            backgroundColor: 'rgba(27,31,35,.05)',
-                            borderRadius: 3,
-                            fontSize: '95%',
-                            padding: '.2em .4em',
-                            marginLeft: 4,
-                            marginRight: 4,
-                        }}>/instructions</code>
-                        {" "}in Slack to get started
-                    </div>
-                )}
+                        Type <Code text="/instructions" />{" "}in Slack to get started
+                    </span>
+                    {showInfoModal && <InstructionsModal />}
+                </div>
             </Container>
         </Menu>
     );

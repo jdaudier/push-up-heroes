@@ -1,26 +1,11 @@
 import Layout from "./Layout";
 import {useState, useEffect} from 'react';
-import {Divider, Grid, Image, Message, Segment, Button} from "semantic-ui-react";
+import {Divider, Grid, Image, Message, Segment, Button, Icon} from "semantic-ui-react";
+import Code from '../components/Code';
 import quotes from "../utils/quotes";
-import {START_DATE} from '../utils/constants';
 
 /** @jsxImportSource @emotion/react */
 import {css} from "@emotion/react";
-
-const Code = ({text}) => {
-    return (
-        <code css={{
-            backgroundColor: 'rgba(27,31,35,.05)',
-            borderRadius: 3,
-            fontSize: '95%',
-            padding: '.2em .4em',
-            marginLeft: 4,
-            marginRight: 4,
-        }}>
-            {text}
-        </code>
-    )
-}
 
 const messageWrapperCss = css`
     .ui.message {
@@ -38,6 +23,7 @@ const quoteCss = css`
   font-style: italic;
   line-height: 1.5em;
   margin: 1.5em 0;
+  min-height: 77px;
   padding: 0.5em 10px;
   position: relative;
   quotes: "\\201C""\\201D""\\2018""\\2019";
@@ -50,6 +36,7 @@ const quoteCss = css`
     margin-right: 0.25em;
     vertical-align: -0.4em;
   }
+  
   p {
     display: inline;
   }
@@ -61,10 +48,9 @@ const footerCss = css`
 
 const newQuoteButtonCss = css`
   margin-left: auto;
-  button {
+  .ui.button {
     padding-top: 0.4em;
     padding-bottom: 0.4em;
-    box-shadow: none;
   }
 `;
 
@@ -86,7 +72,7 @@ const EmptyView = () => {
     const randomQuote = randomNumber !== undefined ? quotes[randomNumber] : undefined;
 
     return (
-        <Layout>
+        <Layout showInfoModal={false}>
             <Segment raised color='yellow'>
                 <Grid stackable>
                     <Grid.Column width={6}>
@@ -99,13 +85,15 @@ const EmptyView = () => {
                             <Message size='big'>
                                 <Message.Header>Hi friend! The Rock here. Can you smell what I am cooking?</Message.Header>
                                 <Divider />
-                                <p>A push-up challenge that starts on {START_DATE} at{' '}
+                                <p>A push-up challenge that start soon at{' '}
                                     <a href="https://app.slack.com/client/T024VA8T9/CNTT52KV0" target="_blank">
                                         #fun-push-up-challenge
                                     </a>!
                                 </p>
                                 <Message.List>
-                                    <Message.Item>Do some push-ups, log them in Slack with the <Code text='/pushups' /> command.
+                                    <Message.Item>Do some push-ups, log them in{' '}
+                                        <Icon aria-label="Slack" name="slack" size="large" />
+                                        Slack with the <Code text='/pushups' /> command.
                                     </Message.Item>
                                     <Message.Item>Challenge another user with the <Code text='/challenge' /> command.
                                     </Message.Item>
@@ -118,7 +106,7 @@ const EmptyView = () => {
                                 {randomQuote && (
                                     <div>
                                         <blockquote css={quoteCss}>
-                                            {randomQuote.text}
+                                            <p>{randomQuote.text}</p>
                                         </blockquote>
                                         <div css={footerCss}>
                                             <div>

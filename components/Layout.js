@@ -13,7 +13,7 @@ function Layout(props) {
                 <title>Push-Up Heroes</title>
                 <link rel='icon' href='/favicon.ico' />
             </Head>
-            <Nav />
+            <Nav showInfoModal={props.showInfoModal} />
             <Grid container stackable verticalAlign='middle' style={{ paddingTop: '9em', paddingBottom: '4em' }}>
                 <Grid.Row>
                     <Grid.Column>
