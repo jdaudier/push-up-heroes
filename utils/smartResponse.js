@@ -110,7 +110,7 @@ function getSmartResponse(rawStats) {
 
     if (ranking > 1 && totalPushUps !== firstPlaceAthlete.count && !alreadyHasCatchUpMessage) {
         const perHourCount = Math.round(catchTheLeader / NUM_HOURS_AWAKE);
-        const perHourMessage = catchTheLeader >= 50 ? ` No big deal! That's just ${perHourCount} ${maybePluralizePushUps(perHourCount)} per hour for the next ${NUM_HOURS_AWAKE} hours.` : '';
+        const perHourMessage = catchTheLeader >= 50 ? `\nNo big deal! That's just *${perHourCount}* ${maybePluralizePushUps(perHourCount)} per hour* for the next *${NUM_HOURS_AWAKE}* hours.` : '';
 
         facts.push(`Just *${catchTheLeader.toLocaleString()} more* till you catch up to *${firstPlaceAthlete.profile.real_name}*, our current champ!${perHourMessage}`);
     }
