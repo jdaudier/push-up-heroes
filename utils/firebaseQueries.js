@@ -11,6 +11,16 @@ import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
 export const CHALLENGE_ID = 'challenge-1';
 const collectionRef = collection(db, CHALLENGE_ID);
 
+export async function getCollectionSize() {
+    try {
+        const snapshot = await getDocs(collectionRef);
+        return snapshot.size;
+    } catch (err) {
+        console.error('Error:', err);
+        throw new Error(err.message);
+    }
+}
+
 function getBestDailyTotalOverall(countsByDayByUser) {
     const bestDailyTotal = Object.entries(countsByDayByUser).reduce((acc, curr) => {
         const [date, userMap] = curr;
@@ -95,7 +105,7 @@ export async function getFullLeaderboardData() {
     try {
         const snapshot = await getDocs(collectionRef);
 
-        if (snapshot.docs.length === 0) {
+        if (snapshot.size === 0) {
             return {
                 totalPushUps: 0
             }

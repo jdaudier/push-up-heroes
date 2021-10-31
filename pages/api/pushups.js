@@ -1,11 +1,15 @@
 import fetch from 'isomorphic-unfetch';
-import { addUserData } from '../../utils/firebaseQueries';
+import { addUserData, getCollectionSize } from '../../utils/firebaseQueries';
 import getSlackUser from '../../utils/getSlackUser';
 import getMyStats from '../../utils/getMyStats';
 import randomCelebrations from '../../utils/randomCelebrations';
 import getSmartResponse from '../../utils/smartResponse';
 
 const slackPostMessageUrl = 'https://slack.com/api/chat.postMessage';
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+}
 
 async function handler(req, res) {
     const {user_id, user_name, text, channel_name} = req.body;
@@ -55,7 +59,66 @@ async function handler(req, res) {
                 }
             });
 
+            const collectionSize = await getCollectionSize();
+            const hasOnlyOneEntry = collectionSize === 1;
+
+            async function postToChannelForFirstEntry() {
+                const pushUps = count === 1 ? 'push-up' : 'push-ups';
+                const context = "_Use the `/pushups` command to log your set._";
+
+                try {
+                    const blocks = [{
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n:party: This is the first set to be logged! You're a pioneer!\n\n${context}`
+                        }
+                    }];
+
+                    const response = await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
+                        },
+                        body: JSON.stringify({
+                            channel: 'fun-push-up-challenge',
+                            blocks,
+                        })
+                    });
+
+                    const {channel, ts} = await response.json();
+
+                    const randomIndex = getRandomInt(randomCelebrations.length);
+                    const randomCelebration = randomCelebrations[randomIndex];
+
+                    const habitReminder = `According to the book _Tiny Habits_, immediately after you do your new habit, celebrate so you feel a positive emotion. That’s what wires the habit into your brain.\n\nHere's one idea:\n>*${randomCelebration}*`;
+
+                    const habitResponse = {
+                        channel,
+                        thread_ts: ts,
+                        text: habitReminder,
+                    };
+
+                    await fetch(slackPostMessageUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-type': 'application/json',
+                            Authorization: `Bearer ${process.env.zapierSlackToken}`,
+                        },
+                        body: JSON.stringify(habitResponse)
+                    });
+                } catch (err) {
+                    console.error('Error:', err);
+                    throw new Error(err.message);
+                }
+            }
+
             async function postToChannel() {
+                if (hasOnlyOneEntry) {
+                    return postToChannelForFirstEntry();
+                }
+
                 const pushUps = count === 1 ? 'push-up' : 'push-ups';
                 const context = "_Use the `/pushups` command to log your set._";
 
@@ -99,10 +162,6 @@ async function handler(req, res) {
                         },
                         body: JSON.stringify(myStatsResponse)
                     });
-
-                    function getRandomInt(max) {
-                        return Math.floor(Math.random() * Math.floor(max));
-                    }
 
                     const randomIndex = getRandomInt(randomCelebrations.length);
                     const randomCelebration = randomCelebrations[randomIndex];
