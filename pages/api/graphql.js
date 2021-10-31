@@ -1,4 +1,5 @@
-import { ApolloServer, ApolloError, gql } from 'apollo-server-micro'
+import { ApolloServer, ApolloError, gql } from 'apollo-server-micro';
+import Cors from "micro-cors";
 import { getFullLeaderboardData, getLeaderboardText, getGlobalChartData, getPushUpsByUserId, getMostRecentSet, getUserStats, getStreakData, getUserFeed, getAllUsersFeeds } from '../../utils/firebaseQueries';
 import getSlackProfile from '../../utils/getSlackProfile';
 
@@ -350,6 +351,11 @@ const resolvers = {
     },
 };
 
+const cors = Cors({
+    origin: "https://studio.apollographql.com",
+    allowCredentials: true,
+});
+
 const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
@@ -363,12 +369,16 @@ const apolloServer = new ApolloServer({
 
 const startServer = apolloServer.start();
 
-export default async function handler(req, res) {
+export default cors(async (req, res) => {
+    if (req.method === "OPTIONS") {
+        res.end();
+        return false;
+    }
     await startServer;
     await apolloServer.createHandler({
         path: "/api/graphql",
     })(req, res);
-}
+});
 
 export const config = {
     api: {
