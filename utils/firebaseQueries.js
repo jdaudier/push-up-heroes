@@ -4,7 +4,6 @@ import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
 import differenceInDays from 'date-fns/differenceInDays';
-import isToday from 'date-fns/isToday';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
@@ -738,12 +737,19 @@ export async function getUserStats(id) {
                 data.timeZone,
             ), 'yyyy-MM-dd');
 
+            const today = format(utcToZonedTime(
+                new Date(),
+                data.timeZone,
+            ), 'yyyy-MM-dd');
+
             const prevCountByISO = acc.countsByDayInISOMap[createdShortISO];
 
             const countsByDayInISOMap = {
                 ...acc.countsByDayInISOMap,
                 [createdShortISO]: prevCountByISO ? prevCountByISO + count : count,
             }
+
+            const todayCount = countsByDayInISOMap[today];
 
             return {
                 ...acc,
@@ -769,7 +775,8 @@ export async function getUserStats(id) {
                 countsByDayMap,
                 countsByDayInISOMap,
                 totalPushUps: acc.totalPushUps + count,
-                numOfDaysWithEntries: Object.keys(countsByDayMap).length
+                numOfDaysWithEntries: Object.keys(countsByDayMap).length,
+                todayCount: todayCount === undefined ? 0 : todayCount,
             }
         }, {
             bestSet: {
@@ -792,13 +799,10 @@ export async function getUserStats(id) {
             totalPushUps: 0,
             totalSets: snapshot.size,
             numOfDaysWithEntries: 0,
+            todayCount: 0,
         });
 
-        const {totalPushUps, countsByDayMap, countsByDayInISOMap} = results;
-
-        const todayEntries = Object.entries(countsByDayInISOMap).filter(entry => isToday(parseISO(entry[0])));
-        const [todayCount] = todayEntries;
-        const todayTotal = todayCount ? todayCount[1] : 0;
+        const {totalPushUps, countsByDayMap, todayCount} = results;
 
         const firstPlaceAthlete = rankings[0];
 
@@ -829,7 +833,7 @@ export async function getUserStats(id) {
 
         return {
             ...results,
-            todayTotal,
+            todayCount,
             bestDailyTotal,
             ranking,
             dailyAvg: Math.round(totalPushUps / totalChallengeDays),

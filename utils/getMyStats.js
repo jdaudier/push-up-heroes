@@ -16,7 +16,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 dailyAvg,
                 avgSet,
                 contributionPercentage,
-                todayTotal,
+                todayCount,
                 bestDailyTotal,
             } = stats;
 
@@ -45,7 +45,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 value: `${catchTheLeader.toLocaleString()} more`,
             }, {
                 label: `Today's Total`,
-                value: `${todayTotal.toLocaleString()}`,
+                value: `${todayCount.toLocaleString()}`,
             }, {
                 label: 'Best Daily Total',
                 value: `${bestDailyTotal.count.toLocaleString()} (${bestDailyTotal.created.join(', ')})`,
