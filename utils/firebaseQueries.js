@@ -521,9 +521,20 @@ export async function getTotalChallengeDays() {
             getDocs(query(collectionRef, orderBy('created', 'desc'), limit(1))),
         ]);
 
-        const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
-        const lastEntryDate = lastSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+        const firstEntryDate = firstSnapshot.docs.map(doc => {
+            console.log('1 doc.data().created', doc.data().created);
+            console.log('1 doc.data().created.toDate()', doc.data().created.toDate());
+            return doc.data().created.toDate()
+        })[0];
+        const lastEntryDate = lastSnapshot.docs.map(doc => {
+            console.log('last doc.data().created', doc.data().created);
+            console.log('last doc.data().created.toDate()', doc.data().created.toDate());
+            return doc.data().created.toDate()
+        })[0];
 
+        console.log('firstEntryDate', firstEntryDate);
+        console.log('lastEntryDate', lastEntryDate);
+        console.log('differenceInCalendarDays', differenceInCalendarDays(lastEntryDate, firstEntryDate));
         return differenceInCalendarDays(lastEntryDate, firstEntryDate) + 1
     } catch (err) {
         console.error('Error:', err);
