@@ -3,7 +3,7 @@ import { collection, getDocs, addDoc, orderBy, query, limit, startAfter, where }
 import parseISO from 'date-fns/parseISO';
 import format from 'date-fns/format';
 import eachDayOfInterval from 'date-fns/eachDayOfInterval';
-import differenceInCalendarDays from 'date-fns/differenceInCalendarDays';
+import differenceInDays from 'date-fns/differenceInDays';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
@@ -520,7 +520,7 @@ export async function getTotalChallengeDays() {
         const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
         const now = new Date();
 
-        return differenceInCalendarDays(now, firstEntryDate) + 1
+        return differenceInDays(now, firstEntryDate) + 1
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);
