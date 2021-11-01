@@ -516,15 +516,11 @@ export async function addUserData({
 
 export async function getTotalChallengeDays() {
     try {
-        const [firstSnapshot, lastSnapshot] = await Promise.all([
-            getDocs(query(collectionRef, orderBy('created', 'asc'), limit(1))),
-            getDocs(query(collectionRef, orderBy('created', 'desc'), limit(1))),
-        ]);
-
+        const firstSnapshot = await getDocs(query(collectionRef, orderBy('created', 'asc'), limit(1)));
         const firstEntryDate = firstSnapshot.docs.map(doc => doc.data().created.toDate())[0];
-        const lastEntryDate = lastSnapshot.docs.map(doc => doc.data().created.toDate())[0];
+        const now = new Date();
 
-        return differenceInCalendarDays(lastEntryDate, firstEntryDate) + 1
+        return differenceInCalendarDays(now, firstEntryDate) + 1
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);
