@@ -24,10 +24,14 @@ function getSmartResponse(rawStats) {
         globalBestIndividualSet,
         totalSets,
         numOfDaysWithEntries,
+        todayCount,
+        bestDailyTotal,
     } = rawStats;
 
+    // totalSets for user, not global
     const hasMoreThan1Set = totalSets > 1;
     const hasMoreThan1DayOfEntries = numOfDaysWithEntries > 1;
+    const hasMoreThan2DaysOfEntries = numOfDaysWithEntries > 2;
 
     const facts = [];
 
@@ -70,6 +74,16 @@ function getSmartResponse(rawStats) {
         facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
     }
 
+    if (hasMoreThan2DaysOfEntries && bestDailyTotal.count > todayCount) {
+        const diffFromBestDay = bestDailyTotal.count - todayCount;
+
+        facts.push(`You're at *${todayCount.toLocaleString()}* ${maybePluralizePushUps(todayCount)} for today! *${diffFromBestDay.toLocaleString()}* more till you reach your best daily total of *${bestDailyTotal.count.toLocaleString()}*! :close:`);
+    }
+
+    if (hasMoreThan2DaysOfEntries && todayCount === bestDailyTotal.count) {
+        facts.push(`You're at *${todayCount.toLocaleString()}* ${maybePluralizePushUps(todayCount)} for today! Congrats, today is your best day! :monkey-dance:`);
+    }
+
     if (hasMoreThan1DayOfEntries && count > dailyAvg) {
         facts.push(`This set is higher than your daily average of *${dailyAvg.toLocaleString()}*!`);
     }
@@ -102,7 +116,7 @@ function getSmartResponse(rawStats) {
 
     const firstSetCount = firstSet.count;
     const diffFromFirstSet = count - firstSetCount;
-    if (diffFromFirstSet > 15) {
+    if (diffFromFirstSet > 20) {
         facts.push(`Your current set is *${diffFromFirstSet.toLocaleString()}* more than your first set of *${firstSetCount.toLocaleString()}* on ${firstSet.created}.`);
     }
 
