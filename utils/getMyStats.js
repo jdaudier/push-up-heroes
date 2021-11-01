@@ -16,6 +16,7 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 dailyAvg,
                 avgSet,
                 contributionPercentage,
+                todayTotal,
                 bestDailyTotal,
             } = stats;
 
@@ -43,17 +44,20 @@ async function getMyStats(userId, {tagUser} = {tagUser: false}) {
                 label: 'Catch the Leader',
                 value: `${catchTheLeader.toLocaleString()} more`,
             }, {
-                label: 'Daily Average',
-                value: `${dailyAvg.toLocaleString()}`,
+                label: `Today's Total`,
+                value: `${todayTotal.toLocaleString()}`,
             }, {
                 label: 'Best Daily Total',
                 value: `${bestDailyTotal.count.toLocaleString()} (${bestDailyTotal.created.join(', ')})`,
             }, {
-                label: 'Longest Streak',
-                value: `${longestStreak.toLocaleString()} ${dayOrDays(longestStreak)}`,
+                label: 'Daily Average',
+                value: `${dailyAvg.toLocaleString()}`,
             }, {
                 label: 'Current Streak',
                 value: `${currentStreak.toLocaleString()} ${dayOrDays(currentStreak)}`,
+            }, {
+                label: 'Longest Streak',
+                value: `${longestStreak.toLocaleString()} ${dayOrDays(longestStreak)}`,
             }, {
                 label: 'Best Set',
                 value: `${bestSet.count.toLocaleString()}`,
