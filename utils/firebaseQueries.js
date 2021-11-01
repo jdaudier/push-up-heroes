@@ -812,6 +812,8 @@ export async function getUserStats(id) {
             count: 0,
         });
 
+        console.log('totalChallengeDays', totalChallengeDays);
+        console.log('totalPushUps', totalPushUps);
         return {
             ...results,
             bestDailyTotal,
