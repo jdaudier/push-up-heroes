@@ -137,7 +137,7 @@ const UserFeed = ({id, totalSets, totalPushUps, bestSetCount}) => {
                                     lineHeight: 1.6,
                             }
                             }}>
-                                View your own stats in Slack by typing
+                                View your own stats in <Icon aria-label="Slack" name="slack" size="large" />by typing
                                 <code css={{
                                     backgroundColor: 'rgba(27,31,35,.05)',
                                     borderRadius: 3,

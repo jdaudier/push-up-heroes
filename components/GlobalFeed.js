@@ -225,7 +225,7 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
                                     marginRight: 4,
                                 }}>/pushups
                                 </code>
-                                in Slack to log sets and
+                                in <Icon aria-label="Slack" name="slack" size="large" />to log sets and
                                 <code css={{
                                     backgroundColor: 'rgba(27,31,35,.05)',
                                     borderRadius: 3,

@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { gql } from "@apollo/client";
 import client from "../apollo-client";
 import ClientOnly from '../components/ClientOnly';
-import { Label, Image, Table, Header, Tab, Menu } from 'semantic-ui-react';
+import { Label, Image, Table, Header, Tab, Menu, Icon } from 'semantic-ui-react';
 import Crown from '../components/Crown';
 const GlobalFeed = dynamic(() => import('../components/GlobalFeed'));
 const GlobalChart = dynamic(() => import('../components/GlobalChart'));
@@ -212,7 +212,7 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                             marginTop: 6,
                             marginBottom: 6,
                         }}>
-                            View this in Slack by typing
+                            View this in <Icon aria-label="Slack" name="slack" size="large" />by typing
                             <code css={{
                                 backgroundColor: 'rgba(27,31,35,.05)',
                                 borderRadius: 3,
