@@ -169,14 +169,14 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
-                                        {count}
+                                        {count.toLocaleString()}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title={`${profile.real_name}'s page`} css={medalLinkCss}>
-                                        {diffFromLeader > 0 ? `${diffFromLeader} more` : (
+                                        {diffFromLeader > 0 ? `${diffFromLeader.toLocaleString()} more` : (
                                             <div css={medalCss}>
                                                 <Image src="/images/medal.png" style={{height: 50}} />
                                             </div>
@@ -187,7 +187,7 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                             <Table.Cell>
                                 <Link href='/users/[id]' as={`/users/${id}`}>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
-                                        {dailyAvg}
+                                        {dailyAvg.toLocaleString()}
                                     </a>
                                 </Link>
                             </Table.Cell>
