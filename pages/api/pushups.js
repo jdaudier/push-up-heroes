@@ -201,16 +201,16 @@ async function handler(req, res) {
                     text: ':bravo:️ Thank you for logging your push-up count for the <#CNTT52KV0|fun-push-up-challenge>!',
                 };
 
-                await postToChannel();
                 res.setHeader('Content-Type', 'application/json');
                 res.statusCode = 200;
-                return res.json(slackWarningMessage);
+                res.json(slackWarningMessage);
+                return await postToChannel();
             }
 
-            await postToChannel();
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
             res.json(null);
+            await postToChannel();
         } catch (err) {
             console.error('Error:', err);
             throw new Error(err.message);
