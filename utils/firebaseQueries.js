@@ -374,7 +374,13 @@ export async function getLeaderboardText(userId) {
             const countWithSpacing = count + new Array(spaceAfterCount + 1).join(' ');
 
             if (isFirst) {
-                return `#   ${headingWithSpacing}${heading2WithSpacing}${heading3Text}\n${rank}.  ${nameWithSpacing}${countWithSpacing}\n`;
+                return `#    ${headingWithSpacing}${heading2WithSpacing}${heading3Text}\n${rank}.  ${nameWithSpacing}${countWithSpacing}\n`;
+            }
+
+            const isSingleDigitRank = rank < 10;
+            if (isSingleDigitRank) {
+                // This is to line up the names
+                return `${acc}${rank}.   ${nameWithSpacing}${countWithSpacing}${catchTheLeader} more\n`;
             }
 
             return `${acc}${rank}.  ${nameWithSpacing}${countWithSpacing}${catchTheLeader} more\n`;
