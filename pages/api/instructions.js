@@ -10,7 +10,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `Hi <@${user_id}>! The Rock here. Welcome to <https://pushupheroes.com|Push-Up Heroes>!\n\n\n\n*Here are all the commands you can use:*`
+                            "text": `Hi <@${user_id}>! The Rock here. Welcome to <https://pushupheroes.com|Push-Up Heroes>!\n\n\n\n*Here are all the commands you can use (works in any :slack: channel):*`
                         },
                         "accessory": {
                             "type": "image",
@@ -25,7 +25,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "*/pushups* _number_ \n To log each set of push-ups that you do. _(works in any :slack: channel)_"
+                            "text": "*/pushups* _number_ \n To log each set of push-ups that you do."
                         },
                         "accessory": {
                             "type": "image",
@@ -40,7 +40,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "*/challenge* _@user number_ \nTo challenge another user. If they click the *Accept* button, that number of push-ups will be logged for them. _(works in any :slack: channel)_"
+                            "text": "*/challenge* _@user number_ \nTo challenge another user. If they click the *Accept* button, that number of push-ups will be logged for them."
                         },
                         "accessory": {
                             "type": "image",
@@ -55,7 +55,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": "*/mystats*\nTo see your latest stats _(only visible to you; works in any :slack: channel)_."
+                            "text": "*/mystats*\nTo see your latest stats _(only visible to you)_."
                         },
                         "accessory": {
                             "type": "image",
@@ -70,7 +70,7 @@ async function handler(req, res) {
                         "type": "section",
                         "text": {
                             "type": "mrkdwn",
-                            "text": `*/leaderboard*\nTo see the top ${MAX_NUM_FOR_SUMMARY} athletes currently at the top of the leaderboard _(visible to everyone; works in any :slack: channel)_.`
+                            "text": `*/leaderboard*\nTo see the top ${MAX_NUM_FOR_SUMMARY} athletes currently at the top of the leaderboard _(visible to everyone)_.`
                         },
                         "accessory": {
                             "type": "image",
