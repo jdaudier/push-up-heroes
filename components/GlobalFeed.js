@@ -90,7 +90,7 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
 }
 
 const DateDisclaimerTooltip = ({trigger}) => (
-    <Popup content="In each athlete's local time" position='top left' trigger={trigger} />
+    <Popup content="In each athlete's local date & time" position='top left' trigger={trigger} />
 )
 
 const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
@@ -104,7 +104,7 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
     return (
         <>
             {activePage === 1 && (
-                <div css={dateDisclaimer}>Date and time displayed are in each participant's local time.</div>
+                <div css={dateDisclaimer}>Date and time are displayed in each participant's local time zone.</div>
             )}
             <Table celled padded selectable size='large' striped textAlign="left">
                 <Table.Header>

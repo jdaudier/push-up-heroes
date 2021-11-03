@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
-import { Table, Icon } from 'semantic-ui-react';
+import {Table, Icon, Popup} from 'semantic-ui-react';
 import { BLUE, FEED_LIMIT } from '../utils/constants';
 import FeedPagination from "./FeedPagination";
 import LoadingTableView from "./LoadingTableView";
@@ -23,7 +23,13 @@ const GET_USER_FEED = gql`
     }
 `;
 
-const UserFeed = ({id, totalSets, totalPushUps, bestSetCount}) => {
+const DateDisclaimerTooltip = ({firstName, trigger}) => (
+    <Popup content={`In ${firstName}'s local date & time`} position='top left' trigger={trigger} />
+)
+
+const UserFeed = ({id, name, totalSets, totalPushUps, bestSetCount}) => {
+    const [firstName] = name.split(' ');
+
     const [activePage, setActivePage] = useState(1);
     const { loading, error, data } = useQuery(GET_USER_FEED, {
         variables: {
@@ -43,9 +49,30 @@ const UserFeed = ({id, totalSets, totalPushUps, bestSetCount}) => {
                             ({totalSets.toLocaleString()})
                         </span>
                     </Table.HeaderCell>
-                    <Table.HeaderCell>Day</Table.HeaderCell>
-                    <Table.HeaderCell>Date</Table.HeaderCell>
-                    <Table.HeaderCell>Time</Table.HeaderCell>
+                    <DateDisclaimerTooltip
+                        firstName={firstName}
+                        trigger={
+                        <Table.HeaderCell>
+                            Day
+                        </Table.HeaderCell>
+                    }
+                    />
+                    <DateDisclaimerTooltip
+                        firstName={firstName}
+                        trigger={
+                        <Table.HeaderCell>
+                            Date
+                        </Table.HeaderCell>
+                    }
+                    />
+                    <DateDisclaimerTooltip
+                        firstName={firstName}
+                        trigger={
+                        <Table.HeaderCell>
+                            Time
+                        </Table.HeaderCell>
+                    }
+                    />
                     <Table.HeaderCell width={2}>Count
                         <span css={{color: BLUE, marginLeft: 6}}>
                             ({totalPushUps.toLocaleString()})

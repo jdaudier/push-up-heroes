@@ -177,6 +177,7 @@ export default function User({ data }) {
                 <UserFeed
                     bestSetCount={data.userStats.bestSet.count}
                     id={id}
+                    name={data ? data.userSlackProfile.real_name : ''}
                     totalPushUps={data.userStats.totalPushUps}
                     totalSets={data.userStats.totalSets}
                 />
