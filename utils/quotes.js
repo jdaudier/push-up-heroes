@@ -40,6 +40,12 @@ const quotes = [{
 }, {
     text: "Don’t be afraid to be ambitious about your goals. Hard work never stops. Neither should your dreams.",
     author: 'Dwayne “The Rock” Johnson',
+}, {
+    text: "Make your goals a healthy obsession and then apply the strategy of consistent, daily hard work. Slow and steady always wins the long game race.",
+    author: 'Dwayne “The Rock” Johnson',
+}, {
+    text: "We only get one dance in life, so fuck it we may as well give it all we got.",
+    author: 'Dwayne “The Rock” Johnson',
 }];
 
 export default quotes;
