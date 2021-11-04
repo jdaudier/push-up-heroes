@@ -12,7 +12,7 @@ function getRandomInt(max) {
 }
 
 async function handler(req, res) {
-    const {user_id, user_name, text} = req.body;
+    const {user_id, user_name, text, channel_name} = req.body;
     const count = Number(text);
     const pushUps = count === 1 ? 'push-up' : 'push-ups';
 
@@ -134,15 +134,22 @@ async function handler(req, res) {
                 }
             }
 
-            const confirmationMessage = {
-                response_type: 'ephemeral',
-                text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thanks for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
-            };
+            if (channel_name !== 'fun-push-up-challenge') {
+                const confirmationMessage = {
+                    response_type: 'ephemeral',
+                    text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thanks for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
+                };
 
+                await postToChannel();
+                res.setHeader('Content-Type', 'application/json');
+                res.statusCode = 200;
+                res.json(confirmationMessage);
+            }
+
+            await postToChannel();
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
-            res.json(confirmationMessage);
-            await postToChannel();
+            res.json(null);
         } catch (err) {
             console.error('Error:', err);
             throw new Error(err.message);
