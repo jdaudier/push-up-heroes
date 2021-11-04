@@ -136,7 +136,7 @@ async function handler(req, res) {
 
             const confirmationMessage = {
                 response_type: 'ephemeral',
-                text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thank you for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
+                text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thanks for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
             };
 
             res.setHeader('Content-Type', 'application/json');
