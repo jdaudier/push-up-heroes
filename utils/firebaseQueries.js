@@ -394,9 +394,9 @@ export async function getLeaderboardText(userId) {
         const top3 = sortedLeaderboard.slice(0, 3);
         const summary = top3.map((person, i) => {
             switch (i) {
-                case (0): return `<@${person.id}> is in first place! :first_place_medal:`;
-                case (1): return `<@${person.id}> is in second place! :second_place_medal:`;
-                case (2): return `<@${person.id}> is in third place! :third_place_medal:`;
+                case (0): return `*${person.name}* is in first place! :first_place_medal:`;
+                case (1): return `*${person.name}* is in second place! :second_place_medal:`;
+                case (2): return `*${person.name}* is in third place! :third_place_medal:`;
             }
         }).join('\n');
 
