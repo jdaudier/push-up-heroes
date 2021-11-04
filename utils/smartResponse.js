@@ -40,20 +40,20 @@ function getSmartResponse(rawStats) {
     }
 
     if (ranking > 1 && totalPushUps === firstPlaceAthlete.count) {
-        facts.push(`Congrats! You're tied with <@${firstPlaceAthlete.id}> for *first place*! :dancingmonkey:`);
+        facts.push(`Congrats! You're tied with *${firstPlaceAthlete.profile.real_name}* for *first place*! :dancingmonkey:`);
     }
 
     const shouldShowSecondPlaceMsg = ranking === 2 && catchTheLeader <= 40;
     if (shouldShowSecondPlaceMsg) {
-        facts.push(`<@${firstPlaceAthlete.id}> should be scared. You're in *second place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
+        facts.push(`*${firstPlaceAthlete.profile.real_name}* should be scared. You're in *second place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
     const shouldShowThirdPlaceMsg = ranking === 3 && catchTheLeader <= 50;
     if (shouldShowThirdPlaceMsg) {
-        facts.push( `<@${firstPlaceAthlete.id}> should be shaking. You're in *third place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
+        facts.push( `*${firstPlaceAthlete.profile.real_name}* should be shaking. You're in *third place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
-    const notYou = globalBestIndividualSet.athletes.filter(athlete => athlete.id !== id).map(a =>`<@${a.id}>`);
+    const notYou = globalBestIndividualSet.athletes.filter(athlete => athlete.id !== id).map(a =>`*${a.profile.real_name}*`);
 
     let bestSetAthleteNames;
     if (notYou.length > 0) {
