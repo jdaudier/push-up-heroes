@@ -12,8 +12,9 @@ function getRandomInt(max) {
 }
 
 async function handler(req, res) {
-    const {user_id, user_name, text, channel_name} = req.body;
+    const {user_id, user_name, text} = req.body;
     const count = Number(text);
+    const pushUps = count === 1 ? 'push-up' : 'push-ups';
 
     if (req.method === 'POST') {
         if (!Number(text)) {
@@ -63,7 +64,6 @@ async function handler(req, res) {
             const hasOnlyOneEntry = collectionSize === 1;
 
             async function postToChannelForFirstEntry() {
-                const pushUps = count === 1 ? 'push-up' : 'push-ups';
                 const context = "_Use the `/pushups` command to log your set._";
                 const reply = `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n:party: This is the first set to be logged! You're a pioneer!\n\n${context}`;
 
@@ -121,7 +121,6 @@ async function handler(req, res) {
                     return postToChannelForFirstEntry();
                 }
 
-                const pushUps = count === 1 ? 'push-up' : 'push-ups';
                 const context = "_Use the `/pushups` command to log your set._";
 
                 try {
@@ -197,7 +196,7 @@ async function handler(req, res) {
 
             const confirmationMessage = {
                 response_type: 'ephemeral',
-                text: ':bravo:️ Thank you for logging your push-up count for the <#CNTT52KV0|fun-push-up-challenge>!',
+                text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thank you for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
             };
 
             res.setHeader('Content-Type', 'application/json');
