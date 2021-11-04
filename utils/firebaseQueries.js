@@ -8,7 +8,7 @@ import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
 
-export const CHALLENGE_ID = 'challenge-1';
+export const CHALLENGE_ID = 'challenge-2';
 const collectionRef = collection(db, CHALLENGE_ID);
 
 export async function getCollectionSize() {
