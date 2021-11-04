@@ -64,7 +64,7 @@ async function handler(req, res) {
                 const context = "_Use the `/pushups` command to log your set._";
 
                 try {
-                    const {blocks: myStatsBlocks, rawStats} = await getMyStats(user_id, {tagUser: true});
+                    const {blocks: myStatsBlocks, rawStats} = await getMyStats(user_id, {tagUser: false});
                     const smartResponse = getSmartResponse({id: user_id, count, ...rawStats});
                     const smartResponseText = `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n${smartResponse}\n${context}`;
 
