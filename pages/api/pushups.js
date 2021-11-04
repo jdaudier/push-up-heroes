@@ -50,7 +50,7 @@ async function handler(req, res) {
                 timeZone: tz,
                 profile: {
                     real_name,
-                    image_original,
+                    image_original: image_original ?? image_512,
                     image_24,
                     image_32,
                     image_48,
