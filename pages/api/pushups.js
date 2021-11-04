@@ -195,21 +195,14 @@ async function handler(req, res) {
                 }
             }
 
-            if (channel_name !== 'fun-push-up-challenge') {
-                const slackWarningMessage = {
-                    response_type: 'ephemeral',
-                    text: ':bravo:️ Thank you for logging your push-up count for the <#CNTT52KV0|fun-push-up-challenge>!',
-                };
-
-                res.setHeader('Content-Type', 'application/json');
-                res.statusCode = 200;
-                res.json(slackWarningMessage);
-                return await postToChannel();
-            }
+            const confirmationMessage = {
+                response_type: 'ephemeral',
+                text: ':bravo:️ Thank you for logging your push-up count for the <#CNTT52KV0|fun-push-up-challenge>!',
+            };
 
             res.setHeader('Content-Type', 'application/json');
             res.statusCode = 200;
-            res.json(null);
+            res.json(confirmationMessage);
             await postToChannel();
         } catch (err) {
             console.error('Error:', err);
