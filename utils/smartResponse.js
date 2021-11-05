@@ -39,16 +39,17 @@ function getSmartResponse(rawStats) {
         facts.push(`Congrats! You're in the lead!`);
     }
 
-    if (ranking > 1 && totalPushUps === firstPlaceAthlete.count) {
+    const tiedWithFirstPlace = totalPushUps === firstPlaceAthlete.count;
+    if (ranking > 1 && tiedWithFirstPlace) {
         facts.push(`Congrats! You're tied with *${firstPlaceAthlete.profile.real_name}* for *first place*! :dancingmonkey:`);
     }
 
-    const shouldShowSecondPlaceMsg = ranking === 2 && catchTheLeader <= 40;
+    const shouldShowSecondPlaceMsg = ranking === 2 && catchTheLeader <= 40 && !tiedWithFirstPlace;
     if (shouldShowSecondPlaceMsg) {
         facts.push(`*${firstPlaceAthlete.profile.real_name}* should be scared. You're in *second place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
 
-    const shouldShowThirdPlaceMsg = ranking === 3 && catchTheLeader <= 50;
+    const shouldShowThirdPlaceMsg = ranking === 3 && catchTheLeader <= 50 && !tiedWithFirstPlace;
     if (shouldShowThirdPlaceMsg) {
         facts.push( `*${firstPlaceAthlete.profile.real_name}* should be shaking. You're in *third place*! Only *${catchTheLeader.toLocaleString()}* more till you catch up!`);
     }
