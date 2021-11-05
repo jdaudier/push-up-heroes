@@ -757,6 +757,18 @@ export async function getUserStats(id) {
 
             const todayCount = countsByDayInISOMap[today];
 
+            function getNumOfSetsWithBestSet(count, bestSetCount, numOfSets) {
+                if (count > bestSetCount) {
+                    return 1;
+                }
+
+                if (count === bestSetCount) {
+                    return numOfSets + 1;
+                }
+
+                return numOfSets;
+            }
+
             return {
                 ...acc,
                 bestSet: {
@@ -767,6 +779,7 @@ export async function getUserStats(id) {
                     createdShort: count > acc.bestSet.count ? [createdShort] :
                         count === acc.bestSet.count && acc.bestSet.created.indexOf(created) === -1 ?
                             [...acc.bestSet.createdShort, createdShort] : acc.bestSet.createdShort,
+                    numOfSets: getNumOfSetsWithBestSet(count, acc.bestSet.count, acc.bestSet.numOfSets)
                 },
                 firstSet: {
                     count: index === 0 ? count : acc.firstSet.count,
@@ -789,6 +802,7 @@ export async function getUserStats(id) {
                 count: 0,
                 created: [],
                 createdShort: [],
+                numOfSets: 0,
             },
             firstSet: {
                 count: 0,

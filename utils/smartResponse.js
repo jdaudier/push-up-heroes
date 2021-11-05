@@ -72,7 +72,11 @@ function getSmartResponse(rawStats) {
     }
 
     if (hasMoreThan1Set && count === bestSet.count && count !== globalBestIndividualSet.count) {
-        facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
+        if (bestSet.numOfSets === 1) {
+            facts.push(`This is your best set ever! Go celebrate! :celebrate-hands:`);
+        } else {
+            facts.push(`This is the same amount as your best set! Keep it up! :celebrate-hands:`);
+        }
     }
 
     if (hasMoreThan2DaysOfEntries && bestDailyTotal.count > todayCount) {
