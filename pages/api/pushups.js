@@ -134,21 +134,20 @@ async function handler(req, res) {
                 }
             }
 
+            await postToChannel();
+
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+
             if (channel_name !== 'fun-push-up-challenge') {
                 const confirmationMessage = {
                     response_type: 'ephemeral',
                     text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thanks for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
                 };
 
-                await postToChannel();
-                res.setHeader('Content-Type', 'application/json');
-                res.statusCode = 200;
                 return res.json(confirmationMessage);
             }
-
-            await postToChannel();
-            res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
+            
             res.json(null);
         } catch (err) {
             console.error('Error:', err);
