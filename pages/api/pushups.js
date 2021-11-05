@@ -143,7 +143,7 @@ async function handler(req, res) {
                 await postToChannel();
                 res.setHeader('Content-Type', 'application/json');
                 res.statusCode = 200;
-                res.json(confirmationMessage);
+                return res.json(confirmationMessage);
             }
 
             await postToChannel();
