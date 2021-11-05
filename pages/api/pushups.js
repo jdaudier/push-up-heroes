@@ -56,7 +56,7 @@ async function handler(req, res) {
                     image_48,
                     image_72,
                     image_192,
-                    image_512,
+                    image_512: image_512 || image_original,
                 }
             });
 

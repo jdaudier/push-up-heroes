@@ -141,7 +141,7 @@ const typeDefs = gql`
         id: String!
         date: Date!
         real_name: String!
-        image_original: String!
+        image_original: String
         image_24: String!
         image_32: String!
         image_48: String!
@@ -193,7 +193,7 @@ const typeDefs = gql`
     }
     interface Profile {
         real_name: String!
-        image_original: String!
+        image_original: String
         image_24: String!
         image_32: String!
         image_48: String!
@@ -203,7 +203,7 @@ const typeDefs = gql`
     }
     type SlimSlackProfile implements Profile {
         real_name: String!
-        image_original: String!
+        image_original: String
         image_24: String!
         image_32: String!
         image_48: String!
@@ -224,7 +224,7 @@ const typeDefs = gql`
         status_emoji: String!
         status_expiration: Int!
         avatar_hash: String!
-        image_original: String!
+        image_original: String
         first_name: String!
         last_name: String!
         image_24: String!

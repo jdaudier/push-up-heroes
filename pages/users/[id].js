@@ -22,6 +22,7 @@ const GET_USER_STATS = gql`
             real_name
             title
             image_512
+            image_original
         }
         pushUpsByUser(id: $id) {
             sorted {
@@ -85,10 +86,10 @@ const cardWrapperCss = {
     }
 };
 
-const UserCard = ({user: {real_name, title, image_512}, mostRecentSet}) => (
+const UserCard = ({user: {real_name, title, image_512, image_original}, mostRecentSet}) => (
     <div css={cardWrapperCss}>
         <Card color='blue'>
-            <Image src={image_512} wrapped ui={false} />
+            <Image src={image_512 || image_original} wrapped ui={false} />
             <Card.Content>
                 <Card.Header>{real_name}</Card.Header>
                 <Card.Description>
