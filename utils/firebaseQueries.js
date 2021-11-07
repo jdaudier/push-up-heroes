@@ -7,6 +7,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import { utcToZonedTime } from 'date-fns-tz';
 import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
+import getBestIndividualSetAthletes from './getBestIndividualSetAthletes';
 
 export const CHALLENGE_ID = 'challenge-2';
 const collectionRef = collection(db, CHALLENGE_ID);
@@ -156,10 +157,12 @@ export async function getFullLeaderboardData() {
                 totalPushUps: acc.totalPushUps + count,
                 bestIndividualSet: {
                     count: count > acc.bestIndividualSet.count ? count : acc.bestIndividualSet.count,
-                    athletes: count > acc.bestIndividualSet.count ? [currentAthlete] :
-                        count === acc.bestIndividualSet.count && !acc.bestIndividualSet.athletes.find(a => a.id === id) ?
-                            [...acc.bestIndividualSet.athletes, currentAthlete] :
-                            acc.bestIndividualSet.athletes,
+                    athletes: getBestIndividualSetAthletes({
+                        count: count,
+                        accCount: acc.bestIndividualSet.count,
+                        currentAthlete,
+                        accAthletes: acc.bestIndividualSet.athletes
+                    })
                 },
                 countsByDayByUser: {
                     ...acc.countsByDayByUser,
@@ -186,7 +189,7 @@ export async function getFullLeaderboardData() {
 
         const {totalPushUps, bestIndividualSet, leaderboard, slackIdMap, slackProfileMap, countsByDayByUser} = data;
         const totalChallengeDays = await getTotalChallengeDays();
-        const bestDailyTotalOverall = getBestDailyTotalOverall(countsByDayByUser)
+        const bestDailyTotalOverall = getBestDailyTotalOverall(countsByDayByUser);
 
         const leaderArr = Object.keys(leaderboard).map((id) => {
             const name = slackIdMap[id];
