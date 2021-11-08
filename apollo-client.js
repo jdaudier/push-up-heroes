@@ -1,8 +1,12 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
+const env = process.env.NODE_ENV
+
+const uri = env === 'development' ? 'http://localhost:3000/api/graphql' : 'https://pushupheroes.com/api/graphql';
+
 // For local dev: http://localhost:3000/api/graphql
 const client = new ApolloClient({
-    uri: "https://pushupheroes.com/api/graphql",
+    uri,
     cache: new InMemoryCache(),
     defaultOptions: {
         query: {
