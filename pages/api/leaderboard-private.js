@@ -5,7 +5,7 @@ async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
-            const leaderboardText = await getLeaderboardText(user_id);
+            const leaderboardText = await getLeaderboardText(user_id, false);
 
             if (leaderboardText) {
                 const blocks = [

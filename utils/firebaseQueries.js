@@ -300,7 +300,7 @@ export async function getAllUsersFeeds({page}) {
     }
 }
 
-export async function getLeaderboardText(userId) {
+export async function getLeaderboardText(userId, withContext = true) {
     try {
         const snapshot = await getDocs(collectionRef);
         const data = snapshot.docs.reduce((acc, doc) => {
@@ -406,7 +406,9 @@ export async function getLeaderboardText(userId) {
         const fallbackDate = format(new Date(), 'EEE, MMM dd');
         const date = `<!date^${Math.floor(new Date() / 1000)}^{date_short_pretty} at {time}|${fallbackDate}>`;
 
-        return sortedLeaderboard.length > 0 ? `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${context}\n${webLink}` : '';
+        const fullText = withContext ? `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${context}\n${webLink}` : `*LEADERBOARD - ${date}*\n${summary}\n${leaderboardText}\n${webLink}`;
+
+        return sortedLeaderboard.length > 0 ? fullText : '';
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);
