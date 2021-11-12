@@ -74,7 +74,7 @@ function GlobalChart({ leaderboardData}) {
 
     const dailyAvg = leaderboardData.leaderboard.dailyAvg;
 
-    const avgPerPerson = leaderboardData.leaderboard.totalPushUps / leaderboardData.leaderboard.totalAthletes;
+    const avgPerPerson = Math.round(leaderboardData.leaderboard.totalPushUps / leaderboardData.leaderboard.totalAthletes);
 
     if (!data) return <LoadingChartView />;
 

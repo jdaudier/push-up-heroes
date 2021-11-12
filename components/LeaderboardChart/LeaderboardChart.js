@@ -118,7 +118,7 @@ function LeaderboardChart({rankings, avgPerPerson}) {
                     <BarChart
                         data={data}
                         layout="vertical"
-                        margin={{ top: 30, right: 70 }}
+                        margin={{ top: 25, right: 70 }}
                     >
                         <CartesianGrid horizontal={false} strokeDasharray="3 3" vertical={true} />
                         <XAxis allowDecimals={false}

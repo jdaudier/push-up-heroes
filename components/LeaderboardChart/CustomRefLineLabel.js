@@ -21,7 +21,7 @@ const CustomRefLineLabel = ({viewBox, avg, fill = YELLOW}) => {
                   fill={fill}
                   fontWeight="bold"
                   fontSize={LABEL_FONT_SIZE}>
-                {`${avg} / person avg`}
+                {`${avg.toLocaleString()} / person avg`}
             </text>
         </g>
     )
