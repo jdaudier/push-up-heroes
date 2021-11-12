@@ -20,7 +20,8 @@ const imageByNameMap = {};
 
 const BAR_SIZE = 38;
 const IMAGE_WIDTH = 38;
-const Y_AXIS_LEFT_PADDING = 45;
+const IMAGE_LEFT_MARGIN = -10;
+const Y_AXIS_LEFT_PADDING = 65;
 
 const formatDataForLeaderboardChart = rankings => {
     return rankings.map(rank => {
@@ -43,13 +44,15 @@ const CustomXAxisTick = ({x, y, payload: {value}}) => {
     );
 };
 
-const CustomYAxisTick = ({ x, y, payload: { value } }) => {
-    const fontSize = 16;
-    const IMAGE_SPACE = -10;
+const customYAxisTickFontSize = 16;
+
+
+const CustomYAxisTick = ({ x, y, index, payload: { value } }) => {
+    const rank = index + 1;
 
     return (
         <g transform={`translate(${x},${y})`}>
-            <text x={-IMAGE_WIDTH + IMAGE_SPACE} y={-10} dy={16} textAnchor="end" fill="#666" fontSize={fontSize} fontWeight="bold">{value}</text>
+            <text x={-IMAGE_WIDTH + IMAGE_LEFT_MARGIN} y={-10} dy={16} textAnchor="end" fill="#666" fontSize={customYAxisTickFontSize} fontWeight="bold">{value} {rank}. </text>
             <image x={-IMAGE_WIDTH} y={-20} href={imageByNameMap[value]} width={IMAGE_WIDTH} />
         </g>
     );
@@ -70,10 +73,11 @@ const CustomizedLabel =(props) => {
 
 let ctx;
 
+// Inspo: https://codesandbox.io/s/recharts-horizontal-bar-with-dual-y-axis-25v91?file=/src/index.js:1060-1092
 export const measureTextWidth = text => {
     if (!ctx) {
         ctx = document.createElement("canvas").getContext("2d");
-        ctx.font = "18px 'Lato'";
+        ctx.font = `${customYAxisTickFontSize}px Lato`;
     }
 
     return ctx.measureText(text).width;
@@ -96,7 +100,35 @@ function LeaderboardChart({rankings, avgPerPerson}) {
         [data]
     );
 
-    const Y_AXIS_WIDTH = maxNameWidth + IMAGE_WIDTH + Y_AXIS_LEFT_PADDING;
+    const letterMap = {
+        single: `${9}. `,
+        double: `${85}. `,
+        triple: `${854}. `,
+        quadruple: `${8537}. `,
+    }
+
+    const getDigitLengthForRank = (length) => {
+        if (length < 10) {
+            return 'single';
+        }
+
+        if (length >= 10 && length < 100) {
+            return 'double';
+        }
+
+        if (length >= 100 && length < 1000) {
+            return 'triple';
+        }
+
+        if (length >= 1000 && length < 10000) {
+            return 'quadruple';
+        }
+    }
+
+    const sampleRankText = letterMap[getDigitLengthForRank(rankings.length)];
+    const RANK_TEXT_WIDTH = measureTextWidth(sampleRankText);
+
+    const Y_AXIS_WIDTH = maxNameWidth + IMAGE_WIDTH + IMAGE_LEFT_MARGIN + RANK_TEXT_WIDTH + Y_AXIS_LEFT_PADDING;
 
     return (
         <div css={wrapperCss}>
