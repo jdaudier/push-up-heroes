@@ -200,7 +200,7 @@ export async function getFullLeaderboardData() {
                 count,
                 id,
                 profile,
-                dailyAvg: Math.round(count / totalChallengeDays),
+                dailyAvg: Math.round(count / totalChallengeDays) || Math.ceil(count / totalChallengeDays),
                 contributionPercentage: Math.round((count / totalPushUps) * 100) || Math.ceil((count / totalPushUps) * 100),
             };
         });
@@ -861,7 +861,7 @@ export async function getUserStats(id) {
             todayCount,
             bestDailyTotal,
             ranking,
-            dailyAvg: Math.round(totalPushUps / totalChallengeDays),
+            dailyAvg: Math.round(totalPushUps / totalChallengeDays) || Math.ceil(totalPushUps / totalChallengeDays),
             globalDailyAvg: Math.round(totalPushUpsGlobally / totalChallengeDays),
             avgSet: Math.round(totalPushUps / snapshot.size),
             globalAvgSet: Math.round(totalPushUpsGlobally / totalSets),
