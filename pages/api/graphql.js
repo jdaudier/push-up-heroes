@@ -11,7 +11,7 @@ const typeDefs = gql`
         leaderboard: Leaderboard!
         summary: String!
         mostRecentSet: MostRecentSet!
-        globalUsersFeed(page: Int!): GlobalUsersFeedData!
+        globalUsersFeed(page: Int!): [GlobalFeedSet!]!
         globalChartData: [CountByDay!]!
         
         pushUpsByUser(id: ID!): PushUpsByUser!
@@ -56,10 +56,6 @@ const typeDefs = gql`
         sorted: [Set!]!
         byDay: [CountByDay!]!
     }
-    type GlobalUsersFeedData {
-        feed: [GlobalUserFeed!]!
-        setsByDayMap: GraphQLJSON
-    }
     type UserFeedData {
         feed: [UserFeed!]!
         setsByDayMap: GraphQLJSON
@@ -81,15 +77,13 @@ const typeDefs = gql`
         globalBestIndividualSet: BestIndividualSet!
         bestDailyTotal: BestIndividualDailyTotal!
     }
-    type GlobalUserFeed implements Feed {
+    type GlobalFeedSet {
+        created: Date!
+        id: ID!
+        count: Int!
+        timeZone: String!
         name: String!
         profile: SlimSlackProfile!
-        count: Int!
-        dayOfWeek: DayOfWeek!
-        date: Date!
-        time: String!
-        slackId: ID!
-        simplifiedDate: Date!
     }
     type UserFeed implements Feed {
         count: Int!

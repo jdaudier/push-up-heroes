@@ -252,48 +252,14 @@ export async function getAllUsersFeeds({page}) {
         const pageQuery = await getPaginatedPageQuery(firstPageQuery);
         const snapshot = await getDocs(pageQuery);
 
-        return snapshot.docs.reduce(async (acc, doc) => {
-            const prevAcc = await acc;
-
+        return snapshot.docs.map(doc => {
             const data = doc.data();
-            const dayOfWeek = format(utcToZonedTime(
-                data.created.toDate(),
-                data.timeZone,
-            ), 'E');
-
-            const date = format(utcToZonedTime(
-                data.created.toDate(),
-                data.timeZone,
-            ), 'MMM d, y');
-
-            const time = format(utcToZonedTime(
-                data.created.toDate(),
-                data.timeZone,
-            ), 'h:mm aaaa');
-
-            const simplifiedDate = format(utcToZonedTime(
-                data.created.toDate(),
-                data.timeZone,
-            ), 'yyyy-MM-dd');
 
             return {
-                feed:[...prevAcc.feed, {
-                    ...data,
-                    slackId: data.id,
-                    dayOfWeek,
-                    date,
-                    time,
-                    simplifiedDate,
-                }],
-                setsByDayMap: {
-                    ...prevAcc.setsByDayMap,
-                    [simplifiedDate]: prevAcc.setsByDayMap[simplifiedDate] ? prevAcc.setsByDayMap[simplifiedDate] + 1 : 1,
-                }
+                ...data,
+                created: data.created.toDate(),
             }
-        }, Promise.resolve({
-            feed: [],
-            setsByDayMap: {}
-        }));
+        });
     } catch (err) {
         console.error('Error:', err);
         throw new Error(err.message);

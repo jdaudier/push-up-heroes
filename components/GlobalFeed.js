@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useQuery, gql } from '@apollo/client';
+import format from "date-fns/format";
 import { Table, Image, Icon, Popup } from 'semantic-ui-react';
 import { BLUE, FEED_LIMIT } from '../utils/constants';
 import LoadingTableView from './LoadingTableView';
@@ -12,19 +13,14 @@ import { jsx } from '@emotion/react';
 const GET_GLOBAL_USERS_FEED = gql`
     query globalUsersFeed($page: Int!) {
         globalUsersFeed(page: $page) {
-            feed {
-                slackId
-                profile {
-                    image_48
-                    real_name
-                }
-                count
-                dayOfWeek
-                date
-                time
-                simplifiedDate
+            created,
+            id,
+            count,
+            name,
+            profile {
+                real_name,
+                image_48,
             }
-            setsByDayMap
         }
     }
 `;
@@ -34,10 +30,6 @@ const linkCss = {
     cursor: 'pointer',
     color: 'initial',
 };
-
-const dateDisclaimer = {
-    textAlign: 'right'
-}
 
 function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, children}) {
     const cellCss = {
@@ -89,23 +81,49 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
     );
 }
 
-const DateDisclaimerTooltip = ({trigger}) => (
-    <Popup content="In each athlete's local date & time" position='top left' trigger={trigger} />
-)
+const formatDataForGlobalFeed = data => {
+    if (!data) return;
+
+    return data.globalUsersFeed.reduce((acc, data) => {
+        const createdDate = new Date(data.created);
+
+        const dayOfWeek = format(createdDate, 'E');
+        const date = format(createdDate, 'MMM d, y');
+        const time = format(createdDate, 'h:mm aaaa');
+        const simplifiedDate = format(createdDate, 'yyyy-MM-dd');
+
+        return {
+            feed:[...acc.feed, {
+                ...data,
+                slackId: data.id,
+                dayOfWeek,
+                date,
+                time,
+                simplifiedDate,
+            }],
+            setsByDayMap: {
+                ...acc.setsByDayMap,
+                [simplifiedDate]: acc.setsByDayMap[simplifiedDate] ? acc.setsByDayMap[simplifiedDate] + 1 : 1,
+            }
+        }
+    }, {
+        feed: [],
+        setsByDayMap: {}
+    });
+}
 
 const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
     const [activePage, setActivePage] = useState(1);
     const { loading, error, data } = useQuery(GET_GLOBAL_USERS_FEED, {
         variables: { page: activePage },
     });
+    
+    const formattedData = formatDataForGlobalFeed(data);
 
     const totalPages = Math.ceil(totalSets / FEED_LIMIT);
 
     return (
         <>
-            {activePage === 1 && (
-                <div css={dateDisclaimer}>Date and time are displayed in each participant's local time zone.</div>
-            )}
             <Table celled padded selectable size='large' striped textAlign="left">
                 <Table.Header>
                     <Table.Row>
@@ -114,24 +132,15 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
                                 ({totalSets.toLocaleString()})
                             </span>
                         </Table.HeaderCell>
-                        <DateDisclaimerTooltip trigger={
-                             <Table.HeaderCell>
-                                 Day
-                             </Table.HeaderCell>
-                         }
-                        />
-                        <DateDisclaimerTooltip trigger={
-                            <Table.HeaderCell>
-                                Date
-                            </Table.HeaderCell>
-                        }
-                        />
-                        <DateDisclaimerTooltip trigger={
-                            <Table.HeaderCell>
-                                Time
-                            </Table.HeaderCell>
-                        }
-                        />
+                        <Table.HeaderCell>
+                            Day
+                        </Table.HeaderCell>
+                        <Table.HeaderCell>
+                            Date
+                        </Table.HeaderCell>
+                        <Table.HeaderCell>
+                            Time
+                        </Table.HeaderCell>
                         <Table.HeaderCell>Athlete</Table.HeaderCell>
                         <Table.HeaderCell width={2}>Count
                             <span css={{color: BLUE, marginLeft: 6}}>
@@ -143,8 +152,8 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
 
                 {!data ? <LoadingTableView /> : (
                     <Table.Body>
-                        {data.globalUsersFeed.feed.map(({slackId, dayOfWeek, date, time, count, simplifiedDate, profile}, i, arr) => {
-                            const rowSpan = data.globalUsersFeed.setsByDayMap[simplifiedDate];
+                        {formattedData.feed.map(({slackId, dayOfWeek, date, time, count, simplifiedDate, profile}, i, arr) => {
+                            const rowSpan = formattedData.setsByDayMap[simplifiedDate];
 
                             const firstIndex = arr.findIndex(item => item.simplifiedDate === simplifiedDate);
 
