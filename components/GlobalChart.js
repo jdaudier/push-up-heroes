@@ -7,6 +7,7 @@ import CustomYAxisTick from './Chart/CustomYAxisTick';
 import CustomTooltip from './Chart/CustomTooltip';
 import CustomRefLineLabel from './Chart/CustomRefLineLabel';
 import LoadingChartView from './LoadingChartView';
+import LeaderboardChart from './LeaderboardChart';
 
 /** @jsxImportSource @emotion/react */
 import { jsx } from '@emotion/react';
@@ -68,8 +69,12 @@ const formatDataForGlobalChart = data => {
     });
 }
 
-function GlobalChart({dailyAvg}) {
+function GlobalChart({ leaderboardData}) {
     const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_CHART_DATA);
+
+    const dailyAvg = leaderboardData.leaderboard.dailyAvg;
+
+    const avgPerPerson = leaderboardData.leaderboard.totalPushUps / leaderboardData.leaderboard.totalAthletes;
 
     if (!data) return <LoadingChartView />;
 
@@ -79,6 +84,7 @@ function GlobalChart({dailyAvg}) {
 
     return (
         <>
+            <LeaderboardChart avgPerPerson={avgPerPerson} rankings={leaderboardData.leaderboard.rankings} />
             <Header as='h2'
                     attached='top'
                     style={{

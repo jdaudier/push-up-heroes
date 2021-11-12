@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dimmer, Header, Loader, Segment } from 'semantic-ui-react';
+import {FIRST_CHART_HEADING} from "./LeaderboardChart/LeaderboardChart";
 
 /** @jsxImportSource @emotion/react */
 import { jsx } from '@emotion/react';
@@ -15,7 +16,7 @@ const LoadingChartView = () => {
                         paddingTop: 20,
                     }}
                     textAlign="center">
-                Push-Ups Over Time
+                {FIRST_CHART_HEADING}
             </Header>
             <Segment attached='bottom' padded="very" style={{
                 paddingLeft: 0,

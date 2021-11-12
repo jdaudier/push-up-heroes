@@ -303,7 +303,7 @@ const Home = ({ data }) => {
             >
                 <Header as='h2'>
                     <span css={tabCss}>
-                        Chart
+                        Charts
                     </span>
                 </Header>
             </Menu.Item>
@@ -311,7 +311,7 @@ const Home = ({ data }) => {
         render: () => (
             <ClientOnly>
                 <Tab.Pane>
-                    <GlobalChart dailyAvg={data.leaderboard.dailyAvg} />
+                    <GlobalChart leaderboardData={data} />
                 </Tab.Pane>
             </ClientOnly>
         )
