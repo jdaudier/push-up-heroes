@@ -20,7 +20,7 @@ const imageByNameMap = {};
 
 const BAR_SIZE = 38;
 const IMAGE_WIDTH = 38;
-const Y_AXIS_LEFT_PADDING = 25;
+const Y_AXIS_LEFT_PADDING = 45;
 
 const formatDataForLeaderboardChart = rankings => {
     return rankings.map(rank => {
