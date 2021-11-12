@@ -35,6 +35,10 @@ function getSmartResponse(rawStats) {
 
     const facts = [];
 
+    if (totalSets === 1) {
+        facts.push(`:clapping2: Woohoo! Your first set! The journey of a thousand push-ups begins with one set.`);
+    }
+
     if (ranking === 1) {
         facts.push(`Congrats! You're in the lead!`);
     }
