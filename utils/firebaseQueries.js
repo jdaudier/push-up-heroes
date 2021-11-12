@@ -532,58 +532,12 @@ export async function getGlobalChartData() {
         const q = query(collectionRef, orderBy('created'));
         const snapshot = await getDocs(q);
 
-        const {
-            firstEntry,
-            lastEntry,
-            countsByDayMap,
-        } = snapshot.docs.reduce((acc, doc, i, arr) => {
+        return snapshot.docs.map(doc => {
             const data = doc.data();
-            const created = format(utcToZonedTime(
-                data.created.toDate(),
-                data.timeZone,
-            ), 'yyyy-MM-dd');
 
-            const currentSet = {
+            return {
                 ...data,
-                created,
-                rawCreated: data.created.toDate(),
-            };
-            const prevCount = acc.countsByDayMap[created];
-            return {
-                ...acc,
-                firstEntry: i === 0 ? currentSet : acc.firstEntry,
-                lastEntry: i === arr.length - 1 ? currentSet : acc.lastEntry,
-                countsByDayMap: {
-                    ...acc.countsByDayMap,
-                    [created]: prevCount ? prevCount + currentSet.count : currentSet.count,
-                }
-            }
-        }, {
-            firstEntry: {},
-            lastEntry: {},
-            countsByDayMap: {},
-        });
-
-        const firstEntryDateLocalTime = format(utcToZonedTime(
-            firstEntry.rawCreated,
-            firstEntry.timeZone,
-        ), 'yyyy-MM-dd');
-
-        const lastEntryDateLocalTime = format(utcToZonedTime(
-            lastEntry.rawCreated,
-            lastEntry.timeZone,
-        ), 'yyyy-MM-dd');
-
-        const datesArray = eachDayOfInterval(
-            { start: parseISO(firstEntryDateLocalTime), end: parseISO(lastEntryDateLocalTime) }
-        );
-
-        return datesArray.map(date => {
-            const key = format(date, 'yyyy-MM-dd');
-
-            return {
-                label: format(date, 'EEE, MMM d'),
-                value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+                created: data.created.toDate(),
             }
         });
     } catch (err) {

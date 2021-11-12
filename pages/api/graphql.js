@@ -11,8 +11,8 @@ const typeDefs = gql`
         leaderboard: Leaderboard!
         summary: String!
         mostRecentSet: MostRecentSet!
-        globalUsersFeed(page: Int!): [GlobalFeedSet!]!
-        globalChartData: [CountByDay!]!
+        globalUsersFeed(page: Int!): [RawSet!]!
+        globalChartData: [RawSet!]!
         
         pushUpsByUser(id: ID!): PushUpsByUser!
         userSlackProfile(id: ID!): SlackProfile!
@@ -77,7 +77,7 @@ const typeDefs = gql`
         globalBestIndividualSet: BestIndividualSet!
         bestDailyTotal: BestIndividualDailyTotal!
     }
-    type GlobalFeedSet {
+    type RawSet {
         created: Date!
         id: ID!
         count: Int!

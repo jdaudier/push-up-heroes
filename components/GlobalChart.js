@@ -10,22 +10,71 @@ import LoadingChartView from './LoadingChartView';
 
 /** @jsxImportSource @emotion/react */
 import { jsx } from '@emotion/react';
+import format from "date-fns/format";
+import eachDayOfInterval from "date-fns/eachDayOfInterval";
+import parseISO from "date-fns/parseISO";
 
 const GET_GLOBAL_CHART_DATA = gql`
     query globalChartData {
         globalChartData {
-            value
-            label
+            created,
+            count,
         }
     }
 `;
+
+const formatDataForGlobalChart = data => {
+    const {
+        firstEntry,
+        lastEntry,
+        countsByDayMap,
+    } = data.globalChartData.reduce((acc, data, i, arr) => {
+        const createdDate = new Date(data.created);
+
+        const created = format(createdDate, 'yyyy-MM-dd');
+
+        const currentSet = {
+            ...data,
+            created,
+        };
+        
+        const prevCount = acc.countsByDayMap[created];
+        return {
+            ...acc,
+            firstEntry: i === 0 ? currentSet : acc.firstEntry,
+            lastEntry: i === arr.length - 1 ? currentSet : acc.lastEntry,
+            countsByDayMap: {
+                ...acc.countsByDayMap,
+                [created]: prevCount ? prevCount + currentSet.count : currentSet.count,
+            }
+        }
+    }, {
+        firstEntry: {},
+        lastEntry: {},
+        countsByDayMap: {},
+    });
+
+    const datesArray = eachDayOfInterval(
+        { start: parseISO(firstEntry.created), end: parseISO(lastEntry.created) }
+    );
+
+    return datesArray.map(date => {
+        const key = format(date, 'yyyy-MM-dd');
+
+        return {
+            label: format(date, 'EEE, MMM d'),
+            value: countsByDayMap[key] ? countsByDayMap[key] : 0,
+        }
+    });
+}
 
 function GlobalChart({dailyAvg}) {
     const { loading, error, data, fetchMore } = useQuery(GET_GLOBAL_CHART_DATA);
 
     if (!data) return <LoadingChartView />;
 
-    const {globalChartData} = data;
+    const globalChartData = formatDataForGlobalChart(data)
+
     const shouldShowAvg = globalChartData.length > 3;
 
     return (
