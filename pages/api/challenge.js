@@ -120,7 +120,6 @@ async function handler(req, res) {
             return res.status(200).send(slackWarningMessage);
         }
 
-        res.setHeader('Content-Type', 'application/json');
         res.status(200).end();
     }
 }
