@@ -117,13 +117,11 @@ async function handler(req, res) {
             };
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            return res.json(slackWarningMessage);
+            return res.status(200).send(slackWarningMessage);
         }
 
         res.setHeader('Content-Type', 'application/json');
-        res.statusCode = 200;
-        res.json(null);
+        res.status(200).end();
     }
 }
 
