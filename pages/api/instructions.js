@@ -98,8 +98,7 @@ async function handler(req, res) {
                 ];
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            return res.json({
+            return res.status(200).json({
                 response_type: 'ephemeral',
                 blocks,
             });
@@ -112,8 +111,7 @@ async function handler(req, res) {
             };
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            res.json(errorMessage);
+            res.status(200).json(errorMessage);
         }
     }
 }
