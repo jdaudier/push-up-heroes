@@ -2,7 +2,7 @@
 
 [pushupheroes.com](https://pushupheroes.com/)
 
-## To run this project
+## To run this app
 
 1. Create a `.env` file and copy the API keys from **1Password**
 2. `yarn dev`
