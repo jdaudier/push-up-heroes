@@ -221,9 +221,7 @@ async function handler(req, res) {
                 }
             }
 
-            res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            return res.json(null);
+            res.status(200).end();
         }
     }
 }
