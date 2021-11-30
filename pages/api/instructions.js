@@ -98,7 +98,7 @@ async function handler(req, res) {
                 ];
 
             res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({
+            res.status(200).json({
                 response_type: 'ephemeral',
                 blocks,
             });
