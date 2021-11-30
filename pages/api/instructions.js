@@ -97,6 +97,7 @@ async function handler(req, res) {
                     }
                 ];
 
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).json({
                 response_type: 'ephemeral',
                 blocks,
@@ -109,6 +110,7 @@ async function handler(req, res) {
                 text: `:sadtears: Looks like we ran into an error: ${err}!`,
             };
 
+            res.setHeader('Content-Type', 'application/json');
             res.status(200).json(errorMessage);
         }
     }
