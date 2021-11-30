@@ -346,13 +346,15 @@ export async function getLeaderboardText(userId, withContext = true) {
                 return `#    ${headingWithSpacing}${heading2WithSpacing}${heading3Text}\n${rank}.   ${nameWithSpacing}${countWithSpacing}\n`;
             }
 
+            const catchTheLeaderText = catchTheLeader > 0 ? `${catchTheLeader} more` : '';
+
             const isSingleDigitRank = rank < 10;
             if (isSingleDigitRank) {
                 // This is to line up the names
-                return `${acc}${rank}.   ${nameWithSpacing}${countWithSpacing}${catchTheLeader} more\n`;
+                return `${acc}${rank}.   ${nameWithSpacing}${countWithSpacing}${catchTheLeaderText}\n`;
             }
 
-            return `${acc}${rank}.  ${nameWithSpacing}${countWithSpacing}${catchTheLeader} more\n`;
+            return `${acc}${rank}.  ${nameWithSpacing}${countWithSpacing}${catchTheLeaderText}\n`;
         }, '');
 
         const leaderboardText = "```" + formattedText + "```";
