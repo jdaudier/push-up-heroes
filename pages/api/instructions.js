@@ -3,7 +3,7 @@ import {MAX_NUM_FOR_SUMMARY} from '../../utils/constants';
 async function handler(req, res) {
     const {user_id} = req.body;
 
-    res.status(200).send('testing');
+    await res.status(200).send('testing');
     // if (req.method === 'POST') {
     //     try {
     //         const blocks = [
