@@ -24,8 +24,7 @@ async function handler(req, res) {
                 }
 
                 res.setHeader('Content-Type', 'application/json');
-                res.statusCode = 200;
-                return res.json(responseMessage);
+                return res.status(200).send(responseMessage);
             }
 
             const slackEmptyLeaderboardMessage = {
@@ -34,8 +33,7 @@ async function handler(req, res) {
             };
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            res.json(slackEmptyLeaderboardMessage);
+            res.status(200).send(slackEmptyLeaderboardMessage);
         } catch (err) {
             console.error('Error:', err);
             throw new Error(err.message);
