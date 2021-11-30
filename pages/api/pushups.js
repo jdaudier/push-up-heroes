@@ -24,8 +24,7 @@ async function handler(req, res) {
             };
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            return res.json(slackWarningMessage);
+            return res.status(200).send(slackWarningMessage);
         }
 
         try {
@@ -137,7 +136,6 @@ async function handler(req, res) {
             await postToChannel();
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
 
             if (channel_name !== 'fun-push-up-challenge') {
                 const confirmationMessage = {
@@ -145,10 +143,10 @@ async function handler(req, res) {
                     text: `:bravo:️ We got you down for *${text}* ${pushUps}! Thanks for participating in the <#CNTT52KV0|fun-push-up-challenge>!`,
                 };
 
-                return res.json(confirmationMessage);
+                return res.status(200).send(confirmationMessage);
             }
             
-            res.json(null);
+            res.status(200).end();
         } catch (err) {
             console.error('Error:', err);
             throw new Error(err.message);
