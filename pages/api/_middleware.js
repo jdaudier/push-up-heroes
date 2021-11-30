@@ -1,6 +1,8 @@
 import {MAX_NUM_FOR_SUMMARY} from "../../utils/constants";
 
 export async function middleware(req, event) {
+    const {user_id} = req.body;
+
     if (req.nextUrl.pathname.includes('instructions')) {
         try {
             const blocks = [
