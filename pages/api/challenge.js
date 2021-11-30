@@ -21,8 +21,7 @@ async function handler(req, res) {
             };
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            return res.json(slackWarningMessage);
+            return res.status(200).send(slackWarningMessage);
         }
 
         if (!Number(stringCount)) {
@@ -32,8 +31,7 @@ async function handler(req, res) {
             };
 
             res.setHeader('Content-Type', 'application/json');
-            res.statusCode = 200;
-            return res.json(slackWarningMessage);
+            return res.status(200).send(slackWarningMessage);
         }
 
         const count = Number(stringCount);

@@ -40,9 +40,7 @@ async function handler(req, res) {
                     throw new Error(err.message)
                 }
 
-                res.setHeader('Content-Type', 'application/json');
-                res.statusCode = 200;
-                return res.json(null);
+                return res.status(200).end();
             }
 
             const count = Number(stringCount);
