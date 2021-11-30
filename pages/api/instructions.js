@@ -66,18 +66,18 @@ export default function handler(req, res) {
                     {
                         "type": "divider"
                     },
-                    // {
-                    //     "type": "section",
-                    //     "text": {
-                    //         "type": "mrkdwn",
-                    //         "text": `*/leaderboard*\nTo see the top ${MAX_NUM_FOR_SUMMARY} athletes currently at the top of the leaderboard _(visible to everyone)_.`
-                    //     },
-                    //     "accessory": {
-                    //         "type": "image",
-                    //         "image_url": "https://media.giphy.com/media/FMapondVtL2Fi/giphy.gif",
-                    //         "alt_text": "Winner"
-                    //     }
-                    // },
+                    {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text": `*/leaderboard*\nTo see the top ${MAX_NUM_FOR_SUMMARY} athletes currently at the top of the leaderboard _(visible to everyone)_.`
+                        },
+                        "accessory": {
+                            "type": "image",
+                            "image_url": "https://media.giphy.com/media/FMapondVtL2Fi/giphy.gif",
+                            "alt_text": "Winner"
+                        }
+                    },
                     {
                         "type": "divider"
                     },
