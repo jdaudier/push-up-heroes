@@ -97,7 +97,7 @@ async function handler(req, res) {
                     }
                 ];
 
-            return res.status(200).json({
+            res.status(200).send({
                 response_type: 'ephemeral',
                 blocks,
             });
@@ -109,7 +109,7 @@ async function handler(req, res) {
                 text: `:sadtears: Looks like we ran into an error: ${err}!`,
             };
 
-            return res.status(200).json(errorMessage);
+            res.status(200).send(errorMessage);
         }
     }
 }
