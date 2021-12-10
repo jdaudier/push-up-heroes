@@ -9,7 +9,7 @@
 
 ## Slack
 - **Slash commands:** https://api.slack.com/apps/AP6LZU8BX/slash-commands
-- **Responding to a challenge:** https://api.slack.com/apps/AP6LZU8BX/interactive-messages?
+- **Responding to a challenge:** https://api.slack.com/apps/AP6LZU8BX/interactive-messages
 
 - You'll want to use [ngrok](https://ngrok.com) to use a local request URL for development: https://slack.dev/node-slack-sdk/tutorials/local-development
 - For testing Slack changes, you'll need to temporarily change the Slash commands to your local ngrok URL and then change it back
