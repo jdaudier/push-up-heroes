@@ -65,7 +65,7 @@ async function handler(req, res) {
                 try {
                     const {blocks: myStatsBlocks, rawStats} = await getMyStats(user_id, {tagUser: false});
                     const smartResponse = getSmartResponse({id: user_id, count, ...rawStats});
-                    const smartResponseText = `<@${user_id}> just did *${text}* ${pushUps}! :muscle:\n${smartResponse}\n${context}`;
+                    const smartResponseText = `<@${user_id}> just did *${count}* ${pushUps}! :muscle:\n${smartResponse}\n${context}`;
 
                     const blocks = [{
                         "type": "section",
