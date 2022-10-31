@@ -118,7 +118,7 @@ const Stats = ({data}) => {
             >
                 {trimmedBestSetAthletes.map(athlete => {
                     return (
-                        <Link href='/users/[id]' as={`/users/${athlete.id}`} key={athlete.id}>
+                        <Link href='/users/[id]' as={`/users/${athlete.id}`} key={athlete.id} legacyBehavior>
                             <a title={`${athlete.profile.real_name}'s page`} css={{
                                 ...cellLinkCss,
                                 marginBottom: 10,
@@ -158,7 +158,7 @@ const Stats = ({data}) => {
                 </Grid.Column>}
             >
                 {bestDailyTotalOverall.profiles.map(profile => (
-                    <Link href='/users/[id]' as={`/users/${profile.id}`} key={profile.id}>
+                    <Link href='/users/[id]' as={`/users/${profile.id}`} key={profile.id} legacyBehavior>
                         <a title={`${profile.real_name}'s page`} css={{
                             ...cellLinkCss,
                             marginBottom: 10,

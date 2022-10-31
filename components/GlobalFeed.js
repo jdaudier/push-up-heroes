@@ -56,7 +56,7 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
     if (rowSpan === 1) {
         return (
             <Table.Cell className={className}>
-                <Link href='/users/[id]' as={`/users/${slackId}`}>
+                <Link href='/users/[id]' as={`/users/${slackId}`} legacyBehavior>
                     <a title={`${realName}'s page`} css={linkCss}>
                         {children}
                     </a>
@@ -71,7 +71,7 @@ function MaybeLink({className, rowSpan, shouldCellBeHidden, slackId, realName, c
                 {children}
             </div>
             <div css={desktopCss}>
-                <Link href='/users/[id]' as={`/users/${slackId}`}>
+                <Link href='/users/[id]' as={`/users/${slackId}`} legacyBehavior>
                     <a title={`${realName}'s page`} css={linkCss}>
                         {children}
                     </a>
@@ -192,14 +192,14 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
                                     {maybeDayCell}
                                     {maybeDateCell}
                                     <Table.Cell>
-                                        <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                        <Link href='/users/[id]' as={`/users/${slackId}`} legacyBehavior>
                                             <a title={`${profile.real_name}'s page`} css={linkCss}>
                                                 {time}
                                             </a>
                                         </Link>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                        <Link href='/users/[id]' as={`/users/${slackId}`} legacyBehavior>
                                             <a title={`${profile.real_name}'s page`} css={linkCss}>
                                                 <Image src={profile.image_48} avatar />
                                                 <span css={{
@@ -213,7 +213,7 @@ const GlobalFeed = ({totalSets, totalPushUps, bestIndividualSetCount}) => {
                                         </Link>
                                     </Table.Cell>
                                     <Table.Cell>
-                                        <Link href='/users/[id]' as={`/users/${slackId}`}>
+                                        <Link href='/users/[id]' as={`/users/${slackId}`} legacyBehavior>
                                             <a title={`${profile.real_name}'s page`} css={linkCss}>
                                                 {count}
                                                 {count === bestIndividualSetCount && (

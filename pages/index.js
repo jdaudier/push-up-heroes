@@ -142,7 +142,7 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                     return (
                         <Table.Row key={id}>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${id}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`} legacyBehavior>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         <MaybeRibbon place={place} />
                                         {maybePlaceText}
@@ -150,7 +150,7 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${id}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`} legacyBehavior>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {place === 1 && (<div css={crownCss}>
                                             <Crown />
@@ -167,14 +167,14 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${id}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`} legacyBehavior>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {count.toLocaleString()}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${id}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`} legacyBehavior>
                                     <a title={`${profile.real_name}'s page`} css={medalLinkCss}>
                                         {diffFromLeader > 0 ? `${diffFromLeader.toLocaleString()} more` : (
                                             <div css={medalCss}>
@@ -185,14 +185,14 @@ const Leaderboard = ({leaderboard: {rankings}}) => {
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${id}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`} legacyBehavior>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {dailyAvg.toLocaleString()}
                                     </a>
                                 </Link>
                             </Table.Cell>
                             <Table.Cell>
-                                <Link href='/users/[id]' as={`/users/${id}`}>
+                                <Link href='/users/[id]' as={`/users/${id}`} legacyBehavior>
                                     <a title={`${profile.real_name}'s page`} css={cellLinkCss}>
                                         {contributionPercentage}%
                                     </a>

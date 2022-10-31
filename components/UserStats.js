@@ -159,7 +159,7 @@ const UserStats = ({data}) => {
                         </span>
                     </div>
                 ) : (
-                    <Link href='/users/[id]' as={`/users/${firstPlaceAthlete.id}`}>
+                    <Link href='/users/[id]' as={`/users/${firstPlaceAthlete.id}`} legacyBehavior>
                         <a title={`${firstPlaceAthlete.profile.real_name}'s page`} css={cellLinkCss}>
                             <Image src={firstPlaceAthlete.profile.image_48} avatar />
                             <span css={{

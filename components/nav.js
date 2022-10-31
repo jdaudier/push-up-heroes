@@ -12,7 +12,7 @@ const Nav = ({showInfoModal = true}) => {
     return (
         <Menu fixed='top' className="top-nav" size="huge">
             <Container>
-                <Link href="/">
+                <Link href="/" legacyBehavior>
                     <Menu.Item as='a' header>
                         <span css={{marginRight: '1.5em', width: 50}}>
                             <SuperGirl />
