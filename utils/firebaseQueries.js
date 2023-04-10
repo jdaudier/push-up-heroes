@@ -9,7 +9,7 @@ import isYesterday from 'date-fns/isYesterday';
 import { FEED_LIMIT, MAX_NUM_FOR_SUMMARY } from '../utils/constants';
 import getBestIndividualSetAthletes from './getBestIndividualSetAthletes';
 
-export const CHALLENGE_ID = 'challenge-7';
+export const CHALLENGE_ID = 'challenge-8';
 const collectionRef = collection(db, CHALLENGE_ID);
 
 export async function getCollectionSize() {
