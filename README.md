@@ -15,4 +15,4 @@
 - For testing Slack changes, you'll need to temporarily change the Slash commands to your local ngrok URL and then change it back
 
 ## Questions?
-Pop by [#fun-push-up-challenge](https://app.slack.com/client/T024VA8T9/CNTT52KV0) and tag Joanne if you have any questions.
+Pop by [#fun-push-up-challenge](https://app.slack.com/client/T024VA8T9/CNTT52KV0) and tag Joanne if you have any questions
